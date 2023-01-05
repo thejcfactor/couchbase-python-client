@@ -47,6 +47,7 @@ _KV_TESTS = [
     "txcouchbase/tests/mutation_tokens_t.py::MutationTokensEnabledTests",
     "txcouchbase/tests/binary_collection_t.py::BinaryCollectionTests",
     "txcouchbase/tests/transcoder_t.py::DefaultTranscoderTests",
+    "protostellar/tests/collection_t.py::CollectionTests",
 ]
 
 _STREAMING_TESTS = [

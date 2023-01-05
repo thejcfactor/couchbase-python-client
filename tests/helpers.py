@@ -511,10 +511,14 @@ class CouchbaseTestEnvironment():
 
     @staticmethod
     def mock_supports_feature(test_suite,  # type: str
-                              is_mock  # type: bool
+                              is_mock,  # type: bool
+                              is_protostellar=False, # type: bool
                               ) -> bool:
         if not is_mock:
             return True
+
+        if is_protostellar:
+            return False
 
         test_suite_features = TEST_SUITE_MAP.get(test_suite, None)
         if not test_suite_features:
@@ -827,7 +831,7 @@ class ClusterInformation():
     def is_real_server(self):
         return self.real_server_enabled
 
-    def get_connection_string(self):
+    def get_connection_string(self, is_protostellar=False):
         if self.mock_server_enabled:
             if self.mock_server.mock_type == MockServerType.Legacy:
                 # What current client uses for mock:
@@ -835,6 +839,8 @@ class ClusterInformation():
                 return f"http://{self.host}:{self.port}"
 
             return self.mock_server.connstr
+        elif is_protostellar is True:
+            return f"{self.host}:{self.port}"
         else:
             return f"couchbase://{self.host}"
 

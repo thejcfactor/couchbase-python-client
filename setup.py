@@ -25,8 +25,10 @@ from setuptools import (Extension,
                         setup)
 from setuptools.command.build_ext import build_ext
 
+
 sys.path.append('.')
 import couchbase_version  # nopep8 # isort:skip # noqa: E402
+from build_protos import BuildProtosCommand  # nopep8 # isort:skip # noqa: E402
 
 CMAKE_EXE = os.environ.get('CMAKE_EXE', shutil.which('cmake'))
 
@@ -36,7 +38,6 @@ except couchbase_version.CantInvokeGit:
     pass
 
 COUCHBASE_VERSION = couchbase_version.get_version()
-
 COUCHBASE_README = os.path.join(os.path.dirname(__file__), 'README.md')
 
 
@@ -150,9 +151,8 @@ class CMakeBuildExt(build_ext):
         else:
             super().build_extension(ext)
 
-
 # Set debug or release
-build_type = os.getenv('PYCBC_BUILD_TYPE', 'Release')
+build_type = os.getenv('PYCBC_BUILD_TYPE', 'Debug')
 if build_type == 'Debug':
     # @TODO: extra Windows debug args?
     if platform.system() != "Windows":
@@ -182,22 +182,26 @@ if sanitizers:
 # now pop these in CMAKE_COMMON_VARIABLES, and they will be used by cmake...
 os.environ['CMAKE_COMMON_VARIABLES'] = ' '.join(cmake_extra_args)
 
-package_data = {}
+package_data = {'protostellar': ['proto/**/*.py']}
 # some more Windows tomfoolery...
 if platform.system() == 'Windows':
-    package_data = {'couchbase': ['pycbc_core.pyd']}
+    package_data.update({'couchbase': ['pycbc_core.pyd']})
 
 print(f'Python SDK version: {COUCHBASE_VERSION}')
 
 setup(name='couchbase',
       version=COUCHBASE_VERSION,
       ext_modules=[CMakeExtension('couchbase.pycbc_core')],
-      cmdclass={'build_ext': CMakeBuildExt},
+      cmdclass={'build_ext': CMakeBuildExt, 'build_protos': BuildProtosCommand},
       python_requires='>=3.7',
       packages=find_packages(
-          include=['acouchbase', 'couchbase', 'txcouchbase', 'couchbase.*', 'acouchbase.*', 'txcouchbase.*'],
+          include=['acouchbase', 'couchbase', 'txcouchbase', 'couchbase.*', 'acouchbase.*', 'txcouchbase.*', 'protostellar'],
           exclude=['acouchbase.tests', 'couchbase.tests', 'txcouchbase.tests']),
+      package_dir= {'protostellar':'protostellar'},          
       package_data=package_data,
+    #   extras_require={
+    #     "stellar-nebula":["grpcio-tools", "googleapis-common-protos"]
+    #   },
       url="https://github.com/couchbase/couchbase-python-client",
       author="Couchbase, Inc.",
       author_email="PythonPackage@couchbase.com",
