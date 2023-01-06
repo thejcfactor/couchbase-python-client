@@ -90,6 +90,17 @@ class Cluster:
         # TODO:  AlreadyShutdownException?
         return BucketManager(self)
 
+    def buckets(self) -> BucketManager:
+        """
+        Get a :class:`~couchbase.management.buckets.BucketManager` which can be used to manage the buckets
+        of this cluster.
+
+        Returns:
+            :class:`~couchbase.management.buckets.BucketManager`: A :class:`~couchbase.management.buckets.BucketManager` instance.
+        """  # noqa: E501
+        # TODO:  AlreadyShutdownException?
+        return BucketManager(self)
+
     @staticmethod
     def connect(connstr,  # type: str
                 options,  # type: ConnectOptions

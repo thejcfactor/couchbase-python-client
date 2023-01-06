@@ -11,8 +11,11 @@ from protostellar.proto.couchbase.kv import v1_pb2
 
 from couchbase.exceptions import InvalidIndexException
 from protostellar.transcoder import JSONTranscoder
+<<<<<<< HEAD
 
 from couchbase.result import QueryResult  # noqa: F401
+=======
+>>>>>>> 0b9b09c (updates)
 
 if TYPE_CHECKING:
     from protostellar.transcoder import Transcoder

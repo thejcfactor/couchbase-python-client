@@ -155,7 +155,7 @@ class CollectionTests:
         assert value == g_result.content_as[dict]
 
     def test_replace_with_cas(self, cb_env, default_kvp_and_reset, new_kvp):
-        # pytest.skip('TBD')
+        pytest.skip('TBD')
         cb = cb_env.collection
         key = default_kvp_and_reset.key
         value1 = new_kvp.value

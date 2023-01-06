@@ -72,9 +72,12 @@ class Collection:
         req_args = self._get_namespace_args()
         req_args['key'] = key
         # TODO:  add final_opts
-        req = v1_pb2.ExistsRequest(**req_args)
-        res = self._kv.Exists(req)
-        return ExistsResult(key, res)
+        req = v1_pb2.GetAndLockRequest(**req_args)
+        res = self._kv.GetAndLock(req)
+        transcoder = final_opts.get('transcoder', None)
+        if not transcoder:
+            transcoder = self.default_transcoder
+        return GetResult(key, res, transcoder)
 
     @BlockingWrapper.handle_exception
     def get(self,

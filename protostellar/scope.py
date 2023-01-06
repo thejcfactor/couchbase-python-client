@@ -9,6 +9,7 @@ from protostellar.result import QueryResult
 from protostellar import query_grpc_module as query
 
 
+
 class Scope:
     def __init__(self, bucket, name, metadata):
         self._bucket = bucket
