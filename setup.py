@@ -25,7 +25,6 @@ from setuptools import (Extension,
                         setup)
 from setuptools.command.build_ext import build_ext
 
-
 sys.path.append('.')
 import couchbase_version  # nopep8 # isort:skip # noqa: E402
 from build_protos import BuildProtosCommand  # nopep8 # isort:skip # noqa: E402
@@ -151,6 +150,7 @@ class CMakeBuildExt(build_ext):
         else:
             super().build_extension(ext)
 
+
 # Set debug or release
 build_type = os.getenv('PYCBC_BUILD_TYPE', 'Debug')
 if build_type == 'Debug':
@@ -195,13 +195,14 @@ setup(name='couchbase',
       cmdclass={'build_ext': CMakeBuildExt, 'build_protos': BuildProtosCommand},
       python_requires='>=3.7',
       packages=find_packages(
-          include=['acouchbase', 'couchbase', 'txcouchbase', 'couchbase.*', 'acouchbase.*', 'txcouchbase.*', 'protostellar'],
+          include=['acouchbase', 'couchbase', 'txcouchbase', 'couchbase.*',
+                   'acouchbase.*', 'txcouchbase.*', 'protostellar'],
           exclude=['acouchbase.tests', 'couchbase.tests', 'txcouchbase.tests']),
-      package_dir= {'protostellar':'protostellar'},          
+      package_dir={'protostellar': 'protostellar'},
       package_data=package_data,
-    #   extras_require={
-    #     "stellar-nebula":["grpcio-tools", "googleapis-common-protos"]
-    #   },
+      #   extras_require={
+      #     "stellar-nebula":["grpcio-tools", "googleapis-common-protos"]
+      #   },
       url="https://github.com/couchbase/couchbase-python-client",
       author="Couchbase, Inc.",
       author_email="PythonPackage@couchbase.com",

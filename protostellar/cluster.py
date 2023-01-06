@@ -15,30 +15,33 @@
 
 from __future__ import annotations
 
+from typing import (TYPE_CHECKING,
+                    Any,
+                    Dict,
+                    Optional)
+
 import grpc
-from typing import Optional, TYPE_CHECKING, Any, Dict
 
 from couchbase.serializer import DefaultJsonSerializer, Serializer
-
 from protostellar.bucket import Bucket
+from protostellar.management.buckets import BucketManager
 from protostellar.options import ConnectOptions
 from protostellar.transcoder import JSONTranscoder
 
 if TYPE_CHECKING:
     from couchbase.transcoder import Transcoder
-    
+
 
 class Cluster:
-    def __init__(self, 
-                connstr, # type: str
-                options, # type: ConnectOptions
-                **kwargs,  # type: Dict[str, Any]
-        ):
+    def __init__(self,
+                 connstr,  # type: str
+                 options,  # type: ConnectOptions
+                 **kwargs,  # type: Dict[str, Any]
+                 ):
         self._creds = grpc.ssl_channel_credentials()
         # self._channel = grpc.secure_channel(host, self._creds)
         self._channel = grpc.insecure_channel(connstr)
 
-        
         self._default_serializer = DefaultJsonSerializer()
         self._default_transcoder = JSONTranscoder()
 
@@ -64,10 +67,20 @@ class Cluster:
     def serializer(self) -> Serializer:
         return self._serializer
 
-
-    def bucket(self, name # type: str
-        ) -> Bucket:
+    def bucket(self, name  # type: str
+               ) -> Bucket:
         return Bucket(self, name)
+
+    def buckets(self) -> BucketManager:
+        """
+        Get a :class:`~couchbase.management.buckets.BucketManager` which can be used to manage the buckets
+        of this cluster.
+
+        Returns:
+            :class:`~couchbase.management.buckets.BucketManager`: A :class:`~couchbase.management.buckets.BucketManager` instance.
+        """  # noqa: E501
+        # TODO:  AlreadyShutdownException?
+        return BucketManager(self)
 
     @staticmethod
     def connect(connstr,  # type: str

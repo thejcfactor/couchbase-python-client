@@ -22,7 +22,6 @@ from typing import (TYPE_CHECKING,
 
 from couchbase.exceptions import ValueFormatException
 from couchbase.serializer import DefaultJsonSerializer
-
 from protostellar.proto.couchbase.kv import v1_pb2
 
 if TYPE_CHECKING:
@@ -45,6 +44,7 @@ class Transcoder(ABC):
                      content_type  # type: int
                      ) -> Any:
         raise NotImplementedError()
+
 
 class JSONTranscoder(Transcoder):
 

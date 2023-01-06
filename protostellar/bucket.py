@@ -1,9 +1,8 @@
 from typing import Optional
 
 from couchbase.serializer import Serializer
-
-from protostellar.scope import Scope
 from protostellar.collection import Collection
+from protostellar.scope import Scope
 from protostellar.transcoder import Transcoder
 
 
@@ -12,7 +11,6 @@ class Bucket:
         self._cluster = cluster
         self._channel = cluster.channel
         self._bucket_name = name
-
 
     @property
     def channel(self):
@@ -47,4 +45,4 @@ class Bucket:
 
     def default_collection(self) -> Collection:
         scope = self.default_scope()
-        return scope.collection(Collection.default_name())        
+        return scope.collection(Collection.default_name())

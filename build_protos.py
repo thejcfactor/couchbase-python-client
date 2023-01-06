@@ -12,12 +12,15 @@ COUCHBASE_ROOT = pathlib.Path(__file__).parent
 
 
 def build_protostellar_init_file(protos):
-    modules = []
+    main_modules = []
+    admin_modules = []
     for proto in protos:
         tokens = proto.split('/')
         end = len(tokens)-1
         if tokens[end].endswith('_grpc.py') and tokens[end-1] == 'couchbase':
-            modules.append(tokens[end])
+            main_modules.append(tokens[end])
+        elif tokens[end].endswith('_grpc.py') and tokens[end-1] == 'admin':
+            admin_modules.append(tokens[end])
 
     lines = [
         'import importlib',
@@ -28,13 +31,24 @@ def build_protostellar_init_file(protos):
         '',
     ]
 
-    for module in modules:
+    for module in main_modules:
         tokens = module.split('.')
         abbrv = tokens[0]
         name = module[:-3]
         lines.append(f'# {abbrv}')
         lines.append(
             f"{abbrv}_grpc_spec = importlib.util.spec_from_file_location('{name}', os.path.join(pathlib.Path(__file__).parent, 'proto', 'couchbase', '{module}'))")  # noqa: E501
+        lines.append(f"{abbrv}_grpc_module = importlib.util.module_from_spec({abbrv}_grpc_spec)")
+        lines.append(f"{abbrv}_grpc_spec.loader.exec_module({abbrv}_grpc_module)")
+        lines.append('')
+
+    for module in admin_modules:
+        tokens = module.split('.')
+        abbrv = f'{tokens[0]}_admin'
+        name = module[:-3]
+        lines.append(f'# {abbrv}')
+        lines.append(
+            f"{abbrv}_grpc_spec = importlib.util.spec_from_file_location('{name}', os.path.join(pathlib.Path(__file__).parent, 'proto', 'couchbase', 'admin', '{module}'))")  # noqa: E501
         lines.append(f"{abbrv}_grpc_module = importlib.util.module_from_spec({abbrv}_grpc_spec)")
         lines.append(f"{abbrv}_grpc_spec.loader.exec_module({abbrv}_grpc_module)")
         lines.append('')

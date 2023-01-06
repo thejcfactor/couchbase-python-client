@@ -27,6 +27,7 @@ repos:
           (?x)^(
               deps/|
               src/|
+              protostellar/proto/|
               simple_acouchbase.py|
               simple_couchbase.py|
               simple_txcouchbase.py|
@@ -46,6 +47,7 @@ repos:
           (?x)^(
               deps/|
               src/|
+              protostellar/proto/|
               examples/txcouchbase/
           )
         args:
@@ -65,9 +67,11 @@ repos:
           (?x)^(
               deps/|
               src/|
+              protostellar/proto/|
               acouchbase/tests/|
               txcouchbase/tests/|
               couchbase/tests/|
+              protostellar/tests/|
               tests/mock_server.py|
               simple_acouchbase.py|
               simple_couchbase.py|

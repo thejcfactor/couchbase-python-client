@@ -6,6 +6,7 @@ exclude =
     docs/source/conf.py,
     build,
     dist,
-    src
-    deps
+    src,
+    deps,
+    protostellar/proto
 max-complexity = 10

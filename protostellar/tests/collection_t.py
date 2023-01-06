@@ -29,13 +29,13 @@ from couchbase.exceptions import (AmbiguousTimeoutException,
                                   InvalidArgumentException,
                                   PathNotFoundException,
                                   TemporaryFailException)
-from couchbase.options import (GetOptions,
-                               InsertOptions,
-                               ReplaceOptions,
-                               UpsertOptions)
+from protostellar.options import (GetOptions,
+                                  InsertOptions,
+                                  ReplaceOptions,
+                                  UpsertOptions)
 from protostellar.result import (ExistsResult,
-                              GetResult,
-                              MutationResult)
+                                 GetResult,
+                                 MutationResult)
 
 from ._test_utils import (CollectionType,
                           KVPair,
@@ -62,11 +62,28 @@ class CollectionTests:
         #                                       cb_env.teardown_named_collections,
         #                                       raise_if_no_exception=False)
 
-
     @pytest.fixture(name="default_kvp")
     def default_key_and_value(self, cb_env) -> KVPair:
         key, value = cb_env.get_default_key_value()
         yield KVPair(key, value)
+
+    @pytest.fixture(name="default_kvp_and_reset")
+    def default_key_and_value_with_reset(self, cb_env) -> KVPair:
+        key, value = cb_env.get_default_key_value()
+        yield KVPair(key, value)
+        cb_env.try_n_times(5, 3, cb_env.collection.upsert, key, value)
+
+    @pytest.fixture(name="new_kvp")
+    def new_key_and_value_with_reset(self, cb_env) -> KVPair:
+        key, value = cb_env.get_new_key_value()
+        yield KVPair(key, value)
+        cb_env.try_n_times_till_exception(10,
+                                          1,
+                                          cb_env.collection.remove,
+                                          key,
+                                          expected_exceptions=(DocumentNotFoundException,),
+                                          reset_on_timeout=True,
+                                          reset_num_times=3)
 
     # def test_exists(self, cb_env, default_kvp):
     #     cb = cb_env.collection
@@ -89,4 +106,89 @@ class CollectionTests:
     def test_get_fails(self, cb_env):
         cb = cb_env.collection
         with pytest.raises(DocumentNotFoundException):
-            cb.get(self.NO_KEY)        
+            cb.get(self.NO_KEY)
+
+    def test_upsert(self, cb_env, default_kvp):
+        cb = cb_env.collection
+        key = default_kvp.key
+        value = default_kvp.value
+        result = cb.upsert(key, value, UpsertOptions(
+            timeout=timedelta(seconds=3)))
+        assert result is not None
+        assert isinstance(result, MutationResult)
+        assert result.cas != 0
+        g_result = cb_env.try_n_times(10, 3, cb.get, key)
+        assert g_result.key == key
+        assert value == g_result.content_as[dict]
+
+    def test_insert(self, cb_env, new_kvp):
+        cb = cb_env.collection
+        key = new_kvp.key
+        value = new_kvp.value
+        result = cb.insert(key, value, InsertOptions(
+            timeout=timedelta(seconds=3)))
+        assert result is not None
+        assert isinstance(result, MutationResult)
+        assert result.cas != 0
+        g_result = cb_env.try_n_times(10, 3, cb.get, key)
+        assert g_result.key == key
+        assert value == g_result.content_as[dict]
+
+    def test_insert_document_exists(self, cb_env, default_kvp):
+        cb = cb_env.collection
+        key = default_kvp.key
+        value = default_kvp.value
+        with pytest.raises(DocumentExistsException):
+            cb.insert(key, value)
+
+    def test_replace(self, cb_env, default_kvp):
+        cb = cb_env.collection
+        key = default_kvp.key
+        value = default_kvp.value
+        result = cb.replace(key, value, ReplaceOptions(
+            timeout=timedelta(seconds=3)))
+        assert result is not None
+        assert isinstance(result, MutationResult)
+        assert result.cas != 0
+        g_result = cb_env.try_n_times(10, 3, cb.get, key)
+        assert g_result.key == key
+        assert value == g_result.content_as[dict]
+
+    def test_replace_with_cas(self, cb_env, default_kvp_and_reset, new_kvp):
+        pytest.skip('TBD')
+        cb = cb_env.collection
+        key = default_kvp_and_reset.key
+        value1 = new_kvp.value
+        result = cb.get(key)
+        old_cas = result.cas
+        result = cb.replace(key, value1, ReplaceOptions(cas=old_cas))
+        assert isinstance(result, MutationResult)
+        assert result.cas != old_cas
+
+        # try same cas again, must fail.
+        with pytest.raises(CasMismatchException):
+            cb.replace(key, value1, ReplaceOptions(cas=old_cas))
+
+    def test_replace_fail(self, cb_env):
+        cb = cb_env.collection
+        with pytest.raises(DocumentNotFoundException):
+            cb.replace(self.NO_KEY, {"some": "content"})
+
+    def test_remove(self, cb_env, default_kvp_and_reset):
+        cb = cb_env.collection
+        key = default_kvp_and_reset.key
+        result = cb.remove(key)
+        assert isinstance(result, MutationResult)
+
+        with pytest.raises(DocumentNotFoundException):
+            cb_env.try_n_times_till_exception(3,
+                                              1,
+                                              cb.get,
+                                              key,
+                                              expected_exceptions=(DocumentNotFoundException,),
+                                              raise_exception=True)
+
+    def test_remove_fail(self, cb_env):
+        cb = cb_env.collection
+        with pytest.raises(DocumentNotFoundException):
+            cb.remove(self.NO_KEY)

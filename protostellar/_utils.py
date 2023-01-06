@@ -19,6 +19,7 @@ from google.protobuf.timestamp_pb2 import Timestamp
 
 from couchbase.exceptions import InvalidArgumentException
 
+
 def timedelta_as_timestamp(
     duration,  # type: timedelta
 ) -> int:
@@ -31,6 +32,7 @@ def timedelta_as_timestamp(
         raise InvalidArgumentException(f'Expected expiry seconds of zero (for no expiry) or greater, got {seconds}.')
 
     return Timestamp().FromSeconds(seconds)
+
 
 def timestamp_as_datetime(
     timestamp,  # type: Timestamp

@@ -25,10 +25,6 @@ from urllib.parse import urlparse
 
 import pytest
 
-from protostellar.cluster import Cluster
-from protostellar.options import ConnectOptions
-from protostellar.scope import Scope
-
 from couchbase.exceptions import (AmbiguousTimeoutException,
                                   BucketAlreadyExistsException,
                                   BucketDoesNotExistException,
@@ -37,6 +33,10 @@ from couchbase.exceptions import (AmbiguousTimeoutException,
                                   ScopeAlreadyExistsException,
                                   ScopeNotFoundException,
                                   UnAmbiguousTimeoutException)
+from protostellar.cluster import Cluster
+from protostellar.options import ConnectOptions
+from protostellar.scope import Scope
+from protostellar.management.buckets import CreateBucketSettings, BucketType, BucketManager
 from tests.helpers import CollectionType  # noqa: F401
 from tests.helpers import KVPair  # noqa: F401
 from tests.helpers import (CouchbaseTestEnvironment,
@@ -54,7 +54,7 @@ class TestEnvironment(CouchbaseTestEnvironment):
 
         if kwargs.get("manage_buckets", False) is True:
             self.check_if_feature_supported('basic_bucket_mgmt')
-            # self._bm = self.cluster.buckets()
+            self._bm = self.cluster.buckets()
 
         if kwargs.get("manage_collections", False) is True:
             self.check_if_feature_supported('collections')
@@ -80,10 +80,10 @@ class TestEnvironment(CouchbaseTestEnvironment):
     def fqdn(self) -> Optional[str]:
         return f'`{self.bucket.name}`.`{self.scope.name}`.`{self.collection.name}`'
 
-    # @property
-    # def bm(self) -> Optional[BucketManager]:
-    #     """Returns the default bucket's BucketManager"""
-    #     return self._bm if hasattr(self, '_bm') else None
+    @property
+    def bm(self) -> Optional[BucketManager]:
+        """Returns the default bucket's BucketManager"""
+        return self._bm if hasattr(self, '_bm') else None
 
     # @property
     # def cm(self) -> Optional[CollectionManager]:
@@ -188,6 +188,36 @@ class TestEnvironment(CouchbaseTestEnvironment):
                 self.collection.remove(k)
             except CouchbaseException:
                 pass
+
+
+    # Bucket MGMT
+
+    def create_bucket(self, bucket_name):
+        try:
+            self.bm.create_bucket(
+                CreateBucketSettings(
+                    name=bucket_name,
+                    bucket_type=BucketType.COUCHBASE,
+                    ram_quota_mb=100))
+        except BucketAlreadyExistsException:
+            pass
+        self.try_n_times(10, 1, self.bm.get_bucket, bucket_name)
+
+    def purge_buckets(self, buckets):
+        for bucket in buckets:
+            try:
+                self.bm.drop_bucket(bucket)
+            except BucketDoesNotExistException:
+                pass
+            except Exception:
+                raise
+
+            # now be sure it is really gone
+            self.try_n_times_till_exception(10,
+                                            3,
+                                            self.bm.get_bucket,
+                                            bucket,
+                                            expected_exceptions=(BucketDoesNotExistException))
 
     # helper methods
 

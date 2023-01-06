@@ -3,6 +3,7 @@ from typing import Optional
 from protostellar.collection import Collection
 from protostellar.transcoder import Transcoder
 
+
 class Scope:
     def __init__(self, bucket, name):
         self._bucket = bucket

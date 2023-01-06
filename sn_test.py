@@ -8,7 +8,11 @@ collection = bucket.default_collection()
 
 res = collection.upsert('test_key', {'what': 'sn-test-doc'})
 print(res)
-res = collection.get('test_key_1')
+res = collection.get('test_key')
 print(res)
 # res = collection.exists('test_key')
 # print(res)
+
+bm = cluster.buckets()
+
+bm.get_all_buckets()

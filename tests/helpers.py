@@ -512,7 +512,7 @@ class CouchbaseTestEnvironment():
     @staticmethod
     def mock_supports_feature(test_suite,  # type: str
                               is_mock,  # type: bool
-                              is_protostellar=False, # type: bool
+                              is_protostellar=False,  # type: bool
                               ) -> bool:
         if not is_mock:
             return True

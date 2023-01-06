@@ -1,17 +1,20 @@
 from datetime import datetime
-from typing import (Any,
+from typing import (TYPE_CHECKING,
+                    Any,
                     Dict,
                     Optional,
                     Tuple,
-                    TYPE_CHECKING,
                     Union)
 
-
-from protostellar.proto.couchbase.kv import v1_pb2
 from protostellar._utils import timestamp_as_datetime
+from protostellar.proto.couchbase.kv import v1_pb2
+
+from couchbase.exceptions import InvalidIndexException
+from protostellar.transcoder import JSONTranscoder
 
 if TYPE_CHECKING:
     from protostellar.transcoder import Transcoder
+
 
 class ContentProxy:
     """
@@ -31,12 +34,13 @@ class ContentProxy:
         """
         return type_(self._content)
 
+
 class ExistsResult:
 
-    def __init__(self, 
-                key, # type: str
-                response, # type:  v1_pb2.ExistsResponse
-        ):
+    def __init__(self,
+                 key,  # type: str
+                 response,  # type:  v1_pb2.ExistsResponse
+                 ):
         self._key = key
         self._cas = response.cas
         self._exists = response.result
@@ -73,11 +77,11 @@ class ExistsResult:
 
 class GetResult:
 
-    def __init__(self, 
-                key, # type: str
-                response, # type:  v1_pb2.GetResponse
-                transcoder, # type: Transcoder
-        ):
+    def __init__(self,
+                 key,  # type: str
+                 response,  # type:  v1_pb2.GetResponse
+                 transcoder,  # type: Transcoder
+                 ):
         self._key = key
         self._cas = response.cas
         self._expiry = None
@@ -85,7 +89,6 @@ class GetResult:
             self._expiry = timestamp_as_datetime(response.expiry)
 
         self._content = transcoder.decode_value(response.content, response.content_type)
-
 
     @property
     def cas(self) -> Optional[int]:
@@ -102,7 +105,6 @@ class GetResult:
         # if time_ms:
         #     return datetime.fromtimestamp(time_ms)
         return self._expiry
-
 
     @property
     def content_as(self) -> Any:
@@ -141,6 +143,7 @@ class GetResult:
             output['expiry_time'] = self._expiry
 
         return "GetResult:{}".format(output)
+
 
 class MutationToken:
     def __init__(self, token  # type: Dict[str, Union[str, int]]
@@ -202,12 +205,13 @@ class MutationToken:
                 and self.sequence_number == other.sequence_number
                 and self.bucket_name == other.bucket_name)
 
+
 class MutationResult:
 
-    def __init__(self, 
-                key, # type: str
-                response, # type: v1_pb2.UpsertResponse
-                ):
+    def __init__(self,
+                 key,  # type: str
+                 response,  # type: v1_pb2.UpsertResponse
+                 ):
 
         self._key = key
         self._cas = response.cas
@@ -252,3 +256,140 @@ class MutationResult:
 
         return "MutationResult:{}".format(output)
 
+class ContentSubdocProxy:
+    """
+    Used to provide access to LookUpResult content via Result.content_as[type](index)
+    """
+
+    def __init__(self, content):
+        self._content = content
+
+    def _parse_content_at_index(self, index, type_):
+        if index > len(self._content) - 1 or index < 0:
+            raise InvalidIndexException(
+                f"Provided index ({index}) is invalid.")
+
+        item = self._content[index]
+        if item is None:
+            # TODO: how to handle
+            raise ValueError(f'Unable to parse content at index: {index}')
+
+        return type_(item)
+
+    def __getitem__(self,
+                    type_       # type: Any
+                    ) -> Any:
+        """
+
+        :param type_: the type to attempt to cast the result to
+        :return: the content cast to the given type, if possible
+        """
+        return lambda index: self._parse_content_at_index(index, type_)
+
+class LookupInResult:
+
+    def __init__(self, 
+                response # type: v1_pb2.LookupInResponse
+            ):
+
+        self._cas = response.cas
+        self._specs = []
+        tc = JSONTranscoder()
+        for spec in response.specs:
+            # print(spec)
+            self._specs.append(tc.decode_value(spec.content, v1_pb2.JSON))
+
+    @property
+    def cas(self) -> Optional[int]:
+        """
+            Optional[int]: The CAS of the document, if it exists
+        """
+        return self._cas
+
+    def exists(self,  # type: LookupInResult
+               index  # type: int
+               ) -> bool:
+        """Check if the subdocument path exists.
+
+        Raises:
+            :class:`~couchbase.exceptions.InvalidIndexException`: If the provided index is out of range.
+
+        Returns:
+            bool: True if the path exists.  False if the path does not exist.
+        """
+
+        if index > len(self._specs) - 1 or index < 0:
+            raise InvalidIndexException(
+                f"Provided index ({index}) is invalid.")
+
+        exists = self._specs[index]
+        return exists is not None and exists is True
+
+    @property
+    def content_as(self) -> ContentSubdocProxy:
+        """
+            :class:`.ContentSubdocProxy`: A proxy to return the value at the specified index.
+
+            Get first value as a dict::
+
+                res = collection.lookup_in(key, (SD.get("geo"), SD.exists("city")))
+                value = res.content_as[dict](0)
+        """
+        return ContentSubdocProxy(self._specs)
+
+    def __repr__(self):
+        output = {
+            'cas': self._cas,
+            'specs': self._specs
+        }
+        return "LookupInResult:{}".format(output)
+
+class MutateInResult:
+
+    def __init__(self, 
+                response # type: v1_pb2.MutateInResponse
+            ):
+
+        self._cas = response.cas
+        self._mutation_token = MutationToken(response.mutation_token)
+        self._specs = []
+        tc = JSONTranscoder()
+        for spec in response.specs:
+            if spec.HasField('content'):
+                self._specs.append(tc.decode_value(spec.content, v1_pb2.JSON))
+
+    @property
+    def cas(self) -> Optional[int]:
+        """
+            Optional[int]: The CAS of the document, if it exists
+        """
+        return self._cas
+
+    @property
+    def content_as(self) -> ContentSubdocProxy:
+        """
+            :class:`.ContentSubdocProxy`: A proxy to return the value at the specified index.
+
+            Get first value as a dict::
+
+                res = collection.lookup_in(key, (SD.get("geo"), SD.exists("city")))
+                value = res.content_as[dict](0)
+        """
+        return ContentSubdocProxy(self._specs)
+
+    @property
+    def mutation_token(self) -> MutationToken:
+        """Get the operation's mutation token.
+
+        Returns:
+            :class:`.MutationToken`: The operation's mutation token.
+        """
+        return self._mutation_token
+
+    def __repr__(self):
+        output = {
+            'cas': self._cas,
+            'mutation_token': self._mutation_token,
+            'specs': self._specs
+        }
+        return "MutateInResult:{}".format(output)

@@ -38,3 +38,13 @@ query_grpc_spec.loader.exec_module(query_grpc_module)
 analytics_grpc_spec = importlib.util.spec_from_file_location('analytics.v1_pb2_grpc', os.path.join(pathlib.Path(__file__).parent, 'proto', 'couchbase', 'analytics.v1_pb2_grpc.py'))
 analytics_grpc_module = importlib.util.module_from_spec(analytics_grpc_spec)
 analytics_grpc_spec.loader.exec_module(analytics_grpc_module)
+
+# collection_admin
+collection_admin_grpc_spec = importlib.util.spec_from_file_location('collection.v1_pb2_grpc', os.path.join(pathlib.Path(__file__).parent, 'proto', 'couchbase', 'admin', 'collection.v1_pb2_grpc.py'))
+collection_admin_grpc_module = importlib.util.module_from_spec(collection_admin_grpc_spec)
+collection_admin_grpc_spec.loader.exec_module(collection_admin_grpc_module)
+
+# bucket_admin
+bucket_admin_grpc_spec = importlib.util.spec_from_file_location('bucket.v1_pb2_grpc', os.path.join(pathlib.Path(__file__).parent, 'proto', 'couchbase', 'admin', 'bucket.v1_pb2_grpc.py'))
+bucket_admin_grpc_module = importlib.util.module_from_spec(bucket_admin_grpc_spec)
+bucket_admin_grpc_spec.loader.exec_module(bucket_admin_grpc_module)

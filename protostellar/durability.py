@@ -19,24 +19,23 @@ from typing import (Dict,
                     Optional,
                     Union)
 
-from couchbase.durability import ClientDurability
 from couchbase.durability import DurabilityLevel  # noqa: F401
 from couchbase.durability import DurabilityType  # noqa: F401
 from couchbase.durability import PersistTo  # noqa: F401
 from couchbase.durability import PersistToExtended  # noqa: F401
 from couchbase.durability import ReplicateTo  # noqa: F401
-from couchbase.durability import ServerDurability
-
+from couchbase.durability import ClientDurability, ServerDurability
 from protostellar.proto.couchbase.kv import v1_pb2
+
 
 class DurabilityParser:
     @staticmethod
     def parse_durability(durability  # type: DurabilityType
                          ) -> Optional[Union[int, Dict[str, int]]]:
         if isinstance(durability, ClientDurability):
-            return v1_pb2.LegacyDurabilitySpec(num_replicated=durability.replicate_to.value, 
-                                                num_persisted=durability.persist_to.value)
-            
+            return v1_pb2.LegacyDurabilitySpec(num_replicated=durability.replicate_to.value,
+                                               num_persisted=durability.persist_to.value)
+
         if isinstance(durability, ServerDurability):
             return durability.level.value
 
