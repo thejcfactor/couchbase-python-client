@@ -18,7 +18,9 @@ from __future__ import annotations
 from typing import (TYPE_CHECKING,
                     Any,
                     Dict,
-                    Optional)
+                    List,
+                    Optional,
+                    Tuple)
 
 import grpc
 
@@ -38,10 +40,16 @@ class Cluster:
                  options,  # type: ConnectOptions
                  **kwargs,  # type: Dict[str, Any]
                  ):
-        self._creds = grpc.ssl_channel_credentials()
+        # with open('/Users/jaredcasey/Desktop/server_cert.pem', 'rb') as f:
+        #     self._creds = grpc.ssl_channel_credentials(f.read())
+        # self._creds = grpc.ssl_channel_credentials(creds)
         # self._channel = grpc.secure_channel(host, self._creds)
-        self._channel = grpc.insecure_channel(connstr)
+        # self._creds = grpc.composite_channel_credentials(grpc.ssl_channel_credentials(), options.grpc_call_credentials())        
+        # self._channel = grpc.secure_channel(connstr, self._creds)
 
+        self._metadata = []
+        self._metadata.append(options.auth_metadata())
+        self._channel = grpc.insecure_channel(connstr)
         self._default_serializer = DefaultJsonSerializer()
         self._default_transcoder = JSONTranscoder()
 
@@ -67,9 +75,9 @@ class Cluster:
     def serializer(self) -> Serializer:
         return self._serializer
 
-    def bucket(self, name  # type: str
+    def bucket(self, name,  # type: str
                ) -> Bucket:
-        return Bucket(self, name)
+        return Bucket(self, name, self._metadata)
 
     def buckets(self) -> BucketManager:
         """

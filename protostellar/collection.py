@@ -35,13 +35,14 @@ if TYPE_CHECKING:
 
 
 class Collection:
-    def __init__(self, scope, name):
+    def __init__(self, scope, name, metadata):
         if not scope:
             raise InvalidArgumentException(message="Collection must be given a scope")
         # if not scope.connection:
         #     raise RuntimeError("No connection provided")
         self._scope = scope
         self._collection_name = name
+        self._metadata = metadata
         self._channel = scope.channel
         self._kv = kv.KvStub(self._channel)
 
@@ -86,7 +87,7 @@ class Collection:
         req_args['key'] = key
         # TODO:  add final_opts
         req = v1_pb2.GetRequest(**req_args)
-        res = self._kv.Get(req)
+        res = self._kv.Get(req, metadata=self._metadata)
         transcoder = final_opts.get('transcoder', None)
         if not transcoder:
             transcoder = self.default_transcoder

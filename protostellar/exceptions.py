@@ -20,6 +20,9 @@ from grpc import StatusCode
 from couchbase.exceptions import DocumentNotFoundException, DocumentExistsException
 
 def parse_proto_exception(ex):
+    # if need traceback info:
+    # import traceback
+    # tb = ''.join(traceback.format_stack())
     if ex.code() == StatusCode.NOT_FOUND:
         kwargs = {
             'message': ex.details(),

@@ -5,8 +5,10 @@ from datetime import timedelta
 from typing import (TYPE_CHECKING,
                     Any,
                     Dict,
+                    Iterable,
                     List,
                     Optional,
+                    Tuple,
                     overload)
 
 import grpc
@@ -19,8 +21,12 @@ from protostellar.durability import DurabilityParser
 from protostellar.subdocument import StoreSemantics
 
 if TYPE_CHECKING:
+    from couchbase._utils import JSONType
     from protostellar.durability import DurabilityType
+    from protostellar.mutation_state import MutationState
     from protostellar.transcoder import Transcoder
+    from couchbase.n1ql import QueryProfile, QueryScanConsistency
+    from couchbase.serializer import Serializer
 
 
 @dataclass
@@ -31,10 +37,12 @@ class ConnectOptions:
     client_certificate: str = None
     private_key: str = None
 
-    def grpc_call_credentials(self) -> grpc.CallCredentials:
-        token = base64.encode(f'{self.username}:{self.password}')
-        auth_str = f'authorization: Basic {token}'
-        return grpc.access_token_call_credentials(auth_str)
+    def auth_metadata(self) -> Tuple[str]:
+        auth = f'{self.username}:{self.password}1'.encode(encoding='utf-8')
+        token = base64.b64encode(auth)
+        auth_str = f'Basic {token.decode(encoding="utf-8")}'
+        # all metadata keys must be lowercase: https://github.com/grpc/grpc/issues/9863
+        return ('authorization', auth_str)
 
 
 class ExistsOptions(dict):
@@ -319,6 +327,41 @@ class MutateInOptions(dict):
                  **kwargs  # type: Dict[str, Any]
                  ):
 
+        kwargs = {k: v for k, v in kwargs.items() if v is not None}
+        super().__init__(**kwargs)
+
+class QueryOptions(dict):
+
+    # @TODO: span
+    @overload
+    def __init__(
+        self,
+        timeout=None,  # type: Optional[timedelta]
+        read_only=None,  # type: Optional[bool]
+        scan_consistency=None,  # type: Optional[QueryScanConsistency]
+        adhoc=None,  # type: Optional[bool]
+        client_context_id=None,  # type: Optional[str]
+        max_parallelism=None,  # type: Optional[int]
+        positional_parameters=None,  # type: Optional[Iterable[JSONType]]
+        named_parameters=None,  # type: Optional[Dict[str, JSONType]]
+        pipeline_batch=None,  # type: Optional[int]
+        pipeline_cap=None,  # type: Optional[int]
+        profile=None,  # type: Optional[QueryProfile]
+        query_context=None,  # type: Optional[str]
+        scan_cap=None,  # type: Optional[int]
+        scan_wait=None,  # type: Optional[timedelta]
+        metrics=None,  # type: Optional[bool]
+        flex_index=None,  # type: Optional[bool]
+        preserve_expiry=None,  # type: Optional[bool]
+        consistent_with=None,  # type: Optional[MutationState]
+        send_to_node=None,  # type: Optional[str]
+        raw=None,  # type: Optional[Dict[str,Any]]
+        span=None,  # type: Optional[Any]
+        serializer=None  # type: Optional[Serializer]
+    ):
+        pass
+
+    def __init__(self, **kwargs):
         kwargs = {k: v for k, v in kwargs.items() if v is not None}
         super().__init__(**kwargs)
 

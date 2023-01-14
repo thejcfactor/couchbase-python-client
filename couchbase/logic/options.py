@@ -659,11 +659,11 @@ class OptionsTimeoutBase(OptionsBase):
                  span=None,  # type: Optional[Any]
                  **kwargs  # type: Dict[str, Any]
                  ) -> None:
-        """
-        Base options with timeout and span options
-        :param timeout: Timeout for this operation
-        :param span: Parent tracing span to use for this operation
-        """
+        # """
+        # Base options with timeout and span options
+        # :param timeout: Timeout for this operation
+        # :param span: Parent tracing span to use for this operation
+        # """
         if timeout:
             kwargs["timeout"] = timeout
 

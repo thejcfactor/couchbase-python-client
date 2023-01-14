@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, List, Tuple
 
 from couchbase.serializer import Serializer
 from protostellar.collection import Collection
@@ -7,9 +7,10 @@ from protostellar.transcoder import Transcoder
 
 
 class Bucket:
-    def __init__(self, cluster, name):
+    def __init__(self, cluster, name, metadata):
         self._cluster = cluster
         self._channel = cluster.channel
+        self._metadata = metadata
         self._bucket_name = name
 
     @property
@@ -34,9 +35,9 @@ class Bucket:
     def default_scope(self) -> Scope:
         return self.scope(Scope.default_name())
 
-    def scope(self, name  # type: str
+    def scope(self, name,  # type: str
               ) -> Scope:
-        return Scope(self, name)
+        return Scope(self, name, self._metadata)
 
     def collection(self, collection_name  # type: str
                    ) -> Collection:
