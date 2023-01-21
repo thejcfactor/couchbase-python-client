@@ -1,0 +1,2040 @@
+{
+    "airports":
+    {
+        "query": "SELECT a.* FROM `travel-sample`.`inventory`.airport a WHERE a.country = 'United States' AND a.id NOT IN [3670, 3682, 3484, 3645, 3830, 3577, 3876, 3576, 3797, 3697] LIMIT 20",
+        "results":[
+            {
+              "airportname": "Barter Island Lrrs",
+              "city": "Barter Island",
+              "country": "United States",
+              "faa": "BTI",
+              "geo": {
+                "alt": 2,
+                "lat": 70.133989,
+                "lon": -143.581867
+              },
+              "icao": "PABA",
+              "id": 3411,
+              "type": "airport",
+              "tz": "America/Anchorage"
+            },
+            {
+              "airportname": "Wainwright As",
+              "city": "Fort Wainwright",
+              "country": "United States",
+              "faa": "K03",
+              "geo": {
+                "alt": 35,
+                "lat": 70.613378,
+                "lon": -159.86035
+              },
+              "icao": "PAWT",
+              "id": 3412,
+              "type": "airport",
+              "tz": "America/Anchorage"
+            },
+            {
+              "airportname": "Cape Lisburne Lrrs",
+              "city": "Cape Lisburne",
+              "country": "United States",
+              "faa": "LUR",
+              "geo": {
+                "alt": 12,
+                "lat": 68.875133,
+                "lon": -166.110022
+              },
+              "icao": "PALU",
+              "id": 3413,
+              "type": "airport",
+              "tz": "America/Anchorage"
+            },
+            {
+              "airportname": "Point Lay Lrrs",
+              "city": "Point Lay",
+              "country": "United States",
+              "faa": "PIZ",
+              "geo": {
+                "alt": 25,
+                "lat": 69.732875,
+                "lon": -163.005342
+              },
+              "icao": "PPIZ",
+              "id": 3414,
+              "type": "airport",
+              "tz": "America/Anchorage"
+            },
+            {
+              "airportname": "Hilo Intl",
+              "city": "Hilo",
+              "country": "United States",
+              "faa": "ITO",
+              "geo": {
+                "alt": 38,
+                "lat": 19.721375,
+                "lon": -155.048469
+              },
+              "icao": "PHTO",
+              "id": 3415,
+              "type": "airport",
+              "tz": "Pacific/Honolulu"
+            },
+            {
+              "airportname": "Executive",
+              "city": "Orlando",
+              "country": "United States",
+              "faa": "ORL",
+              "geo": {
+                "alt": 113,
+                "lat": 28.545464,
+                "lon": -81.332936
+              },
+              "icao": "KORL",
+              "id": 3416,
+              "type": "airport",
+              "tz": "America/New_York"
+            },
+            {
+              "airportname": "Bettles",
+              "city": "Bettles",
+              "country": "United States",
+              "faa": "BTT",
+              "geo": {
+                "alt": 644,
+                "lat": 66.913944,
+                "lon": -151.529056
+              },
+              "icao": "PABT",
+              "id": 3417,
+              "type": "airport",
+              "tz": "America/Anchorage"
+            },
+            {
+              "airportname": "Clear",
+              "city": "Clear Mews",
+              "country": "United States",
+              "faa": "Z84",
+              "geo": {
+                "alt": 552,
+                "lat": 64.301203,
+                "lon": -149.120144
+              },
+              "icao": "PACL",
+              "id": 3418,
+              "type": "airport",
+              "tz": "America/Anchorage"
+            },
+            {
+              "airportname": "Indian Mountain Lrrs",
+              "city": "Indian Mountains",
+              "country": "United States",
+              "faa": "UTO",
+              "geo": {
+                "alt": 1220,
+                "lat": 65.992794,
+                "lon": -153.704289
+              },
+              "icao": "PAIM",
+              "id": 3419,
+              "type": "airport",
+              "tz": "America/Anchorage"
+            },
+            {
+              "airportname": "Fort Yukon",
+              "city": "Fort Yukon",
+              "country": "United States",
+              "faa": "FYU",
+              "geo": {
+                "alt": 433,
+                "lat": 66.571492,
+                "lon": -145.250417
+              },
+              "icao": "PFYU",
+              "id": 3420,
+              "type": "airport",
+              "tz": "America/Anchorage"
+            },
+            {
+              "airportname": "Sparrevohn Lrrs",
+              "city": "Sparrevohn",
+              "country": "United States",
+              "faa": "SVW",
+              "geo": {
+                "alt": 1583,
+                "lat": 61.097369,
+                "lon": -155.574228
+              },
+              "icao": "PASV",
+              "id": 3421,
+              "type": "airport",
+              "tz": "America/Anchorage"
+            },
+            {
+              "airportname": "Bryant Ahp",
+              "city": "Fort Richardson",
+              "country": "United States",
+              "faa": "FRN",
+              "geo": {
+                "alt": 378,
+                "lat": 61.266381,
+                "lon": -149.653119
+              },
+              "icao": "PAFR",
+              "id": 3422,
+              "type": "airport",
+              "tz": "America/Anchorage"
+            },
+            {
+              "airportname": "Tatalina Lrrs",
+              "city": "Tatalina",
+              "country": "United States",
+              "faa": "TLJ",
+              "geo": {
+                "alt": 964,
+                "lat": 62.894369,
+                "lon": -155.976525
+              },
+              "icao": "PATL",
+              "id": 3423,
+              "type": "airport",
+              "tz": "America/Anchorage"
+            },
+            {
+              "airportname": "Cape Romanzof Lrrs",
+              "city": "Cape Romanzof",
+              "country": "United States",
+              "faa": "CZF",
+              "geo": {
+                "alt": 457,
+                "lat": 61.780297,
+                "lon": -166.038747
+              },
+              "icao": "PACZ",
+              "id": 3424,
+              "type": "airport",
+              "tz": "America/Anchorage"
+            },
+            {
+              "airportname": "Laurence G Hanscom Fld",
+              "city": "Bedford",
+              "country": "United States",
+              "faa": "BED",
+              "geo": {
+                "alt": 133,
+                "lat": 42.469953,
+                "lon": -71.289031
+              },
+              "icao": "KBED",
+              "id": 3425,
+              "type": "airport",
+              "tz": "America/New_York"
+            },
+            {
+              "airportname": "St Paul Island",
+              "city": "St. Paul Island",
+              "country": "United States",
+              "faa": "SNP",
+              "geo": {
+                "alt": 63,
+                "lat": 57.167333,
+                "lon": -170.220444
+              },
+              "icao": "PASN",
+              "id": 3426,
+              "type": "airport",
+              "tz": "America/Anchorage"
+            },
+            {
+              "airportname": "Cape Newenham Lrrs",
+              "city": "Cape Newenham",
+              "country": "United States",
+              "faa": "EHM",
+              "geo": {
+                "alt": 541,
+                "lat": 58.646428,
+                "lon": -162.062778
+              },
+              "icao": "PAEH",
+              "id": 3427,
+              "type": "airport",
+              "tz": "America/Anchorage"
+            },
+            {
+              "airportname": "St George",
+              "city": "Point Barrow",
+              "country": "United States",
+              "faa": "PBV",
+              "geo": {
+                "alt": 125,
+                "lat": 56.578344,
+                "lon": -169.661611
+              },
+              "icao": "PAPB",
+              "id": 3428,
+              "type": "airport",
+              "tz": "America/Anchorage"
+            },
+            {
+              "airportname": "Iliamna",
+              "city": "Iliamna",
+              "country": "United States",
+              "faa": "ILI",
+              "geo": {
+                "alt": 186,
+                "lat": 59.754356,
+                "lon": -154.910961
+              },
+              "icao": "PAIL",
+              "id": 3429,
+              "type": "airport",
+              "tz": "America/Anchorage"
+            },
+            {
+              "airportname": "Platinum",
+              "city": "Port Moller",
+              "country": "United States",
+              "faa": "PTU",
+              "geo": {
+                "alt": 15,
+                "lat": 59.011356,
+                "lon": -161.819664
+              },
+              "icao": "PAPM",
+              "id": 3430,
+              "type": "airport",
+              "tz": "America/Anchorage"
+            }
+          ]
+    },
+    "hotels":
+    {
+        "query": "SELECT h.* FROM `travel-sample`.`inventory`.hotel h WHERE h.country='United States' AND h.city IN  ['Atlanta', 'Detroit','Charlotte', 'Philedelphia', 'Chicago', 'Dallas-Fort Worth', 'Seattle', 'Los Angeles', 'New York', 'Miami' ] AND h.id NOT IN [11787, 11788, 11789, 11791, 16630, 16631, 16632, 16633, 16634, 16635, 16636, 16637, 16638, 16639, 16640, 16648, 16686, 16687, 16708, 16709] LIMIT 20",
+        "results":[
+            {
+              "address": "6301 Orange St",
+              "alias": null,
+              "checkin": null,
+              "checkout": null,
+              "city": "Los Angeles",
+              "country": "United States",
+              "description": "A small, elegant inn.",
+              "directions": null,
+              "email": null,
+              "fax": null,
+              "free_breakfast": true,
+              "free_internet": true,
+              "free_parking": false,
+              "geo": {
+                "accuracy": "APPROXIMATE",
+                "lat": 34.06465,
+                "lon": -118.36543
+              },
+              "id": 16710,
+              "name": "Wilshire Crest Hotel",
+              "pets_ok": false,
+              "phone": null,
+              "price": null,
+              "public_likes": [
+                "Eva Grimes"
+              ],
+              "reviews": [
+                {
+                  "author": "Maria Tillman IV",
+                  "content": "From the top of a hillside down to a coral-strewn beach and some of the best snorkeling in the Caribbean, Tamarindo Estates gives you everything you need in Culebra. The casitas are funky but comfortable--and most importantly they are air conditioned. Down by the water there's also a restaurant in season (not open in the summer) and a swimming pool. You'll take a long, rutted road to get to Tamarindo, but by then you'll be used to potholes and ditches since all the roads on Culebra could use a good coat of asphalt. Recommended for families, friends or couples.",
+                  "date": "2015-06-04 03:20:13 +0300",
+                  "ratings": {
+                    "Check in / front desk": 3,
+                    "Cleanliness": 4,
+                    "Location": 4,
+                    "Overall": 4,
+                    "Rooms": 3,
+                    "Service": 3,
+                    "Value": 4
+                  }
+                },
+                {
+                  "author": "Tyree Mosciski",
+                  "content": "The Tamarindo Estates is a nice property, but overpriced for what it offers. The rental cars that are optional with a room reservation are in poor condition at best (old, beat up, no AC) and, given the even worse condition of the road to get to the hotel, I would recommend renting from Carlos Jeep Rental or other (newer vehicles, AC, automatic transmission). The room would be well priced about $20-40 less per night, and the property would receive 4/5.",
+                  "date": "2013-08-01 14:18:07 +0300",
+                  "ratings": {
+                    "Overall": 3
+                  }
+                }
+              ],
+              "state": "California",
+              "title": "Los Angeles/Wilshire",
+              "tollfree": null,
+              "type": "hotel",
+              "url": "http://www.wilshirecresthotel.com",
+              "vacancy": true
+            },
+            {
+              "address": "435 Culver Blvd",
+              "alias": null,
+              "checkin": null,
+              "checkout": null,
+              "city": "Los Angeles",
+              "country": "United States",
+              "description": "A New England style beach house, located three blocks from the Pacific ocean and five minutes from Los Angeles International Airport.",
+              "directions": null,
+              "email": null,
+              "fax": null,
+              "free_breakfast": true,
+              "free_internet": true,
+              "free_parking": true,
+              "geo": {
+                "accuracy": "RANGE_INTERPOLATED",
+                "lat": 33.96157,
+                "lon": -118.44515
+              },
+              "id": 22540,
+              "name": "Inn at Playa del Rey Bed and Breakfast",
+              "pets_ok": true,
+              "phone": "+1 310 574-1920",
+              "price": null,
+              "public_likes": [
+                "Anabel Ullrich DVM",
+                "Miss Maximo Streich",
+                "Mrs. Muriel Stoltenberg",
+                "Mrs. Pierce Bednar",
+                "Laurine Ward",
+                "Brando McLaughlin MD",
+                "Gloria Lakin",
+                "Concepcion Hegmann"
+              ],
+              "reviews": [
+                {
+                  "author": "Christian Morar",
+                  "content": "My wife and I stayed for four nights in Aug 2005. Excellent value. Our room was a little small but clean and quiet. We shared a bathroom down the hall but never ever saw one other person on the floor, so never had to wait. Good breakfast too. And the location is ideal. Stay here.",
+                  "date": "2012-01-08 01:34:18 +0300",
+                  "ratings": {
+                    "Check in / front desk": 3,
+                    "Cleanliness": 5,
+                    "Location": 5,
+                    "Overall": 5,
+                    "Rooms": 4,
+                    "Service": 4,
+                    "Value": 5
+                  }
+                }
+              ],
+              "state": "California",
+              "title": "Playa del Rey",
+              "tollfree": null,
+              "type": "hotel",
+              "url": "http://www.innatplayadelrey.com/",
+              "vacancy": false
+            },
+            {
+              "address": "8 Dudley Ave",
+              "alias": null,
+              "checkin": "3PM",
+              "checkout": "Noon",
+              "city": "Los Angeles",
+              "country": "United States",
+              "description": "The only hotel in Venice Beach located on the boardwalk on Ocean Front Walk and offering views of the Santa Monica Bay. All rooms have been recently renovated.",
+              "directions": "on Ocean Front Walk btwn Speedway Ave.",
+              "email": "reservations@thecadillachotel.com",
+              "fax": null,
+              "free_breakfast": true,
+              "free_internet": true,
+              "free_parking": false,
+              "geo": {
+                "accuracy": "RANGE_INTERPOLATED",
+                "lat": 33.994061,
+                "lon": -118.479643
+              },
+              "id": 32171,
+              "name": "The Cadillac Hotel",
+              "pets_ok": false,
+              "phone": "+1 310-399-8876",
+              "price": "$99-219",
+              "public_likes": [
+                "Dr. Jennie Jast",
+                "Dr. Rafael Hudson",
+                "Bart Bode",
+                "Ahmed Murazik",
+                "Theo Hodkiewicz"
+              ],
+              "reviews": [
+                {
+                  "author": "Selmer Ryan",
+                  "content": "We were driving through the area and thought that Calistoga would be a nice place to stop for one night. The Roman Spa is a decent place to stay but is not a resort by any stretch of the imagination. It's an old establishment and shows it, but generally is comfortable. The rooms are updated, but the air conditioning unit is dismal. It was impossible to find a good setting during the night, it was either too cold, but when you turned it up a bit, you woke up sweating. Lots of older couples there which I thought was endearing. The baths are quite old and the tiles are fading badly, but that didn't seem to bother anyone. The reception and service seems to be an afterthought for those who work there. With the exception of a nice young lady, they would just let you stand at the counter indefinitely as they walked back and forth doing \"their work\". It's okay for one night, but I didn't feel it lived up to it's description on the website.",
+                  "date": "2014-10-04 02:10:03 +0300",
+                  "ratings": {
+                    "Business service (e.g., internet access)": 1,
+                    "Check in / front desk": 2,
+                    "Cleanliness": 3,
+                    "Location": 3,
+                    "Overall": 2,
+                    "Rooms": 3,
+                    "Service": 1,
+                    "Value": 3
+                  }
+                }
+              ],
+              "state": "California",
+              "title": "Venice (California)",
+              "tollfree": null,
+              "type": "hotel",
+              "url": "http://www.thecadillachotel.com",
+              "vacancy": false
+            },
+            {
+              "address": "1697 Pacific Ave",
+              "alias": null,
+              "checkin": null,
+              "checkout": null,
+              "city": "Los Angeles",
+              "country": "United States",
+              "description": "Newly launched full service boutique hotel about 200 feet from the ocean in the heart of Venice Beach. Rooftop lounge called High with incredible panoramic views of the ocean and City of LA. Hotel has spacious rooms and 2 room suites, ideal for families. Many rooms have beautiful ocean views. Hotel has gated indoor parking.",
+              "directions": "@ Windward and Pacific Ave",
+              "email": null,
+              "fax": "+1 310-452-5479",
+              "free_breakfast": true,
+              "free_internet": true,
+              "free_parking": false,
+              "geo": {
+                "accuracy": "ROOFTOP",
+                "lat": 33.98714,
+                "lon": -118.47193
+              },
+              "id": 32172,
+              "name": "Hotel Erwin",
+              "pets_ok": true,
+              "phone": "+1 310-452-1111",
+              "price": null,
+              "public_likes": [
+                "Kolby Cummings",
+                "Dean Fadel",
+                "Glenda Dach",
+                "Judd Konopelski",
+                "Vida Pfannerstill",
+                "Golda McGlynn",
+                "Bobbie Goldner",
+                "Roxane Cremin"
+              ],
+              "reviews": [
+                {
+                  "author": "Destiny Nicolas",
+                  "content": "April 11, 2008 Sue Duvall Rossi We should be in Kauai right now. Yes, we are part of history, Airline history. April 7th to 14th in a free condo and ATA Airlines went under. So, we thought of Calistoga and the Roman Spa. The Roman Spa is the only place we ever stay, coming almost every year when we can. We love the proximity to Main St. and all the restuarants and shopping. We absoutly love the lush and beautiful gardens the pools and piece and Quite. Highly Suggest you come and Enjoy, Sue Duvall Rossi",
+                  "date": "2014-03-25 04:27:38 +0300",
+                  "ratings": {
+                    "Overall": 5
+                  }
+                }
+              ],
+              "state": "California",
+              "title": "Venice (California)",
+              "tollfree": "+1-800-421-8151",
+              "type": "hotel",
+              "url": "http://hotelerwin.com",
+              "vacancy": false
+            },
+            {
+              "address": "327 Washington Blvd",
+              "alias": null,
+              "checkin": null,
+              "checkout": null,
+              "city": "Los Angeles",
+              "country": "United States",
+              "description": "Located one block from the Venice Beach Boardwalk, adjacent to the world's largest man-made yacht marina. Has direct online reservations and special packages.",
+              "directions": null,
+              "email": null,
+              "fax": "+1 310-827-0289",
+              "free_breakfast": true,
+              "free_internet": true,
+              "free_parking": false,
+              "geo": {
+                "accuracy": "APPROXIMATE",
+                "lat": 33.98081,
+                "lon": -118.46405
+              },
+              "id": 32173,
+              "name": "The Inn at Venice Beach",
+              "pets_ok": true,
+              "phone": null,
+              "price": null,
+              "public_likes": [
+                "Yvonne Johnston IV",
+                "Gerson Reilly"
+              ],
+              "reviews": [
+                {
+                  "author": "Delphine Batz",
+                  "content": "Roman Spa is funky and comfortable; the spa and pool are warm and inviting. Love the fact that the Oasis is right across the parking lot. A great place to veg with your girlfriends!!!",
+                  "date": "2012-03-01 08:07:28 +0300",
+                  "ratings": {
+                    "Overall": 4
+                  }
+                },
+                {
+                  "author": "Ms. Katherine Nader",
+                  "content": "The Roman spa in Calistoga, is a paradise of flowers, humming birds, fountains, and mineral pools. We return here year after year anticipating the relaxed and rejuvinated sensations that overcome us during our visits. The pools have varing degrees of temperatures, you can find your bliss in anyone or all of them. The service is superb, with easy acess to extra towels, and friendly desk service. The location is perfect, just steps away from main street, and its great eateries. The tranquil atmospher is really pleasing with the beatiful grounds, flowers, fountains, and Palm trees, I think the hummingbirds are slow to migrate because they refuse to leave this oasis. We love the Roman Spa and plan our return when ever we can.",
+                  "date": "2014-06-10 03:12:00 +0300",
+                  "ratings": {
+                    "Overall": 5
+                  }
+                },
+                {
+                  "author": "Deonte Cole",
+                  "content": "Paid 300.00 a night for a tired \"family suite\", only to find it was a one bedroom room with a wallbed in the main living room. Kitchen is small, and the room is older in look and furnishings. Pool and spas are stained but ok, but get this - we took our two year old into the pool area only to be reprimanded and told that it was a \"law\" that we couldn't have him in the pool. Funny - we've stayed in other hotels in Calistoga and NEVER had that problem. I believe it was most likely an insurance issue. Stay away...We enjoy our stays in another very nice Calistoga property as we go up there frequently, and the only reason we took a chance on this place was that it was booked. In the future, we'll make sure it's available..!!! (If I could give ZERO stars as a review, I would)",
+                  "date": "2013-07-22 03:32:32 +0300",
+                  "ratings": {
+                    "Check in / front desk": 3,
+                    "Cleanliness": 3,
+                    "Location": 3,
+                    "Overall": 1,
+                    "Rooms": 1,
+                    "Service": 1,
+                    "Value": 1
+                  }
+                },
+                {
+                  "author": "Selina Wilkinson",
+                  "content": "My huband and I just recently returned from a peaceful and relaxing extended weekend at the Roman Spa Hot Springs in Calistoga. We return to this heavenly resort every year in February or March to have a weekend to rest and enjoy the beautiful surrounding of the Roman Spa. Not only is the heated pool and indoor Jacuzzi used, but the peaceful and beautiful grounds at the Roman Spa are something we look forward to visiting. The flowers are beautiful. We have some friends who join us on this wonderful weekend and on the grounds they have available picnic tables, along with BBQ's to use. This year they have added a gas BBQ and it was great! We met our friends, who were also staying at the Roman Spa, for dinner out at the picnic tables and really enjoyed ourselves. We also love the friendly visitors and staff at the Roman Spa and we have made this a tradition for years to come.",
+                  "date": "2014-10-08 09:03:36 +0300",
+                  "ratings": {
+                    "Overall": 5
+                  }
+                },
+                {
+                  "author": "Misael Miller",
+                  "content": "Do you remember the \"Calgon, take me away,\" commercials? This is like - Roman Spa take me away! So nice to dip into the hot mineral pool and let go of the cares of this world. Relaxing atmosphere, always friendly and helpful staff. This was our 5th time here in the last 13 years and we will be back sooner than later. Walking distance to excellent food. The rooms are basic, but clean, the grounds are well kept. Enjoyed a massage at the Oasis as well. Good times!",
+                  "date": "2014-06-06 12:57:40 +0300",
+                  "ratings": {
+                    "Overall": 5
+                  }
+                },
+                {
+                  "author": "Icie Willms",
+                  "content": "Roman Spa is tucked away one from down town Calistoga. Quietly located across from a historical building, it is conveniently located to shops, restaurants, a market, art galleries, and book stores. At night it is quiet. The gardens at the Spa are beautifully tended. Many waterfalls or fountains created a peaceful and serene atmosphere. The soaking and swimming pools are small but I never felt crowded. Three pools offer temperatures from warm to hot with the jacuzzi being the hottest of the three. It is wonderful to sit outside in the sun. Deck chairs and recliners are located throughout the Spa grounds for relaxing. A picnic and Bar-B-Que area is equipped with Weber stoves and the items necessary to have a fun outdoor dinner. At night the pools are softly lit and the night sky, midnight blue when we visited, is filled with stars. Coffee is organic Thanksgiving coffee sustainably grown. Instead of those tedius little pots in each room, you can walk to the office and enjoy as much coffee as you like. Our room did not have a kitchenette but did have a refrigerator. We enjoyed lunch and breakfast (fruits and salads) during the day time at the Spa but ate dinner in town. The staff is friendly and our maid spoke both English and Spanish. She was very helpful when we asked her to make up a couch into a day bed. We love the Roman Spa. This is our 15th year of visiting the Spa. I would recommend the Roman Spa to my friends.",
+                  "date": "2013-05-05 17:56:25 +0300",
+                  "ratings": {
+                    "Overall": 5
+                  }
+                },
+                {
+                  "author": "Allie Leuschke",
+                  "content": "We were greeted warmly and had an early check in. The rooms are super clean and comfortable. The pool is small but nicely landscaped to feel like an \"oasis\". The water temperture was perfect. The best feature is how close the hotel is to the center of town- just a few steps away to our favorite restaurant, Wappo Grill, and the wonderful coffee shop, museum and park. Makes it a super pleasant and easy get-away for a night in Calistoga.",
+                  "date": "2012-07-29 23:38:23 +0300",
+                  "ratings": {
+                    "Business service (e.g., internet access)": 5,
+                    "Check in / front desk": 5,
+                    "Cleanliness": 5,
+                    "Location": 5,
+                    "Overall": 4,
+                    "Rooms": 3,
+                    "Service": 5,
+                    "Value": 3
+                  }
+                }
+              ],
+              "state": "California",
+              "title": "Venice (California)",
+              "tollfree": "+1-800-828-0688",
+              "type": "hotel",
+              "url": "http://www.innatvenicebeach.com/",
+              "vacancy": true
+            },
+            {
+              "address": "1515 Pacific Ave",
+              "alias": null,
+              "checkin": null,
+              "checkout": null,
+              "city": "Los Angeles",
+              "country": "United States",
+              "description": "Private and shared rooms, housekeeping apartments, all with free internet.",
+              "directions": "corner of Windward Ave.",
+              "email": "info@planetvenice.com",
+              "fax": "+1 310-821-3469",
+              "free_breakfast": false,
+              "free_internet": true,
+              "free_parking": true,
+              "geo": {
+                "accuracy": "ROOFTOP",
+                "lat": 33.98778,
+                "lon": -118.47251
+              },
+              "id": 32174,
+              "name": "Venice Beach Hotel & Hostel",
+              "pets_ok": false,
+              "phone": "+1 310-452-3052",
+              "price": null,
+              "public_likes": [
+                "Rachael Spencer",
+                "Justine Koch",
+                "Cheyenne Conroy",
+                "Nick Feest",
+                "Blaise Schuppe",
+                "Sally Fritsch"
+              ],
+              "reviews": [
+                {
+                  "author": "Domenick Bayer",
+                  "content": "First, I'd like to advise readers that the words \"spa\" and \"resort\" are freely bandied around in relation to the motels in Calistoga, and somehow I missed that when researching the Roman Spa Hot Springs Resort. (The word \"motel\" is on their sign, seen if you go directly to their site online.) This is an important distinction that I overlooked - a Motel as opposed to a Hotel - and this evidences itself in terms of austerity in accomodations. All the glowing reviews on this site caused me to abandon a more comprehensive research, so I'd like to give a very thorough review so people can make up their minds with a variety of info. I was hoping for a hot springs soak, and a rejuvenating stay at this \"resort\". I left feeling very tired and discouraged. The pros are that indeed, the staff is friendly, the grounds and rooms are clean, and the springs are used to full advantage, whether you rent a private whirlpool room as I did, or wish to avail yourself to the pool or hot tub outside. The cons of the place? I was a bit unhappy to detect the scent of chlorine in the outside pool, thinking I would be getting the same unadulterated hot spring soak as I could get in my room. It would have been easier to revel in a body of water that is \"pure\" hot springs water, rather than swimming in something with chemicals in it. But the water was nice, the moon was full, and I continued to try to get into the spirit of my retreat. Back in my room, my partner and I excitedly tried to use our new laptop for the first time...he had bid on an auction item online that was due to close. (I admit that not asking the Roman Spa Motel whether or not they had wireless internet service is my own fault, but since I've seen the rankest little motels advertising it, I erroneously assumed they would have it.) We went to the office to see if there was a complimentary PC for guests, but this was not the case either. I was also able to let this detail go, and my partner and I slipped into the whirlpool in our room. This was a nice feature, hot, pure sulpher-smelling water filled the nicely clean tub...but I was disappointed that the tub wasn't just a bit deeper. My partner and I are small people, so if you're a big guy, be advised that in a sitting position, your shoulders will be way above the water line. Scooching down into the tub, we found it difficult to find a comfortable position and hung the back of our necks on the squared edge of the tub. Romance was not to be....We retired to a hard mattress, and closed the curtains that didn't block out the light from outside to our satisfaction. During the night, we finally surrendered and shut off the window-heater-conditioner unit that vibrated and clanked every time it came on...so I woke up cold the next morning. Huddling under the blankets to attempt the last couple hours of precious rest, I was disturbed by the sounds of maids using the laundry next to my room, and the distinct sounds of another guest in an adjoining room, stirring something in a cup and speaking. I was amazed that the walls were so thin! Getting up with sore hips from the hard mattress, I searched the room in vain for a coffee maker...another amenity I guess I've been taking for granted. I guess in short, even if my destination has some charm and the draw of natural features, if I can't get a good night's rest, I won't be inclined to return. Hope this review helps someone's decision-making.",
+                  "date": "2012-04-27 20:23:20 +0300",
+                  "ratings": {
+                    "Business service (e.g., internet access)": 1,
+                    "Check in / front desk": 3,
+                    "Cleanliness": 3,
+                    "Location": 3,
+                    "Overall": 2,
+                    "Rooms": 1,
+                    "Service": 3,
+                    "Value": 2
+                  }
+                },
+                {
+                  "author": "Ms. Kathlyn Rau",
+                  "content": "Calistoga Nov. 8 & 9th, 2006 This was our second visit, having stayed only one night last year. Very relaxing experience. Enjoyed all of the pools and the other guests. Grounds were very clean. The room was very clean, but the bed was not comfortable and the pillows were too hard. This will not deter us from coming back. Staff was very friendly. Looking forward to our third visit.",
+                  "date": "2015-03-29 16:59:52 +0300",
+                  "ratings": {
+                    "Check in / front desk": 5,
+                    "Cleanliness": 5,
+                    "Location": 5,
+                    "Overall": 5,
+                    "Rooms": 3,
+                    "Service": 5,
+                    "Value": 5
+                  }
+                }
+              ],
+              "state": "California",
+              "title": "Venice (California)",
+              "tollfree": null,
+              "type": "hotel",
+              "url": "http://www.planetvenice.com/",
+              "vacancy": false
+            },
+            {
+              "address": "25 Windwward Ave",
+              "alias": null,
+              "checkin": "2PM",
+              "checkout": "11AM",
+              "city": "Los Angeles",
+              "country": "United States",
+              "description": "An affordable hostel with a central location",
+              "directions": "located on Windward btwn Pacific Avenue and Speedway",
+              "email": "reservations@venicebeachcotel.com",
+              "fax": null,
+              "free_breakfast": true,
+              "free_internet": true,
+              "free_parking": false,
+              "geo": {
+                "accuracy": "ROOFTOP",
+                "lat": 33.987293,
+                "lon": -118.472923
+              },
+              "id": 32175,
+              "name": "Venice Beach Cotel",
+              "pets_ok": false,
+              "phone": "+1 310 399-7649",
+              "price": "$25-90",
+              "public_likes": [
+                "Dr. Prince Harvey",
+                "Haylie Shields DDS",
+                "Samantha Lesch",
+                "Mackenzie Stokes",
+                "Brando Gibson MD"
+              ],
+              "reviews": [],
+              "state": "California",
+              "title": "Venice (California)",
+              "tollfree": "+1-888-718-8287",
+              "type": "hotel",
+              "url": "http://www.venicebeachcotel.com",
+              "vacancy": true
+            },
+            {
+              "address": "1305 Ocean Front Walk",
+              "alias": null,
+              "checkin": null,
+              "checkout": null,
+              "city": "Los Angeles",
+              "country": "United States",
+              "description": "Venice Beach Suites & Hotel offers fully furnished vacation/corporate suites in the heart of Venice Beach.",
+              "directions": null,
+              "email": null,
+              "fax": "+1 310-396-3989",
+              "free_breakfast": true,
+              "free_internet": false,
+              "free_parking": false,
+              "geo": {
+                "accuracy": "ROOFTOP",
+                "lat": 33.98826,
+                "lon": -118.47495
+              },
+              "id": 32176,
+              "name": "Venice Beach Suites and Hotel",
+              "pets_ok": false,
+              "phone": "+1 310-396-4559",
+              "price": null,
+              "public_likes": [
+                "Jack Pfeffer",
+                "Madeline Kihn",
+                "Maximilian Kris",
+                "Andy Denesik",
+                "Otilia Wolff",
+                "Isom Conroy",
+                "Avis Bailey"
+              ],
+              "reviews": [
+                {
+                  "author": "Avery Mills",
+                  "content": "We had a great experience at Roman Spa Hot Springs. Convenient location, comfortable room, and \"warm hot springs spa\". Took advantage of the Oasis Spa \"mud bath\" and loved it.",
+                  "date": "2012-11-12 14:31:37 +0300",
+                  "ratings": {
+                    "Overall": 4
+                  }
+                },
+                {
+                  "author": "Joannie Ebert",
+                  "content": "The Roman Spa is a favorite. I have gone to the Roman Spa several times for a romantic weekend. The lush foliage gives the Roman Spa a tropical peaceful ambiance. It is especially beautiful during the holidays. I have also visited the Roman Spa Mother's Day weekend with my mother and sister. The staff was so accomodating. My sister had broken her leg a couple of weeks earlier and the weekend proved to be a bit much for her. The Roman Spa provided a wheel chair, not only for getting around the resort, but for getting to dinner and around town as well. I've even taken my young niece and nephew, who are preteens, to the Roman Spa for an unforgettable weekend. They loved the warm pools. Great restaurants and shopping are all close by. Calistoga is a fun little getaway and the Roman Spa is a special place to enjoy it.",
+                  "date": "2015-05-09 04:33:48 +0300",
+                  "ratings": {
+                    "Overall": 5
+                  }
+                },
+                {
+                  "author": "Rachel Carter",
+                  "content": "I read the (mostly negative) reviews before I stayed at this hotel, and decided to try it anyway to save some money. I was just in town one night to see a band and I was by myself. Hotel was recently updated and is in decent shape. Hotel staff was friendly. Room was small, but bathroom was decent size. The beds aren't as bad as some people have stated but are by no means great. The main problem with this hotel is that the trains constantly run and it's LOUD. I was awoken repeatedly - it sounds and feels like an earthquake. I am normally not someone who gets up at every little sound. I'm guess I would stay here again for one night if I was on a budget, but if you are trying to have a relaxing time, consider whether you can afford a few extra bucks to stay somewhere without the train commotion.",
+                  "date": "2013-03-23 10:54:22 +0300",
+                  "ratings": {
+                    "Cleanliness": 5,
+                    "Location": 1,
+                    "Overall": 2,
+                    "Rooms": 2,
+                    "Service": 2,
+                    "Sleep Quality": 2,
+                    "Value": 3
+                  }
+                },
+                {
+                  "author": "Idell Osinski",
+                  "content": "I'll tell you what..Nice location.close to La Zona Rosa(relatively speaking) and a great value..Staff was courtious friendly and spoke English well...Will go back this year hopefully!",
+                  "date": "2013-04-02 23:07:48 +0300",
+                  "ratings": {
+                    "Cleanliness": 4,
+                    "Location": 4,
+                    "Overall": 5,
+                    "Rooms": 4,
+                    "Service": 5,
+                    "Sleep Quality": 5,
+                    "Value": 4
+                  }
+                },
+                {
+                  "author": "Ricky Bashirian",
+                  "content": "Great find the staff were very helpful and gave us very good recommendations where to eat and I must we were'nt disappointed. The room was well appointed and the bed was very comfy. I must say the general manager was great and very professional. Would deffo be back.",
+                  "date": "2012-01-12 23:18:30 +0300",
+                  "ratings": {
+                    "Cleanliness": 5,
+                    "Location": 5,
+                    "Overall": 4,
+                    "Rooms": 4,
+                    "Service": 5,
+                    "Sleep Quality": 4,
+                    "Value": 5
+                  }
+                },
+                {
+                  "author": "Melany Murazik",
+                  "content": "Hotel is great, staff is friendly and helpful. You certainly get your value for money, whether you book online or directly with the hotel. Rooms are very cosy (see photos), new furniture and most importantly, hotel is very, very clean. All the staff is very friendly and at your disposal, from waiters, reception staff to manager Serpil. After our four days stay, we have decided this is going to be \"our Istanbul hotel\" that we will be coming back to whenever there. Location is perfect, just off the main street which makes it less noisy and enables you to sleep, yet just few steps away from the main happening. Breakfast is nice, buffet type and you can additionally order anything you want. The option of pick up at the airport if you are staying more than 3 nights is very nice and it was comforting to see the sign with your name at a busy airport in Istanbul. Hotel is very near Taksim square (5min walk) where you can get the metro, bus, taxi to go to other parts of the city. Really enjoyed this stay and will hopefully be going there soon again.",
+                  "date": "2012-01-04 21:38:13 +0300",
+                  "ratings": {
+                    "Cleanliness": 5,
+                    "Location": 5,
+                    "Overall": 5,
+                    "Rooms": 5,
+                    "Service": 5,
+                    "Value": 5
+                  }
+                }
+              ],
+              "state": "California",
+              "title": "Venice (California)",
+              "tollfree": "+1-888-877-7602",
+              "type": "hotel",
+              "url": "http://venicebeachsuites.com/",
+              "vacancy": true
+            },
+            {
+              "address": "2 Breeze Ave",
+              "alias": null,
+              "checkin": null,
+              "checkout": null,
+              "city": "Los Angeles",
+              "country": "United States",
+              "description": "Ocean front fully furnished vacation suites on Venice Boardwalk. Beautiful brick building has been recently remodeled retaining classic Venice Beach charm but with chic design and a variety of amenities. Full kitchens, bathrooms with rain showers, walnut floors, free WiFi, cable TV, parking and spectacular roof deck with BBQ and panoramic views across Los Angeles. Nightly, weekly, monthly rates available.",
+              "directions": "Located on the boardwalk, facing the beach",
+              "email": "manager@venicebreezesuites.com",
+              "fax": null,
+              "free_breakfast": false,
+              "free_internet": true,
+              "free_parking": true,
+              "geo": {
+                "accuracy": "ROOFTOP",
+                "lat": 33.98986,
+                "lon": -118.47633
+              },
+              "id": 32177,
+              "name": "Venice Breeze Suites",
+              "pets_ok": false,
+              "phone": "+1 310 566-2222",
+              "price": null,
+              "public_likes": [
+                "Joanny Schmeler Sr.",
+                "Dr. Kareem Lang",
+                "Darius Kemmer",
+                "Cleo Stracke",
+                "Samantha Bergnaum",
+                "Harrison Eichmann",
+                "Elinore Kiehn",
+                "Aurelie Goldner"
+              ],
+              "reviews": [],
+              "state": "California",
+              "title": "Venice (California)",
+              "tollfree": null,
+              "type": "hotel",
+              "url": "http://www.venicebreezesuites.com",
+              "vacancy": false
+            },
+            {
+              "address": "1119 South Robertson Blvd",
+              "alias": null,
+              "checkin": null,
+              "checkout": null,
+              "city": "Los Angeles",
+              "country": "United States",
+              "description": "Suite accommodations.",
+              "directions": null,
+              "email": null,
+              "fax": null,
+              "free_breakfast": false,
+              "free_internet": false,
+              "free_parking": true,
+              "geo": {
+                "accuracy": "APPROXIMATE",
+                "lat": 34.056531,
+                "lon": -118.38407
+              },
+              "id": 3423,
+              "name": "The Carlyle Inn",
+              "pets_ok": true,
+              "phone": "+1-310-275-4445",
+              "price": null,
+              "public_likes": [
+                "Johan Green",
+                "Gregory King",
+                "Adele Kautzer",
+                "Buford Hackett",
+                "Mrs. Aileen Bruen",
+                "Tyrique Schmeler",
+                "Mr. Waino Langosh",
+                "Brionna Yundt PhD",
+                "Jackeline Konopelski"
+              ],
+              "reviews": [
+                {
+                  "author": "Reilly Stanton",
+                  "content": "I just returned from spending three days in Boston with my son during winter break. The staff couldn't have been accomodating and friendly. Our room (two doubles) was just great - very comfy beds (lots of pillows), clean attractive rooms and spacious enough for two. The fitness area has very up-to-date equipment and is suitable for all your basic needs. Pool is spacious, clean and great for both kids (somewhat shallow) or adults who want to swim laps. Our package included breakfast which was wonderful. A buffet variety hat would more than meet anyone's appetite needs. Close walking distance to many attractions: Theatres, Various Restaurants, Chinatown, Faneuil Hall, Quincy Market, Aquarium or to the Boylston T stop Green Line. We took a tour of Fenway Stadium - loved it. We would definately return again to this Hyatt!",
+                  "date": "2015-05-04 03:22:48 +0300",
+                  "ratings": {
+                    "Business service (e.g., internet access)": 4,
+                    "Check in / front desk": 5,
+                    "Cleanliness": 5,
+                    "Location": 5,
+                    "Overall": 5,
+                    "Rooms": 5,
+                    "Service": 4,
+                    "Value": 4
+                  }
+                },
+                {
+                  "author": "Patrick Kertzmann",
+                  "content": "Our stay at the Hyatt was excellent. Even though we booked the rooms via Priceline, the staff provided excellent services. We got a room on the 20th floor with beautiful views of the city and the water (maybe because we were their Gold member). The bed was so soft and huge for two people. The location is convenient within walking distance to everything: Chinatown (2 blocks), subway (red line is right around the corner), movie theaters (couple of blocks), opera house (just across the street), Boston Common, Fenuil Hall, Quincy market, shopping centers, North Street to the Old North Church and little Italy. By the way, if you like Italian food, try Antico Forno (93 Salem St, North End). The food was absolutely delicious, and the price was very reasonable. The only thing we didn't like about Boston is that the parking fee was outrageous ($26/night for self parking underneath the hotel). Use this one. Don't use the one across the street. It is not cheaper ($25/night). Be aware of the parking attentant at this parking lot. We used them the first night. The guy said that it would be $22/night for overnight parking. But when we went the next morning to get our car, the attendant demanded $25. We disagreed and paid $22. He didn't like it, but let us go. They changed their price on the board the next day. We parked our car in the garage underneath the hotel for the rest of our stay. No trouble after that. Overall, we highly recommend this hotel to everybody.",
+                  "date": "2012-08-10 04:42:12 +0300",
+                  "ratings": {
+                    "Business service (e.g., internet access)": 5,
+                    "Check in / front desk": 5,
+                    "Cleanliness": 5,
+                    "Location": 5,
+                    "Overall": 5,
+                    "Rooms": 5,
+                    "Service": 5,
+                    "Value": 5
+                  }
+                }
+              ],
+              "state": "California",
+              "title": "Beverly Hills",
+              "tollfree": "+1-800-322-7595",
+              "type": "hotel",
+              "url": "http://www.carlyle-inn.com/",
+              "vacancy": false
+            },
+            {
+              "address": "300 S. Doheny Dr",
+              "alias": null,
+              "checkin": null,
+              "checkout": null,
+              "city": "Los Angeles",
+              "country": "United States",
+              "description": "Luxury accommodation.",
+              "directions": null,
+              "email": null,
+              "fax": null,
+              "free_breakfast": true,
+              "free_internet": false,
+              "free_parking": false,
+              "geo": {
+                "accuracy": "RANGE_INTERPOLATED",
+                "lat": 34.07264,
+                "lon": -118.389284
+              },
+              "id": 3425,
+              "name": "Four Seasons Hotel",
+              "pets_ok": false,
+              "phone": "+1 310 273-2222",
+              "price": null,
+              "public_likes": [],
+              "reviews": [
+                {
+                  "author": "Mr. Cordell Bruen",
+                  "content": "It was like something out of a film. Luckily we only had to spend a night there after a mix up with booking our original hotel (The Modern Sultan, much, much better) The room is a joke, measures about 2 meters by 3 metres, with dilapidated furniture and a general grubby appearance. And the bathroom? It was so small I could sit on the toilet, brush my teeth in the sink and have a shower ALL AT THE SAME TIME!! It was very noisy, with a main street right outside the building, so plenty of traffic. We could clearly hear people stomping around the hotel until the early ours of the morning. And the lift? Enough room for one person, and no door to the cubicle, so you're seeing bare stone pass 2 inches from your nose. On the plus side, the terrace was nice.",
+                  "date": "2015-08-22 23:39:31 +0300",
+                  "ratings": {
+                    "Cleanliness": 1,
+                    "Location": 2,
+                    "Overall": 1,
+                    "Rooms": 1,
+                    "Service": 3,
+                    "Sleep Quality": 1,
+                    "Value": 1
+                  }
+                },
+                {
+                  "author": "Miss Stephanie Huel",
+                  "content": "So glad we stayed here - had a fabulous time. The room was small as was the bathroom with it's Turkish shower (no shower surround), however these were minor inconveniences weighed against the perfect location & fabulous staff. The day starts with a Turkish buffet breakfast on the top floor with a view of the Bosphorus. The area is also open during the day & evening to any guest wanting to enjoy some quiet time and the view. Watch out for the endless cups of Turkish tea you will be offered if you want to sleep at night! All major attractions are within a 5 minute walk, as is the metro and the ferry. Surrounded by restaurants of all price ranges and rug & china stores where charming proprietors try to entice you to view their wares. A great day is to buy a 1 way ticket on the 10:30 Bosphorus tour ferry at Eminonu (be there at 10:00). Get off at Saiyer and walk back thru town picking up some snacks on the way. Walk back along the river about 15 mins to Buyukdere for the Sadberk Hanim Museum (allow 2 hrs Thur - Tue). Then turn right & walk to the bus stop, catch 25E to Bebek and visit the Rumelihisari fortress (9:00 - 4:30 except Wed). Then catch the 25E again to Ortakoy. Get your stuffed potato and waffle and wander the streets. Continue on the 25E to Kabatas and then change to the metro to get back.",
+                  "date": "2015-03-20 21:01:10 +0300",
+                  "ratings": {
+                    "Cleanliness": 5,
+                    "Location": 5,
+                    "Overall": 5,
+                    "Rooms": 3,
+                    "Service": 5,
+                    "Sleep Quality": 4,
+                    "Value": 5
+                  }
+                }
+              ],
+              "state": "California",
+              "title": "Beverly Hills",
+              "tollfree": null,
+              "type": "hotel",
+              "url": null,
+              "vacancy": true
+            },
+            {
+              "address": "611 S Westlake Ave",
+              "alias": null,
+              "checkin": null,
+              "checkout": null,
+              "city": "Los Angeles",
+              "country": "United States",
+              "description": "A block from MacArthur Park.",
+              "directions": "at 6th St",
+              "email": null,
+              "fax": null,
+              "free_breakfast": true,
+              "free_internet": true,
+              "free_parking": false,
+              "geo": {
+                "accuracy": "RANGE_INTERPOLATED",
+                "lat": 34.058802,
+                "lon": -118.274145
+              },
+              "id": 35074,
+              "name": "Holiday Inn Express Downtown West",
+              "pets_ok": true,
+              "phone": "+1 213 483-6363",
+              "price": null,
+              "public_likes": [
+                "Scotty Ziemann DVM"
+              ],
+              "reviews": [
+                {
+                  "author": "Wendy Macejkovic I",
+                  "content": "Stayed here one night - great location for wandering around old san Juan - lots of restaurants and bars nearby. Visited the bodies exhibition which was right next door. Rooms fine but no space in bathroom for anything - no countertop! The most annoying thing was the elevators - need to use room key to get to your floor but didn't work very smoothly and we, and others, had several rides up and down because we couldn't stop at our floors!",
+                  "date": "2013-07-16 22:44:11 +0300",
+                  "ratings": {
+                    "Cleanliness": 4,
+                    "Location": 5,
+                    "Overall": 3,
+                    "Rooms": 3,
+                    "Service": 3,
+                    "Value": 3
+                  }
+                },
+                {
+                  "author": "Thaddeus Ullrich",
+                  "content": "Stayed at the Sheraton Old San Juan for one night prior to our Carnival cruise on October 8th. This was our second visit to this hotel and we were not disappointed. First of all this Hotel is right across the street from the pier that Carnival sails from. The morning of the cruise you grab your bags walk across the street and you are on the ship. Also, it's location in Old San Juan is perfect to sight see in this beautiful city. We opted to upgrade to a suite for $25.00 additional and WOW, we ended up getting the Governor's Suite. Dining room for 8, beautiful living room with big screen TV, seperate King bedroom, 3 balconies and a great view of one of the forts. What a way to start a trip. The people at the hotel were very helpful with sight seeing tips,and restaurant suggestions. All in all I give this hotel a big thumbs up. Hotel outside could use some new paint.",
+                  "date": "2014-08-04 07:07:52 +0300",
+                  "ratings": {
+                    "Cleanliness": 4,
+                    "Location": 5,
+                    "Overall": 5,
+                    "Rooms": 5,
+                    "Service": 5,
+                    "Sleep Quality": 5,
+                    "Value": 5
+                  }
+                },
+                {
+                  "author": "Jerad Kulas",
+                  "content": "I left my new shirt at the hotel and when I went back to tell them they said it was mysteriously gone. Clearly someone took it. It didn't vanish that fast. I have stayed at Starwood Hotels all over the world and I would never stay here again.",
+                  "date": "2014-02-05 00:22:14 +0300",
+                  "ratings": {
+                    "Cleanliness": 3,
+                    "Location": 3,
+                    "Overall": 2,
+                    "Rooms": 3,
+                    "Service": 2,
+                    "Value": 2
+                  }
+                },
+                {
+                  "author": "Elliott Torphy",
+                  "content": "Stayed one night before our cruise. Excellent choice under AmX Starwood Rewards Program! Excellent location allowed easy access to Old San Juan. Pleasant staff, well maintained facilities, and clean room. Quick and simple registration and departure.",
+                  "date": "2014-09-24 11:28:33 +0300",
+                  "ratings": {
+                    "Cleanliness": 5,
+                    "Location": 5,
+                    "Overall": 5,
+                    "Rooms": 5,
+                    "Service": 5,
+                    "Value": 5
+                  }
+                },
+                {
+                  "author": "Russel Prosacco",
+                  "content": "The day staff was extremely helpful and assisted with planning excursions and getting any extras like additional towels or toothpaste. The room was tasteful and clean with a view of the harbor. Each day we didn't use housekeeping, we got coupons for $5 towards a meal at one of the Sheraton Old San Juan's restaurants, which was a nice perk. The location was fabulous. A post office, CVS and a few restaurants were right around the corner and it was a short walk to the forts, additional restaurants and shopping. We received vouchers for breakfast at the hotel, which was another highlight. Made to order omelets, a selection of fruits and breads, hot items like sausage and potatoes, along with pastries and oatmeal rounded out a filling and healthy breakfast. We also visited the rooftop pool and saw fireworks one evening. The gym is open 24/7 and included TVs, water machine and the essentials. During the week, the hotel was quiet and the smokefree casino was not a problem, people there weren't rowdy or loud. We did have loud neighbors one evening, but they turned off the music at midnight, so no problems sleeping. Otherwise, the hotel was about 45-60 minutes from the El Yunque and about 1.5 hours from snorkeling in Farajardo.",
+                  "date": "2014-11-02 18:18:55 +0300",
+                  "ratings": {
+                    "Cleanliness": 4,
+                    "Overall": 4,
+                    "Service": 4,
+                    "Sleep Quality": 3,
+                    "Value": 4
+                  }
+                }
+              ],
+              "state": "California",
+              "title": "Los Angeles/Northwest",
+              "tollfree": "+1 888 465-4329",
+              "type": "hotel",
+              "url": "http://www.ihg.com/holidayinnexpress/hotels/us/en/los-angeles/laxwd/hoteldetail",
+              "vacancy": true
+            },
+            {
+              "address": "4439 W Sunset Blvd",
+              "alias": null,
+              "checkin": "3PM",
+              "checkout": "noon",
+              "city": "Los Angeles",
+              "country": "United States",
+              "description": "An urban hideaway located in the heart of Silver Lake, and probably the coolest option in the area.  Deluxe suites with private balconies, large flat screen TV's, turntables stocked with vinyl, iPod docks, kitchenettes, free parking and Wi-Fi.",
+              "directions": "above El Chavo",
+              "email": null,
+              "fax": null,
+              "free_breakfast": false,
+              "free_internet": true,
+              "free_parking": false,
+              "geo": {
+                "accuracy": "RANGE_INTERPOLATED",
+                "lat": 34.097774,
+                "lon": -118.286118
+              },
+              "id": 35075,
+              "name": "El Tres Inn",
+              "pets_ok": false,
+              "phone": "+1 323 666-6351",
+              "price": "$150-225",
+              "public_likes": [
+                "Herta Hermann",
+                "Carmine Langosh"
+              ],
+              "reviews": [
+                {
+                  "author": "Mr. Stephon Howell",
+                  "content": "Hotel is nothing spectacular but I always stay here when I travel to PR for business. Has good breakfast that's included in my rate and have tons of restaurants nearby. Rates are cheap. Located in Old San Juan so can walk to see the main tourist area on the island. Pool on roof. Fitness center kind of sucks.",
+                  "date": "2012-05-18 10:29:32 +0300",
+                  "ratings": {
+                    "Cleanliness": 4,
+                    "Location": 5,
+                    "Overall": 4,
+                    "Rooms": 3,
+                    "Service": 4,
+                    "Sleep Quality": 4,
+                    "Value": 4
+                  }
+                },
+                {
+                  "author": "Talia Stroman",
+                  "content": "The Sheraton in Old San Juan was great. The hotel was clean and the staff was so friendly. I felt like they were having a contest or something to see who could be the nicest and most informative about the city! Another bonus was the rooftop pool and the workout facility overlooking the dock where the cruise ships dock. You can walk from the hotel to any of the great restaurants.",
+                  "date": "2012-06-29 03:51:22 +0300",
+                  "ratings": {
+                    "Cleanliness": 5,
+                    "Location": 5,
+                    "Overall": 5,
+                    "Rooms": 5,
+                    "Service": 5,
+                    "Sleep Quality": 4,
+                    "Value": 5
+                  }
+                },
+                {
+                  "author": "Brown Heathcote",
+                  "content": "Had a great time in San Juan and the Old San Juan Sheraton could not have been a better place to stay. The staff were excellent. There is a new \"green\" policy that lets you decline daily maid/linen service..Great idea. There have been negative comments about this hotel but imho knock it off. Ignore any negatives and enjoy this place. Room 633 had a \"juliet balcony\" with view of the cruise ship docks.Again just great and I can heartly reccommend it. I am a senior and the peace and quiet, consideration and helpful suggestions from the front desk and T. Schmidtz were much appreciated.. Go and have a good time..",
+                  "date": "2014-03-19 07:15:01 +0300",
+                  "ratings": {
+                    "Cleanliness": 5,
+                    "Location": 5,
+                    "Overall": 5,
+                    "Rooms": 5,
+                    "Service": 5,
+                    "Sleep Quality": 5,
+                    "Value": 5
+                  }
+                },
+                {
+                  "author": "Mrs. Lane Altenwerth",
+                  "content": "We arrived around 11 AM after not sleeping during the night on a red-eye flight from LAX and were told we would have to wait for our room, and that many others were ahead of us from much earlier in the morning (despite reserving directly with hotel and stating we would be an early arrival and being a Hilton Honors member). We took a few bags with us that we did not want to leave with bellman (laptop and purse/cameras) and found a place for lunch that was so-so after walking up and down some streets when a local resident recommended a place to us. The map the hotel clerk had given us and mentioned place for lunch adjacent was closed. We went back to the hotel after lunch, and were told by another desk clerk we had to wait and that many others ahead of us, but then fortunately the woman desk clerk (she had talked to us initially to check in earlier) said okay to let us have our room. We had booked one overlooking the bay. Once we had our room we immediately crashed to sleep for hours. Later we went out for dinner and walked along Paseo de la Princessa which was a delightful introduction to San Jose in the evening with beautiful fountains, music, and vendors - totally enjoyable. Back to the hotel for a good night's rest before taking a taxi to go to the Celebrity cruise ship at another pier the next day. The room had a safe so we could lock up valuables and hotel was in a good location. We ate breakfast at the hotel in the morning which was decent (but expensive) and wait staff was not attentive to refill coffee or water or take order. In summary, good hotel in nice location but don't expect great service. I had to use my data card as I could not get Internet to work.",
+                  "date": "2013-06-26 17:01:05 +0300",
+                  "ratings": {
+                    "Cleanliness": 5,
+                    "Location": 5,
+                    "Overall": 5,
+                    "Rooms": 4,
+                    "Service": 3,
+                    "Sleep Quality": 5,
+                    "Value": 5
+                  }
+                },
+                {
+                  "author": "Verdie Connelly",
+                  "content": "Stayed in one of the Governor's suites prior to embarking on a cruise. I booked the G-suite after I figured out it would accommodate our group of 3 adults and 2 kids and be cheaper than 2 rooms. The suite was very large including a king sized bedroom and a massive entry/dining/living room area with great views of the city and port. We had a roll-away bed brought up and between that, the king bed, and the sofa pullout had room for all. The location was great for our needs. We were able to hike around OSJ and then when it was time to get on the boat we literally walked across the street. I have 2 issues with the place. First is that standards of cleanliness are not on par with other Sheraton's. Not flithy, but just not completely clean. Second, is that the decor and furnishings were in my opinion not up to \"Governor\" standards. The furniture was a bit worn and some of it really did not match with the decor, minor point no doubt. If you are booking the suite for the lap of luxury look elsewhere, if you want a big place to spread out this is it.",
+                  "date": "2014-04-21 23:30:13 +0300",
+                  "ratings": {
+                    "Cleanliness": 2,
+                    "Location": 4,
+                    "Overall": 3,
+                    "Rooms": 3,
+                    "Service": 3,
+                    "Sleep Quality": 3,
+                    "Value": 3
+                  }
+                },
+                {
+                  "author": "Sarai Fritsch",
+                  "content": "I purchased the room via priceline at a bid of $100.00 per night. Stayed 2 nights. Hotel is located right at the port for Carnival Cruise Line which was great as I stayed 2 nights prior to sailing. You can actually walk to the pier if you do not have much luggage and can walk a distance. However I took a taxi. $10.00. Service is great especially the doormen. There is a trolly stop 1 1/2 blks from hotel which is free. There are 2-trolley routes (2-buses), 1 trolley is enclosed which will take you to all the shopping in Old San Juan. You can hop off/on throughout the route. The bus run frequently!! The other trolley route, an open air trolley will take you to all the historical sites, i.e. the fort, museums, etc. Both of the trolley begin and end at the same location wihich is 1 1/2 blks in either direction of the Sheraton. There is a great restaurant behind the hotel called Latin Roots with great food. You must try the Roasted Pork which you will see a whole pig roasting in the window. You can get a combo which is 1/2 lb. pork and 2-sides for $12.00, or 1/2 lb meat only for $8.00. Inside the hotel is Chicago Beef Co. with good burgers if you must eat at hotel. The swimming pool at the hotel is on the roof with and excellant view of the Bay and the ships. Its great for enjoying the sun and relaxing and a nice pool and whirllpool. Very nice and quaint. Finally, the room was nice size and the beds at the Sheraton are really comfy. There is a casino at the hotel also if you are a gambler and they serve free drinks while gambling. I would highly recommend staying here if you want to be in Old San Juan. Great location, and great accommodations!!",
+                  "date": "2014-05-09 03:24:12 +0300",
+                  "ratings": {
+                    "Cleanliness": 5,
+                    "Location": 5,
+                    "Overall": 4,
+                    "Rooms": 4,
+                    "Service": 5,
+                    "Sleep Quality": 5,
+                    "Value": 4
+                  }
+                },
+                {
+                  "author": "Mrs. Coty Beahan",
+                  "content": "I hate writing negative reviews, but there is little to compliment about this hotel. The lobby constantly smells of grease and fried food (not sure why). One of the two treadmills was broken and when we reported it to the front desk, they shrugged. One morning we were awoken by the maid service before 8 a.m.; the next day they never came. We had to call the front desk three times that evening before someone came to drop off clean sheets and towels (though they did not offer to make up the beds or clean up). Other anomalies about this hotel include barking dogs in the hallways in the early morning(?); lots of small unsupervised children screaming in the gym and the pool. Because I have the Starwoods Credit Card, I typically stay at Starwoods properties (LeMeridien, Sheraton, W, etc.) This one felt more akin to a motel than a multi-star hotel.",
+                  "date": "2012-12-30 10:00:03 +0300",
+                  "ratings": {
+                    "Cleanliness": 2,
+                    "Location": 5,
+                    "Overall": 2,
+                    "Rooms": 2,
+                    "Service": 2,
+                    "Sleep Quality": 2,
+                    "Value": 1
+                  }
+                },
+                {
+                  "author": "Tiara Reichel",
+                  "content": "stayed here 1 night, post cruise....nice hotel in old town....there's alot to see, do, eat, and drink nearby.....pricelined for $145 w/tax on a friday night.....even got a room on the 9th floor facing the harbor...quite nice of them...would definately stay here again...",
+                  "date": "2012-02-19 15:55:06 +0300",
+                  "ratings": {
+                    "Cleanliness": 4,
+                    "Location": 4,
+                    "Overall": 4,
+                    "Rooms": 4,
+                    "Service": 4,
+                    "Sleep Quality": 4,
+                    "Value": 3
+                  }
+                }
+              ],
+              "state": "California",
+              "title": "Los Angeles/Northwest",
+              "tollfree": null,
+              "type": "hotel",
+              "url": "http://www.eltresinn.com",
+              "vacancy": false
+            },
+            {
+              "address": "9801 Airport Blvd",
+              "alias": null,
+              "checkin": null,
+              "checkout": null,
+              "city": "Los Angeles",
+              "country": "United States",
+              "description": "Offers free 24-hour shuttle service.",
+              "directions": null,
+              "email": null,
+              "fax": "+1 310 215-1952",
+              "free_breakfast": true,
+              "free_internet": false,
+              "free_parking": true,
+              "geo": {
+                "accuracy": "ROOFTOP",
+                "lat": 33.946867,
+                "lon": -118.386644
+              },
+              "id": 37886,
+              "name": "Embassy Suites LAX - North",
+              "pets_ok": true,
+              "phone": "+1 310 215-1000",
+              "price": null,
+              "public_likes": [
+                "Ms. Ottilie Moore",
+                "Mitchel Larkin",
+                "Montana Franecki"
+              ],
+              "reviews": [
+                {
+                  "author": "Tremaine Wilkinson",
+                  "content": "My family and I stayed in the Sorrento Hotel for a long weekend while visiting Seattle. We booked through an online booking site and were initially worried about the reception we would receive but all of our concerns quickly disappeared. The staff at the hotel were outstanding in every way. They consistently excelled in their service and their attention to any needs we may have had. The complimentary car is a fabulous amenity and was greatly utilized and appreciated during our stay. We stayed in one of the suites and found the room to be perfect for our needs as we had 3 adults and a toddler. Our suite had 2 queen beds and a living room area with a pull out couch and a second standard couch. The living room had a large flat screen tv and the bedroom area had a smaller flat screen tv. The hotel is very nice in and of itself but the staff is really what makes this place shine. I cant recommend it enough and would definitely stay there again.",
+                  "date": "2014-09-21 21:31:01 +0300",
+                  "ratings": {
+                    "Cleanliness": 5,
+                    "Location": 4,
+                    "Overall": 5,
+                    "Rooms": 4,
+                    "Service": 5,
+                    "Sleep Quality": 3,
+                    "Value": 4
+                  }
+                },
+                {
+                  "author": "Darron Friesen",
+                  "content": "I was blown away by the small touches the Sorrento had in the rooms and in the main areas. From menus from the 1920s to french presses and ground coffee in the rooms, the Sorrento has that modern but historic feel. Plus its in a great location and easy to get in and around Seattle.",
+                  "date": "2013-07-14 02:32:52 +0300",
+                  "ratings": {
+                    "Cleanliness": 4,
+                    "Location": 4,
+                    "Overall": 5,
+                    "Rooms": 4,
+                    "Service": 4,
+                    "Sleep Quality": 5,
+                    "Value": 4
+                  }
+                },
+                {
+                  "author": "Miss Jaeden Grimes",
+                  "content": "I stayed at this hotel for three nights last weekend. The staff, outstanding and extremely accomodating. The rooms, comfortable and full of style. The feeling and energy, amazing. Somehow despite having all the modcons you could want to keep you happy, the hotel has retained its original look and feel inside (think early 1900's glamour), and maintained it from the rooms to the public areas.... and the resulting energy is excellent and a far cry from modern, cookie cutter hotels. My only hesitation and the reason why I did not give this a 5 is because they need another elevator when things get busy. (I wanted to give a 4.5 but didn't have that option). Highly recommended for business or pleasure, I will be back.",
+                  "date": "2012-09-15 04:45:25 +0300",
+                  "ratings": {
+                    "Cleanliness": 5,
+                    "Location": 5,
+                    "Overall": 4,
+                    "Rooms": 5,
+                    "Service": 5,
+                    "Sleep Quality": 5,
+                    "Value": 5
+                  }
+                },
+                {
+                  "author": "Cassandre Hodkiewicz",
+                  "content": "My apologies for not writing this sooner! My husband and I had a wonderful stay at this hotel last spring for our anniversary and wanted to be sure to tell you what an amazing time we had. My husband planned the entire thing without my knowledge so thank you the staff for helping him make it perfect for both of us! The hotel property itself is stunning and welcomes you immediately. We booked the \"shaken and stirred\" package which included a full breakfast in the Hunt Club restaurant (on-site) and in-room martinis. We highly recommend this package if it's still available. All I can say is WOW! Everything about our stay went perfectly from the valet greeting us all the way through our check-out and even included a call to our room a few minutes after arrival to ensure everything was perfect. They clearly understand what customer service means and they made us feel like nothing would be a problem if we asked. MARTINIS: We didn't know what to expect in the way of martini fixings in the room but we were pleasantly surprised. They supplied everything you need to make the martinis: martini glasses, lemon, zester, olives, toothpicks, shaker, ice and a nice bottle of SKY Vodka (enough for 2 drinks each). They also included a nice note to wish us a happy anniversary (nice touch). ROOM SVC: We really enjoyed our in room dining. The food was amazing and arrived sooner than expected since the hotel/restaurant were extremely busy that night. THE ROOM: The bed and linens were luxurious! You won't be ready to leave them in the morning...I promise :)! The bathroom was a little small - wished they would have had a soaking tub at least. We were in a standard room so they might have them in the suites...maybe next time :). We did not ask for an upgrade but somehow I think they would have done it if they had the availability at the time. BREAKFAST: The food in the Hunt Club was delicious and plentiful. My husband had the french toast (which could feed 3 people) and I had the quiche which also could feed 2-3 people. Our waitress was very helpful and very attentive (although not overly so). We have no hesitation about recommending this place for anyone who needs a little time away at an affordable price. You'll feel like you must have spent a fortune here when you leave because of the beauty of the property and the atmosphere you're in. However, you'll feel anything but poor when you leave this luxury hotel...truly refreshing! The service at this hotel once again gave me reason to believe that there are a few great hotels still out there that believe that \"hospitality\" really does mean being hospitable and accommodating to your guests. We never felt like an inconvenience to anyone and our money wasn't your first concern. Well done! It's been a difficult year for us (and lots of other folks) financially but if we can afford it we'll be back to celebrate again in February (maybe a suite this time). Thanks again for an amazing experience!",
+                  "date": "2014-12-29 10:16:05 +0300",
+                  "ratings": {
+                    "Cleanliness": 5,
+                    "Location": 5,
+                    "Overall": 5,
+                    "Rooms": 5,
+                    "Service": 5,
+                    "Sleep Quality": 5,
+                    "Value": 5
+                  }
+                },
+                {
+                  "author": "Rosa Crooks",
+                  "content": "This is a true find in any city! The service is exceptional. Talk about a five star performance! It is a true boutique hotel! It is comfortable and historic. What a great place....and it is a return trip for us.",
+                  "date": "2013-08-24 14:59:58 +0300",
+                  "ratings": {
+                    "Cleanliness": 5,
+                    "Overall": 5,
+                    "Service": 5,
+                    "Sleep Quality": 5,
+                    "Value": 4
+                  }
+                },
+                {
+                  "author": "Demarco Kulas",
+                  "content": "We had a wonderful stay at the Sorrento. The room was wonderful, the staff was very helpful, our free ride to and from the Space Needle for dinner.... It was lovely. And I love that they change the carpet in the elevator every day! (It says the day of the week..very helpful on vacation!!) I would highly recommend this hotel.",
+                  "date": "2013-07-08 18:26:24 +0300",
+                  "ratings": {
+                    "Cleanliness": 5,
+                    "Overall": 5,
+                    "Service": 5,
+                    "Sleep Quality": 5,
+                    "Value": 5
+                  }
+                },
+                {
+                  "author": "Enola Hickle",
+                  "content": "My husband had business in Seattle and I accompanied him for the two night visit. The hotel was charming, the staff very efficient and made us feel most welcome. Loved the older type hotel, had a charming ambiance, nice break from big chain hotels. Location is good, short walk to waterfront, plenty of cafes nearby to get espresso, speaking of coffe they had french press in room to make coffee which was a very nice touch. We valeted our car at the hotel, it is more than the public parking garages but not by much and when you consider you have access to your car 24/7 worth the extra money, valets were qucik and very nice. We did not dine at the hotel, but I did use the gym which was good for a hotel. Part of my visit I choose to just stay in the room rather than walk around city because I found it so comfortable and appealling. Usuually do not do reviews, but thought this hotel deserved it. Both my husband and I would look forward to staying there again.",
+                  "date": "2014-07-15 09:48:03 +0300",
+                  "ratings": {
+                    "Cleanliness": 5,
+                    "Overall": 5,
+                    "Service": 5,
+                    "Sleep Quality": 5,
+                    "Value": 5
+                  }
+                }
+              ],
+              "state": "California",
+              "title": "Westchester (California)",
+              "tollfree": null,
+              "type": "hotel",
+              "url": "http://www.laxembassy.com",
+              "vacancy": false
+            },
+            {
+              "address": "9901 La Cienega Blvd",
+              "alias": null,
+              "checkin": null,
+              "checkout": null,
+              "city": "Los Angeles",
+              "country": "United States",
+              "description": "Offers free 24-hour airport shuttle.",
+              "directions": null,
+              "email": null,
+              "fax": null,
+              "free_breakfast": true,
+              "free_internet": true,
+              "free_parking": false,
+              "geo": {
+                "accuracy": "RANGE_INTERPOLATED",
+                "lat": 33.94627,
+                "lon": -118.370724
+              },
+              "id": 37887,
+              "name": "Holiday Inn LAX Airport Hotel",
+              "pets_ok": true,
+              "phone": "+1 310 694-5151",
+              "price": null,
+              "public_likes": [
+                "Genevieve Doyle",
+                "Kristian Kuhn",
+                "Citlalli Schamberger",
+                "Dr. Jewell Rowe",
+                "Alejandra Rath"
+              ],
+              "reviews": [
+                {
+                  "author": "Elta Spinka",
+                  "content": "I'm a Seattle native and have driven past the historic hotel thousands of times, always wanting to stay there. My husband surprised me with a stay at the Sorrento for my birthday this year. The Sorrento was even better than I expected. I love its historic charm, friendly staff and comfortable rooms. Thanks to the complimentary car service, we left our car in the garage and played tourist in our hometown. The car service dropped us off downtown so we could shop, eat and sightsee, then we rang him when we were ready to return. He was there within minutes to wisk us back to the hotel where we had a drink in the fireside room and listened to live jazz. The whole experience was top-notch! I highly recommend the Sorrento Hotel for visitors to my amazing hometown.",
+                  "date": "2015-08-09 06:22:48 +0300",
+                  "ratings": {
+                    "Cleanliness": 5,
+                    "Location": 4,
+                    "Overall": 5,
+                    "Rooms": 5,
+                    "Service": 5,
+                    "Sleep Quality": 5,
+                    "Value": 5
+                  }
+                },
+                {
+                  "author": "Murl Grimes",
+                  "content": "With a historic hotel, you get the beautiful linens, nice soaps, etc. Wonderful tea and coffee for your use in your room. There was also a fridge with goodies in it that you would pay for if used. Loved this hotel in the heart of Seattle. The Public Market was about 5 blocks and all the quaint little places to eat and drink coffee were walking distance. Close to the museum and great part of town. Would definately stay again. The room was a bit small but that comes with older hotels. They had a restaurant that we did not eat at, but seemed nice and a separate bar that of course with hotels, you will pay a much higher price for. The staff was wonderful and provided great service along with providing needed directions.",
+                  "date": "2012-07-19 18:32:58 +0300",
+                  "ratings": {
+                    "Cleanliness": 5,
+                    "Location": 5,
+                    "Overall": 5,
+                    "Rooms": 4,
+                    "Service": 5,
+                    "Sleep Quality": 5,
+                    "Value": 4
+                  }
+                },
+                {
+                  "author": "Larry Herzog",
+                  "content": "Had the most Amazing time. Great Customer Service, Great Room and great location!I would definetely go back",
+                  "date": "2014-11-02 22:07:46 +0300",
+                  "ratings": {
+                    "Cleanliness": 4,
+                    "Location": 4,
+                    "Overall": 4,
+                    "Rooms": 4,
+                    "Service": 5,
+                    "Value": 4
+                  }
+                },
+                {
+                  "author": "Catalina Schowalter",
+                  "content": "I didn't choose the Sorrento Hotel; it was chosen for me. And thank goodness! In a world of mediocrity and warmed-over â€œclock-watchingâ€� hospitality, the Sorrento Hotel proved to this weary business traveler that there are owners and staff members who still focus on the customer experience. Like everything else in life, it's the little things that make the difference. Thanks to a delayed flight, I was denied the opportunity to enjoy an evening meal during my travels, and arrived at the hotel at 11:00 PM (exactly when the kitchen closes). I asked the server if there were any cold items that might tide me over until morning. He did one better: he convinced the kitchen to conjure up one more Huntsburger with smoked bacon, Huntsman cheese, and crispy fries (every bit as good as it sounds). Upon entering the room, I was astounded to find that my king-bedded room had a walk-in closet. My first car wasn't as big as this closet. In the bathroom - with Italian marble - there was a place for everything: shaver, lotion, toothbrush, shampoo, etc. How many times have you ever-so-carefully balanced all of your toiletries on the side of the deco sink, only to find them in the sink drain or on the floor moments later? This detail is too often overlooked in hotel renovations (tsk, tsk); which brings us to the study desk in the room. I like WiFi as much as the next business traveler - where would we be without it? But for those of us with a VOIP phone and/or a webcam, wired Internet access is the only way to go. You can imagine my shock and awe when I plugged my ethernet cable into the desktop port and witnessed the warm glow of link lights. I was almost as happy as my two-year-old daughter was to see \"daddy on the computer\". Every hotel on the planet brags about their bedding and linens. Sorrento is the first in my road-warrior career to back it up. Enough said. Heading down for breakfast my first morning, I noticed the word \"Monday\" monogrammed in the carpet in the elevator, and couldn't figure out what it meant. It wasn't until Tuesday morning that I figured it out after seeing that \"Monday\" had been replaced by \"Tuesday\". Wow!! In my defense, I had not had any coffee at that time. : - ) Breakfast - served by a professionally cheerful server by the name of Tim - was Salmon Eggs Benedict. Yes indeed. My meeting was held in the hotel - the Ravello Room (I think) - and was adequate in every way. Now if we can only do something about the car horns in Seattle... You would have thought we were closer to New York City. I just don't think I'll ever get used to that. After the meeting, Kody at the concierge desk recommended that we take a walk to the Pike Place Market. It seemed a far walk; but when broken up by a quick bite to eat, truly is an enjoyable walk (not to mention that the walk from the Sorrento to Pike Place Market is ALL DOWNHILL). The walk back to the hotel was not as friendly, but we resolved to walk the whole way, unless one of us collapsed from exhaustion. We didn't, and we have a new found respect for Seattle pedestrians, bicyclists, and parking brakes. After two days of meetings, it was time to return home. As my flight was at 6:00 AM, the front desk agent offered to brew some fresh coffee for her first check-out at 4:00 AM. Her offer was angelic and quickly accepted by yours truly. As I was driven to the airport in the rain, I told myself that I would post an online review of my experience. There is a saying that if a guest has a good experience at your hotel, he will tell three people. If a guest has a bad experience, he will tell ten people. I want to do my part to reverse this trend, because the Sorrento Hotel truly deserves the word of mouth. Heck, I may even tell more than ten people. But Iâ€™m still not going to use my car horn. : - )",
+                  "date": "2014-10-02 07:40:19 +0300",
+                  "ratings": {
+                    "Cleanliness": 5,
+                    "Location": 5,
+                    "Overall": 5,
+                    "Rooms": 5,
+                    "Service": 5
+                  }
+                }
+              ],
+              "state": "California",
+              "title": "Westchester (California)",
+              "tollfree": null,
+              "type": "hotel",
+              "url": "http://www.hilax.com/",
+              "vacancy": false
+            }
+          ]
+    },
+    "landmarks":
+    {
+        "query": "SELECT l.* FROM `travel-sample`.`inventory`.landmark l WHERE l.country='United States' AND l.city IN  ['Atlanta', 'Detroit','Charlotte', 'Philedelphia', 'Chicago', 'Dallas-Fort Worth', 'Seattle', 'Los Angeles', 'New York', 'Miami' ] AND l.id NOT IN [11752, 11753, 11754, 11755, 11756, 11757, 11758, 11759, 11760, 11761, 11762, 11763, 11764, 11765, 11766, 11767, 11768, 11769, 11770, 11771] LIMIT 20",
+        "results":[
+            {
+              "activity": "eat",
+              "address": "7916 W Sunset Blvd",
+              "alt": null,
+              "city": "Los Angeles",
+              "content": "The Griddle Café is the best breakfast experience in LA. It features pages of every type of pancake you can imagine, which also happen to be twice as large as any pancake you've ever had, and still manage to be fluffy-thick and light on the tummy. Coffee is fresh, in a French press, and the menu features more than just breakfast. Short story: Food is awesome, service is great, but its always crowded. Don't worry though, they serve fast and you will feel the wait is worth it.",
+              "country": "United States",
+              "directions": "east of Fairfax Ave",
+              "email": null,
+              "geo": {
+                "accuracy": "ROOFTOP",
+                "lat": 34.097866,
+                "lon": -118.36221
+              },
+              "hours": "M-F 7AM-4PM, Sa-Su 8AM-4PM",
+              "id": 11772,
+              "image": null,
+              "name": "The Griddle Café",
+              "phone": "+1 323 874-0377",
+              "price": null,
+              "state": "California",
+              "title": "Hollywood",
+              "tollfree": null,
+              "type": "landmark",
+              "url": "http://www.thegriddlecafe.com"
+            },
+            {
+              "activity": "eat",
+              "address": "1660 N Highland Ave",
+              "alt": null,
+              "city": "Los Angeles",
+              "content": "Come here for traditional diner fare: cheeseburgers, French fries, and milkshakes. Part of the chain that opened in San Francisco in the late '40s. There is another location on the Sunset Strip in [[West Hollywood]].",
+              "country": "United States",
+              "directions": null,
+              "email": null,
+              "geo": {
+                "accuracy": "RANGE_INTERPOLATED",
+                "lat": 34.100856,
+                "lon": -118.338454
+              },
+              "hours": "Su-Th 6:30AM-3AM, F-Sa 24 hrs",
+              "id": 11773,
+              "image": null,
+              "name": "Mel's Drive-In",
+              "phone": "+1 323 465-3111",
+              "price": null,
+              "state": "California",
+              "title": "Hollywood",
+              "tollfree": null,
+              "type": "landmark",
+              "url": "http://www.melsdrive-in.com"
+            },
+            {
+              "activity": "eat",
+              "address": "6667 Hollywood Blvd",
+              "alt": null,
+              "city": "Los Angeles",
+              "content": "For a taste of old Hollywood, this is the place. It's been famous for generations.",
+              "country": "United States",
+              "directions": null,
+              "email": null,
+              "geo": {
+                "accuracy": "RANGE_INTERPOLATED",
+                "lat": 34.101784,
+                "lon": -118.33539
+              },
+              "hours": "Tu-Sa 11AM-11PM",
+              "id": 11774,
+              "image": null,
+              "name": "Musso and Frank Grill",
+              "phone": "+1 323 467-7788",
+              "price": null,
+              "state": "California",
+              "title": "Hollywood",
+              "tollfree": null,
+              "type": "landmark",
+              "url": "http://mussoandfrank.com"
+            },
+            {
+              "activity": "eat",
+              "address": "6051 Hollywood Blvd",
+              "alt": null,
+              "city": "Los Angeles",
+              "content": "A small and moderately-priced authentic Japanese restaurant with a great sushi bar and friendly chefs--one of the best this side of the 101.",
+              "country": "United States",
+              "directions": "in a mini-mall on the corner of Gower",
+              "email": null,
+              "geo": {
+                "accuracy": "ROOFTOP",
+                "lat": 34.102051,
+                "lon": -118.321824
+              },
+              "hours": "Lunch: M-F noon-2:30PM; dinner: M-Sa 5:30PM-10PM",
+              "id": 11775,
+              "image": null,
+              "name": "Sushi Ike",
+              "phone": "+1 323 856-9972",
+              "price": null,
+              "state": "California",
+              "title": "Hollywood",
+              "tollfree": null,
+              "type": "landmark",
+              "url": null
+            },
+            {
+              "activity": "eat",
+              "address": "1999 N Sycamore Ave",
+              "alt": null,
+              "city": "Los Angeles",
+              "content": "This Japanese restaurant is perched above Hollywood, and on most nights provides an unbeatable view of the city, from downtown to Palos Verdes. The food is excellent, the gardens and architecture are elegant, and the restaurant has a fascinating history (the story's on the menu). Look for the small sign just west of the Magic Castle; valet parking only.",
+              "country": "United States",
+              "directions": null,
+              "email": null,
+              "geo": {
+                "accuracy": "APPROXIMATE",
+                "lat": 34.105882,
+                "lon": -118.342073
+              },
+              "hours": "Su-Th 5:30PM-9:30PM, F 5:30PM-10:30PM, Sa 5PM-10:30PM",
+              "id": 11776,
+              "image": null,
+              "name": "Yamashiro",
+              "phone": "+1 323 466-5125",
+              "price": null,
+              "state": "California",
+              "title": "Hollywood",
+              "tollfree": null,
+              "type": "landmark",
+              "url": "http://www.yamashirorestaurant.com/"
+            },
+            {
+              "activity": "eat",
+              "address": "6300 Hollywood Blvd",
+              "alt": null,
+              "city": "Los Angeles",
+              "content": "The newest restaurant from acclaimed chef Katsuya Uechi, designed by Philippe Starck. Mouth-watering Japanese menu, destined to be a new Hollywood institution. His other restaurants around the LA area are rated as some of the best in the city.",
+              "country": "United States",
+              "directions": "at Vine St",
+              "email": null,
+              "geo": {
+                "accuracy": "ROOFTOP",
+                "lat": 34.101498,
+                "lon": -118.326944
+              },
+              "hours": "Lunch: M-F 11:30AM-2:30PM; dinner: Su-Th 5:30PM-11PM, F-Sa 5:30PM-midnight",
+              "id": 11777,
+              "image": null,
+              "name": "Katsuya",
+              "phone": "+1 323 871-8777",
+              "price": null,
+              "state": "California",
+              "title": "Hollywood",
+              "tollfree": null,
+              "type": "landmark",
+              "url": "http://www.sbeent.com/katsuya/"
+            },
+            {
+              "activity": "eat",
+              "address": "6922 Hollywood Blvd #107",
+              "alt": null,
+              "city": "Los Angeles",
+              "content": "Right across the street from Grauman's Chinese Theatre you'll find one of LA's best places for tart Italian non-fat frozen yogurt and yogurt smoothies. Choose from 4 different frozen yogurt flavors: Original, Blackberry, Raspberry-Pomogranate, and Green Tea, along with a wide variety of fresh fruits and dry toppings. They also offer smoothies, herbal teas, and coffees.",
+              "country": "United States",
+              "directions": null,
+              "email": null,
+              "geo": {
+                "accuracy": "ROOFTOP",
+                "lat": 34.101343,
+                "lon": -118.341087
+              },
+              "hours": "11AM-11PM daily",
+              "id": 11778,
+              "image": null,
+              "name": "ceFiore",
+              "phone": "+1 323 465-9097",
+              "price": null,
+              "state": "California",
+              "title": "Hollywood",
+              "tollfree": null,
+              "type": "landmark",
+              "url": "http://www.cefiore.com"
+            },
+            {
+              "activity": "drink",
+              "address": "6332 Hollywood Blvd",
+              "alt": null,
+              "city": "Los Angeles",
+              "content": "One of the best juice places in LA, it recently moved from its old location on Vine St. The juices are fresh and delicious, and its run by a sweet Hispanic family. Don't mess with the grandma!",
+              "country": "United States",
+              "directions": "between Ivar and Vine",
+              "email": null,
+              "geo": {
+                "accuracy": "APPROXIMATE",
+                "lat": 34.101466,
+                "lon": -118.327698
+              },
+              "hours": "M-F 8AM-5PM, Sa-Su 10AM-4PM",
+              "id": 11779,
+              "image": null,
+              "name": "The Juice Fountain",
+              "phone": "+1 323 464-8986",
+              "price": "$3-5",
+              "state": "California",
+              "title": "Hollywood",
+              "tollfree": null,
+              "type": "landmark",
+              "url": null
+            },
+            {
+              "activity": "drink",
+              "address": "6530 W Sunset Blvd",
+              "alt": null,
+              "city": "Los Angeles",
+              "content": "A large and reasonably authentic British pub, the Cat & Fiddle always has a fun crowd, a good selection of beers and British pub food, and darts in the back room. The outdoor area is extraordinarily nice but fills early, while the inside of the bar is spacious but gets crowded in the evenings.  Prices are reasonable given the location and decor, with beers from $5 per pint and food starting around $8.",
+              "country": "United States",
+              "directions": null,
+              "email": null,
+              "geo": {
+                "accuracy": "ROOFTOP",
+                "lat": 34.09773,
+                "lon": -118.332739
+              },
+              "hours": "M-F 11:30AM-2AM, Sa-Su 10AM-2AM",
+              "id": 11780,
+              "image": null,
+              "name": "Cat and Fiddle",
+              "phone": "+1 323 468-9045",
+              "price": null,
+              "state": "California",
+              "title": "Hollywood",
+              "tollfree": null,
+              "type": "landmark",
+              "url": "http://www.thecatandfiddle.com/"
+            },
+            {
+              "activity": "drink",
+              "address": "7000 Hollywood Blvd",
+              "alt": null,
+              "city": "Los Angeles",
+              "content": "The lounge in this historic hotel is an upscale hotspot where one is likely to find Hollywood elite enjoying cocktails on weekdays, and a hipster party scene on weekends. Plenty of leather couches, candles, and a classy staff provides a sense of how the &quot;other half&quot; lives.  Expect Hollywood prices to go along with the Hollywood atmosphere.",
+              "country": "United States",
+              "directions": "across the street from Grauman's Chinese Theatre",
+              "email": "infoHRH@thompsonhotels.com",
+              "geo": {
+                "accuracy": "RANGE_INTERPOLATED",
+                "lat": 34.101258,
+                "lon": -118.34183
+              },
+              "hours": null,
+              "id": 11781,
+              "image": null,
+              "name": "Roosevelt Hotel Lounge",
+              "phone": "+1 323 466-7000",
+              "price": null,
+              "state": "California",
+              "title": "Hollywood",
+              "tollfree": null,
+              "type": "landmark",
+              "url": "http://www.hollywoodroosevelt.com/"
+            },
+            {
+              "activity": "drink",
+              "address": "1714 N Highland Ave",
+              "alt": null,
+              "city": "Los Angeles",
+              "content": "One of the most laid back and relaxed bars in town, head here for cheap beer, darts and classic rock. Come as you are, and you will be glad you're here.",
+              "country": "United States",
+              "directions": null,
+              "email": null,
+              "geo": {
+                "accuracy": "ROOFTOP",
+                "lat": 34.102173,
+                "lon": -118.338448
+              },
+              "hours": "M-Sa noon-2AM, Su 10AM-2AM",
+              "id": 11782,
+              "image": null,
+              "name": "Power House",
+              "phone": "+1 323 463-9438",
+              "price": null,
+              "state": "California",
+              "title": "Hollywood",
+              "tollfree": null,
+              "type": "landmark",
+              "url": null
+            },
+            {
+              "activity": "drink",
+              "address": "1652 N Cherokee Ave",
+              "alt": null,
+              "city": "Los Angeles",
+              "content": "Power through the packed crowds and grab yourself a spot at this bar, where the drinks are strong and there's good people watching to be had.",
+              "country": "United States",
+              "directions": null,
+              "email": null,
+              "geo": {
+                "accuracy": "RANGE_INTERPOLATED",
+                "lat": 34.101087,
+                "lon": -118.334934
+              },
+              "hours": "Su-Th 5PM-2AM, F-Sa 4PM-2AM",
+              "id": 11783,
+              "image": null,
+              "name": "Boardners",
+              "phone": "+1 323 462-9621",
+              "price": null,
+              "state": "California",
+              "title": "Hollywood",
+              "tollfree": null,
+              "type": "landmark",
+              "url": "http://www.boardners.com"
+            },
+            {
+              "activity": "drink",
+              "address": "6356 Hollywood Blvd",
+              "alt": null,
+              "city": "Los Angeles",
+              "content": "A movie-themed dance club that was touted by Playboy Magazine as LA's best bar.  They also occasionally offer dinner in front of a large movie screen with reasonably good California cuisine for around $25-40 per person.",
+              "country": "United States",
+              "directions": "2nd Level",
+              "email": null,
+              "geo": {
+                "accuracy": "ROOFTOP",
+                "lat": 34.101433,
+                "lon": -118.328518
+              },
+              "hours": "9PM-2AM daily",
+              "id": 11784,
+              "image": null,
+              "name": "Cinespace",
+              "phone": "+1 323 817-3456",
+              "price": null,
+              "state": "California",
+              "title": "Hollywood",
+              "tollfree": null,
+              "type": "landmark",
+              "url": "http://www.cinespace.info"
+            },
+            {
+              "activity": "drink",
+              "address": "6255 W Sunset Blvd",
+              "alt": null,
+              "city": "Los Angeles",
+              "content": "Make out as if you're a local and head to this so trendy it has a secret entrance door (hint, the entrance is on Argyle, even though the address is on Sunset). While the crowd can be posey, its one of the better clubs in the area, and still manages to remain intimate and cozy.",
+              "country": "United States",
+              "directions": null,
+              "email": null,
+              "geo": {
+                "accuracy": "RANGE_INTERPOLATED",
+                "lat": 34.098652,
+                "lon": -118.325389
+              },
+              "hours": "5PM-2AM daily",
+              "id": 11785,
+              "image": null,
+              "name": "The Well",
+              "phone": "+1 323 467-9355",
+              "price": null,
+              "state": "California",
+              "title": "Hollywood",
+              "tollfree": null,
+              "type": "landmark",
+              "url": "http://vintagebargroup.com/the-well.php"
+            },
+            {
+              "activity": "drink",
+              "address": "1612 N Cahuenga Blvd",
+              "alt": null,
+              "city": "Los Angeles",
+              "content": "Dark lounge inspired by Dia de los Muertos. Lots of tequila, beer, and of course margaritas.",
+              "country": "United States",
+              "directions": null,
+              "email": null,
+              "geo": {
+                "accuracy": "ROOFTOP",
+                "lat": 34.100283,
+                "lon": -118.329361
+              },
+              "hours": "M-F 11:30AM-2AM, Sa-Su 6PM-2AM",
+              "id": 11786,
+              "image": null,
+              "name": "Velvet Margarita Cantina",
+              "phone": "+1 323 469-2000",
+              "price": null,
+              "state": "California",
+              "title": "Hollywood",
+              "tollfree": null,
+              "type": "landmark",
+              "url": "http://www.velvetmargarita.com"
+            },
+            {
+              "activity": "see",
+              "address": null,
+              "alt": null,
+              "city": "Los Angeles",
+              "content": "Primarily centered around North Broadway; unlike Chinatowns in many other cities, it has a wide, main, busy street filled with small shops and restaurants. At about the middle point of N Broadway in Chinatown is an ''open market'' much like those found in [[Hong Kong]]. Be sure to [[haggle]]!",
+              "country": "United States",
+              "directions": null,
+              "email": null,
+              "geo": {
+                "accuracy": "ROOFTOP",
+                "lat": 34.062384,
+                "lon": -118.238322
+              },
+              "hours": null,
+              "id": 16564,
+              "image": null,
+              "name": "Chinatown",
+              "phone": null,
+              "price": null,
+              "state": "California",
+              "title": "Los Angeles/Downtown",
+              "tollfree": null,
+              "type": "landmark",
+              "url": "http://www.chinatownla.com"
+            },
+            {
+              "activity": "see",
+              "address": null,
+              "alt": null,
+              "city": "Los Angeles",
+              "content": "The Japanese district features restaurants, museums, and shops. It sits in the area between Temple and about 5th and Spring through Alameda.",
+              "country": "United States",
+              "directions": null,
+              "email": null,
+              "geo": {
+                "accuracy": "RANGE_INTERPOLATED",
+                "lat": 34.052624,
+                "lon": -118.239505
+              },
+              "hours": null,
+              "id": 16565,
+              "image": null,
+              "name": "Little Tokyo",
+              "phone": null,
+              "price": null,
+              "state": "California",
+              "title": "Los Angeles/Downtown",
+              "tollfree": null,
+              "type": "landmark",
+              "url": "http://www.elittletokyo.com"
+            },
+            {
+              "activity": "see",
+              "address": null,
+              "alt": null,
+              "city": "Los Angeles",
+              "content": "This is where LA was founded as ''El Pueblo de Los Angeles''. You can take a tour of the city's oldest house to see what it looked like at that time. The plaza is mostly filled with Mexican trinket stands and Mexican restaurants.",
+              "country": "United States",
+              "directions": "across from Union Station",
+              "email": null,
+              "geo": {
+                "accuracy": "ROOFTOP",
+                "lat": 34.057464,
+                "lon": -118.238018
+              },
+              "hours": null,
+              "id": 16566,
+              "image": null,
+              "name": "Olvera Street",
+              "phone": null,
+              "price": null,
+              "state": "California",
+              "title": "Los Angeles/Downtown",
+              "tollfree": null,
+              "type": "landmark",
+              "url": "http://www.olvera-street.com"
+            },
+            {
+              "activity": "see",
+              "address": "250 S Grand Ave",
+              "alt": null,
+              "city": "Los Angeles",
+              "content": "The permanent collection is fairly interesting, but the changing exhibitions can be more hit or miss. The museum has no 'traditional' art, so bring an open mind. The gift shop (free entrance) is fun for at least 20 minutes of wonder and awe.",
+              "country": "United States",
+              "directions": null,
+              "email": null,
+              "geo": {
+                "accuracy": "RANGE_INTERPOLATED",
+                "lat": 34.053455,
+                "lon": -118.250549
+              },
+              "hours": "Th-M 11AM-5PM",
+              "id": 16567,
+              "image": null,
+              "name": "Museum of Contemporary Art (MOCA)",
+              "phone": "+1 213 626-6222",
+              "price": "$12, $7 student (includes admission to Geffen Contemporary)",
+              "state": "California",
+              "title": "Los Angeles/Downtown",
+              "tollfree": null,
+              "type": "landmark",
+              "url": "http://www.moca.org"
+            },
+            {
+              "activity": "see",
+              "address": "152 N Central Ave",
+              "alt": null,
+              "city": "Los Angeles",
+              "content": "A branch of MOCA tucked away in Little Tokyo. Same opening hours and shared tickets as MOCA on Grand.",
+              "country": "United States",
+              "directions": null,
+              "email": null,
+              "geo": {
+                "accuracy": "APPROXIMATE",
+                "lat": 34.05065,
+                "lon": -118.238665
+              },
+              "hours": null,
+              "id": 16568,
+              "image": null,
+              "name": "Geffen Contemporary",
+              "phone": null,
+              "price": null,
+              "state": "California",
+              "title": "Los Angeles/Downtown",
+              "tollfree": null,
+              "type": "landmark",
+              "url": "http://www.moca.org/museum/moca_geffen.php"
+            }
+          ]
+    }
+}

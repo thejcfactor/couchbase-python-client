@@ -26,11 +26,10 @@ from typing import (TYPE_CHECKING,
                     Tuple,
                     Union)
 
-from new_couchbase.api.transcoder import TranscoderInterface
 from new_couchbase.serializer import DefaultJsonSerializer
 from new_couchbase.api import ApiImplementation
 
-from new_couchbase.exceptions import InvalidArgumentException, ValueFormatException
+from new_couchbase.exceptions import CouchbaseException, ValueFormatException
 
 if TYPE_CHECKING:
     from new_couchbase.api.serializer import SerializerInterface
@@ -47,11 +46,11 @@ def get_format_flags(format, # type: TranscoderFormat
     ) -> int:
 
     if not implementation:
-        implementation = ApiImplementation.SERVER
+        implementation = ApiImplementation.CLASSIC
 
     if implementation == ApiImplementation.PROTOSTELLAR:
         try:
-            from new_couchbase.impl.protostellar.proto.couchbase.kv import v1_pb2
+            from new_couchbase.protostellar.proto.couchbase.kv import v1_pb2
             if format == TranscoderFormat.FMT_JSON:
                 return v1_pb2.JSON
             elif format == TranscoderFormat.FMT_BYTES:
@@ -59,31 +58,32 @@ def get_format_flags(format, # type: TranscoderFormat
             else:
                 return v1_pb2.UNKNOWN
         except ImportError as ex:
-            raise
+            raise CouchbaseException(message="Unable to import couchbase protostellar package.", 
+                                    exc_info={'inner_cause': ex})
     else:
         try:
-            import new_couchbase.impl.server.core.transcoder as server_transcoder
+            import new_couchbase.classic.core.transcoder as classic_transcoder
 
             if format == TranscoderFormat.FMT_JSON:
-                return server_transcoder.FMT_JSON
+                return classic_transcoder.FMT_JSON
             elif format == TranscoderFormat.FMT_BYTES:
-                return server_transcoder.FMT_BYTES
+                return classic_transcoder.FMT_BYTES
             elif format == TranscoderFormat.FMT_STRING:
-                return server_transcoder.FMT_UTF8
+                return classic_transcoder.FMT_UTF8
         except ImportError as ex:
-            # @TODO(jc):  What to raise?
-            raise 
+            raise CouchbaseException(message="Unable to import couchbase classic package.", 
+                                    exc_info={'inner_cause': ex})
 
 def get_decode_format(flags, # type: int
                     implementation=None # type: Optional[Union[ApiImplementation, int]]
     ) -> int:
 
     if not implementation:
-        implementation = ApiImplementation.SERVER
+        implementation = ApiImplementation.CLASSIC
 
     if implementation == ApiImplementation.PROTOSTELLAR:
         try:
-            from new_couchbase.impl.protostellar.proto.couchbase.kv import v1_pb2
+            from new_couchbase.protostellar.proto.couchbase.kv import v1_pb2
             if flags == v1_pb2.JSON:
                 return v1_pb2.JSON
             elif flags == v1_pb2.BINARY:
@@ -91,16 +91,43 @@ def get_decode_format(flags, # type: int
             else:
                 return v1_pb2.UNKNOWN
         except ImportError as ex:
-            raise
+            raise CouchbaseException(message="Unable to import couchbase protostellar package.", 
+                                    exc_info={'inner_cause': ex})
     else:
         try:
-            import new_couchbase.impl.server.core.transcoder as server_transcoder
-            return server_transcoder.get_decode_format(flags)
+            from new_couchbase.classic.core.transcoder import get_decode_format
+            return get_decode_format(flags)
         except ImportError as ex:
-            # @TODO(jc):  What to raise?
-            raise 
+            raise CouchbaseException(message="Unable to import couchbase classic package.", 
+                                    exc_info={'inner_cause': ex})
 
-class JSONTranscoder(TranscoderInterface):
+class Transcoder(ABC):
+    """Interface a Custom Transcoder must implement
+    """
+
+    @abstractmethod
+    def encode_value(self,
+                     value,   # type: Any
+                     **kwargs, # type: Dict[str, Any]
+                     ) -> Tuple[bytes, int]:
+        raise NotImplementedError
+
+    @abstractmethod
+    def decode_value(self,
+                     value,  # type: bytes
+                     content_type,  # type: int
+                     **kwargs, # type: Dict[str, Any]
+                     ) -> Any:
+        raise NotImplementedError
+
+    @classmethod
+    def __subclasshook__(cls, subclass):
+        return (hasattr(subclass, 'encode_value') and
+                callable(subclass.encode_value) and
+                hasattr(subclass, 'decode_value') and
+                callable(subclass.decode_value))
+
+class JSONTranscoder(Transcoder):
 
     def __init__(self, serializer=None  # type: SerializerInterface
                  ):
@@ -154,7 +181,7 @@ class JSONTranscoder(TranscoderInterface):
                 "Unrecognized format provided: {}".format(format))
 
 
-# class RawJSONTranscoder(TranscoderInterface):
+# class RawJSONTranscoder(Transcoder):
 
 #     def encode_value(self,
 #                      value  # type: Union[str,bytes,bytearray]
@@ -197,7 +224,7 @@ class JSONTranscoder(TranscoderInterface):
 #             raise InvalidArgumentException("Unexpected flags value.")
 
 
-# class RawStringTranscoder(TranscoderInterface):
+# class RawStringTranscoder(Transcoder):
 
 #     def encode_value(self,
 #                      value  # type: str
@@ -228,7 +255,7 @@ class JSONTranscoder(TranscoderInterface):
 #             raise InvalidArgumentException("Unexpected flags value.")
 
 
-# class RawBinaryTranscoder(TranscoderInterface):
+# class RawBinaryTranscoder(Transcoder):
 #     def encode_value(self,
 #                      value  # type: Union[bytes,bytearray]
 #                      ) -> Tuple[bytes, int]:
@@ -262,7 +289,7 @@ class JSONTranscoder(TranscoderInterface):
 #             raise InvalidArgumentException("Unexpected flags value.")
 
 
-# class LegacyTranscoder(TranscoderInterface):
+# class LegacyTranscoder(Transcoder):
 
 #     def encode_value(self,
 #                      value  # type: Any

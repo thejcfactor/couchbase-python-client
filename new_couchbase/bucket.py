@@ -18,29 +18,31 @@ from __future__ import annotations
 from typing import (TYPE_CHECKING,
                     Any,
                     Dict,
-                    Optional)
-
-from new_couchbase.impl import BucketFactory
-from new_couchbase.api.bucket import BucketInterface
+                    Optional,
+                    Union)
 
 from new_couchbase.result import PingResult
-from new_couchbase.api.collection import CollectionInterface
-from new_couchbase.api.transcoder import TranscoderInterface
-from new_couchbase.api.serializer import SerializerInterface
-from new_couchbase.api.scope import ScopeInterface
+from new_couchbase.collection import Collection
+from new_couchbase.scope import Scope
 from new_couchbase.api import ApiImplementation
 
 
 if TYPE_CHECKING:
-    from new_couchbase.api.cluster import ClusterInterface
+    from new_couchbase.classic.cluster import Cluster as ClassicCluster
+    from new_couchbase.protostellar.cluster import Cluster as ProtostellarCluster
 
-class Bucket(BucketInterface):
+class Bucket:
 
     def __init__(self,
-                 cluster,  # type: ClusterInterface
+                 cluster,  # type: Union[ClassicCluster, ProtostellarCluster]
                  bucket_name  # type: str
                  ):
-        self._impl = BucketFactory.create_bucket(cluster, bucket_name)
+        if cluster.api_implementation == ApiImplementation.PROTOSTELLAR:
+            from new_couchbase.protostellar.bucket import Bucket
+            self._impl = Bucket(cluster, bucket_name)
+        else:
+            from new_couchbase.classic.bucket import Bucket
+            self._impl = Bucket(cluster, bucket_name)
 
     @property
     def api_implementation(self) -> ApiImplementation:
@@ -51,29 +53,21 @@ class Bucket(BucketInterface):
         return self._impl.connected
 
     @property
-    def default_serializer(self) -> SerializerInterface:
-        return self._impl.default_serializer
-
-    @property
-    def default_transcoder(self) -> TranscoderInterface:
-        return self._impl.default_transcoder
-
-    @property
     def name(self) -> str:
         return self._impl.name
 
     def collection(self, 
                 collection_name # type: str
-                ) -> CollectionInterface:
+                ) -> Collection:
         return self._impl.collection(collection_name)
 
-    def default_collection(self) -> CollectionInterface:
+    def default_collection(self) -> Collection:
         return self._impl.default_collection()
 
-    def default_scope(self) -> ScopeInterface:
+    def default_scope(self) -> Scope:
         return self._impl.default_scope()
 
     def scope(self, 
                 scope_name # type: str
-                ) -> ScopeInterface:
+                ) -> Scope:
         return self._impl.scope(scope_name)

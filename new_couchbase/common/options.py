@@ -28,10 +28,14 @@ from new_couchbase.exceptions import InvalidArgumentException
 
 if TYPE_CHECKING:
     from new_couchbase.api.authentication import Authenticator
-    from new_couchbase.api.serializer import SerializerInterface
-    from new_couchbase.api.transcoder import TranscoderInterface
-    from new_couchbase.common.durability import DurabilityType
-    from new_couchbase.common.diagnostics import ClusterState, ServiceType
+    from new_couchbase.serializer import Serializer
+    from new_couchbase.transcoder import Transcoder
+    from new_couchbase.common._utils import JSONType
+    from new_couchbase.diagnostics import ClusterState, ServiceType
+    from new_couchbase.durability import DurabilityType
+    from new_couchbase.mutation_state import MutationState
+    from new_couchbase.subdocument import StoreSemantics
+    from new_couchbase.n1ql import QueryProfile, QueryScanConsistency
 
 def parse_options(
     valid_opts,  # type: Dict[str,Any]
@@ -400,8 +404,8 @@ class ClusterOptionsBase(dict):
         enable_metrics=None,    # type: Optional[bool]
         network=None,    # type: Optional[str]
         tls_verify=None,    # type: Optional[Union[TLSVerifyMode, str]]
-        serializer=None,  # type: Optional[SerializerInterface]
-        transcoder=None,  # type: Optional[TranscoderInterface]
+        serializer=None,  # type: Optional[Serializer]
+        transcoder=None,  # type: Optional[Transcoder]
         tcp_keep_alive_interval=None,  # type: Optional[timedelta]
         config_poll_interval=None,  # type: Optional[timedelta]
         config_poll_floor=None,  # type: Optional[timedelta]
@@ -655,7 +659,7 @@ class GetOptionsBase(OptionsBase):
         timeout=None,  # type: Optional[timedelta]
         with_expiry=None,  # type: Optional[bool]
         project=None,  # type: Optional[Iterable[str]]
-        transcoder=None  # type: Optional[TranscoderInterface]
+        transcoder=None  # type: Optional[Transcoder]
     ):
         pass
 
@@ -675,7 +679,7 @@ class GetAllReplicasOptionsBase(OptionsBase):
     @overload
     def __init__(self,
                  timeout=None,  # type: Optional[timedelta]
-                 transcoder=None  # type: Optional[TranscoderInterface]
+                 transcoder=None  # type: Optional[Transcoder]
                  ):
         pass
 
@@ -687,7 +691,7 @@ class GetAndLockOptionsBase(OptionsBase):
     @overload
     def __init__(self,
                  timeout=None,  # type: Optional[timedelta]
-                 transcoder=None  # type: Optional[TranscoderInterface]
+                 transcoder=None  # type: Optional[Transcoder]
                  ):
         pass
 
@@ -699,7 +703,7 @@ class GetAndTouchOptionsBase(OptionsBase):
     @overload
     def __init__(self,
                  timeout=None,  # type: Optional[timedelta]
-                 transcoder=None  # type: Optional[TranscoderInterface]
+                 transcoder=None  # type: Optional[Transcoder]
                  ):
         pass
 
@@ -711,7 +715,7 @@ class GetAnyReplicaOptionsBase(OptionsBase):
     @overload
     def __init__(self,
                  timeout=None,  # type: Optional[timedelta]
-                 transcoder=None  # type: Optional[TranscoderInterface]
+                 transcoder=None  # type: Optional[Transcoder]
                  ):
         pass
 
@@ -725,7 +729,7 @@ class InsertOptionsBase(OptionsDurabilityBase):
                  timeout=None,  # type: Optional[timedelta]
                  expiry=None,  # type: Optional[timedelta]
                  durability=None,  # type: Optional[DurabilityType]
-                 transcoder=None  # type: Optional[TranscoderInterface]
+                 transcoder=None  # type: Optional[Transcoder]
                  ):
         pass
 
@@ -754,7 +758,7 @@ class ReplaceOptionsBase(OptionsDurabilityBase):
                  cas=None,  # type: Optional[int]
                  preserve_expiry=False,  # type: Optional[bool]
                  durability=None,  # type: Optional[DurabilityType]
-                 transcoder=None  # type: Optional[TranscoderInterface]
+                 transcoder=None  # type: Optional[Transcoder]
                  ):
         pass
 
@@ -792,7 +796,7 @@ class UpsertOptionsBase(OptionsDurabilityBase):
                  expiry=None,  # type: Optional[timedelta]
                  preserve_expiry=False,  # type: Optional[bool]
                  durability=None,  # type: Optional[DurabilityType]
-                 transcoder=None  # type: Optional[TranscoderInterface]
+                 transcoder=None  # type: Optional[Transcoder]
                  ):
         pass
 
@@ -803,12 +807,75 @@ class UpsertOptionsBase(OptionsDurabilityBase):
 
 # Sub-document Operations
 
+class LookupInOptionsBase(OptionsBase):
+    @overload
+    def __init__(self,
+                 timeout=None,  # type: Optional[timedelta]
+                 access_deleted=None  # type: Optional[bool]
+                 ):
+        pass
+
+    def __init__(self, **kwargs):
+        kwargs = {k: v for k, v in kwargs.items() if v is not None}
+        super().__init__(**kwargs)
+
+
+class MutateInOptionsBase(OptionsDurabilityBase):
+    @overload
+    def __init__(self,
+                 timeout=None,  # type: Optional[timedelta]
+                 cas=0,          # type: Optional[int]
+                 durability=None,  # type: Optional[DurabilityType]
+                 store_semantics=None,  # type: Optional[StoreSemantics]
+                 access_deleted=None,  # type: Optional[bool]
+                 preserve_expiry=None  # type: Optional[bool]
+                 ):
+        pass
+
+    def __init__(self, **kwargs):
+        kwargs = {k: v for k, v in kwargs.items() if v is not None}
+        super().__init__(**kwargs)
 
 """
 
 Python SDK Streaming Operation Options Base Classes
 
 """
+
+class QueryOptionsBase(dict):
+
+    # @TODO: span
+    @overload
+    def __init__(
+        self,
+        timeout=None,  # type: Optional[timedelta]
+        read_only=None,  # type: Optional[bool]
+        scan_consistency=None,  # type: Optional[QueryScanConsistency]
+        adhoc=None,  # type: Optional[bool]
+        client_context_id=None,  # type: Optional[str]
+        max_parallelism=None,  # type: Optional[int]
+        positional_parameters=None,  # type: Optional[Iterable[JSONType]]
+        named_parameters=None,  # type: Optional[Dict[str, JSONType]]
+        pipeline_batch=None,  # type: Optional[int]
+        pipeline_cap=None,  # type: Optional[int]
+        profile=None,  # type: Optional[QueryProfile]
+        query_context=None,  # type: Optional[str]
+        scan_cap=None,  # type: Optional[int]
+        scan_wait=None,  # type: Optional[timedelta]
+        metrics=None,  # type: Optional[bool]
+        flex_index=None,  # type: Optional[bool]
+        preserve_expiry=None,  # type: Optional[bool]
+        consistent_with=None,  # type: Optional[MutationState]
+        send_to_node=None,  # type: Optional[str]
+        raw=None,  # type: Optional[Dict[str,Any]]
+        span=None,  # type: Optional[Any]
+        serializer=None  # type: Optional[Serializer]
+    ):
+        pass
+
+    def __init__(self, **kwargs):
+        kwargs = {k: v for k, v in kwargs.items() if v is not None}
+        super().__init__(**kwargs)
 
 
 """

@@ -18,26 +18,30 @@ from __future__ import annotations
 from typing import (TYPE_CHECKING,
                     Any,
                     Dict,
-                    Optional)
+                    Optional,
+                    Union)
 
-from new_couchbase.impl import ScopeFactory
-from new_couchbase.api.scope import ScopeInterface
-
-from new_couchbase.api.collection import CollectionInterface
-from new_couchbase.api.transcoder import TranscoderInterface
-from new_couchbase.api.serializer import SerializerInterface
-from new_couchbase.api.scope import ScopeInterface
 from new_couchbase.api import ApiImplementation
+from new_couchbase.collection import Collection
+from new_couchbase.n1ql import N1QLRequest
+from new_couchbase.result import QueryResult
 
 
 if TYPE_CHECKING:
-    from new_couchbase.api.bucket import BucketInterface
+    from new_couchbase.classic.bucket import Bucket as ClassicBucket
+    from new_couchbase.protostellar.bucket import Bucket as ProtostellarBucket
+    from new_couchbase.options import QueryOptions
 
-class Scope(ScopeInterface):
-    def __init__(self, bucket, # type: BucketInterface
+class Scope:
+    def __init__(self, bucket, # type: Union[ClassicBucket, ProtostellarBucket]
             scope_name # type: str
             ):
-        self._impl = ScopeFactory.create_scope(bucket, scope_name)
+        if bucket.api_implementation == ApiImplementation.PROTOSTELLAR:
+            from new_couchbase.protostellar.scope import Scope
+            self._impl = Scope(bucket, scope_name)
+        else:
+            from new_couchbase.classic.scope import Scope
+            self._impl = Scope(bucket, scope_name)
 
     @property
     def api_implementation(self) -> ApiImplementation:
@@ -48,21 +52,22 @@ class Scope(ScopeInterface):
         return self._impl.bucket_name
 
     @property
-    def default_serializer(self) -> SerializerInterface:
-        return self._impl.default_serializer
-
-    @property
-    def default_transcoder(self) -> TranscoderInterface:
-        return self._impl.default_transcoder
-
-    @property
     def name(self) -> str:
         return self._impl.name
 
     def collection(self, 
                 collection_name # type: str
-                ) -> CollectionInterface:
+                ) -> Collection:
         return self._impl.collection(collection_name)
+
+    def query(
+        self,
+        statement,  # type: str
+        *opts,  # type: QueryOptions
+        **kwargs  # type: Dict[str, Any]
+    ) -> QueryResult:
+        n1ql_request = N1QLRequest(self._impl.query(statement, *opts, **kwargs))
+        return QueryResult(n1ql_request)
 
     @staticmethod
     def default_name():

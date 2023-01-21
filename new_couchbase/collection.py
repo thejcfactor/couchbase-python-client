@@ -18,39 +18,96 @@ from __future__ import annotations
 from typing import (TYPE_CHECKING,
                     Any,
                     Dict,
-                    Optional)
+                    Iterable,
+                    Optional,
+                    Union)
 
-from new_couchbase.impl import CollectionFactory
-from new_couchbase.api.collection import CollectionInterface
-
-from new_couchbase.api.collection import CollectionInterface
-from new_couchbase.api.transcoder import TranscoderInterface
 from new_couchbase.api import ApiImplementation
 
-from new_couchbase.result import GetResult, MutationResult
+from new_couchbase.result import (ExistsResult,
+                                  GetResult,
+                                  LookupInResult,
+                                  MutateInResult,
+                                  MutationResult)
 
 
 if TYPE_CHECKING:
-    from new_couchbase.api.scope import ScopeInterface
-    from new_couchbase.options import GetOptions, UpsertOptions
+    from new_couchbase.common._utils import JSONType
+    from new_couchbase.classic.scope import Scope as ClassicScope
+    from new_couchbase.protostellar.scope import Scope as ProtostellarScope
+    from new_couchbase.options import (ExistsOptions,
+                                       GetOptions,
+                                       InsertOptions,
+                                       LookupInOptions,
+                                       MutateInOptions,
+                                       RemoveOptions,
+                                       ReplaceOptions,
+                                       UpsertOptions)
+    from new_couchbase.subdocument import Spec
 
-class Collection(CollectionInterface):
-    def __init__(self, scope, # type: ScopeInterface
-            collection_name # type: str
+class Collection:
+    def __init__(self, 
+                scope, # type: Union[ClassicScope, ProtostellarScope]
+                collection_name # type: str
             ):
-        self._impl = CollectionFactory.create_collection(scope, collection_name)
+        self._scope = scope
+        if scope.api_implementation == ApiImplementation.PROTOSTELLAR:
+            from new_couchbase.protostellar.collection import Collection
+            self._impl = Collection(scope, collection_name)
+        else:
+            from new_couchbase.classic.collection import Collection
+            self._impl = Collection(scope, collection_name)
 
     @property
     def api_implementation(self) -> ApiImplementation:
         return self._impl.api_implementation
 
     @property
-    def default_transcoder(self) -> TranscoderInterface:
-        return self._impl.default_transcoder
-
-    @property
     def name(self) -> str:
         return self._impl.name
+
+    def exists(
+        self,
+        key,  # type: str
+        *opts,  # type: ExistsOptions
+        **kwargs,  # type: Dict[str, Any]
+    ) -> ExistsResult:
+        """Checks whether a specific document exists or not.
+
+        Args:
+            key (str): The key for the document to check existence.
+            opts (:class:`~couchbase.options.ExistsOptions`): Optional parameters for this operation.
+            **kwargs (Dict[str, Any]): keyword arguments that can be used in place or to
+                override provided :class:`~couchbase.options.ExistsOptions`
+
+        Returns:
+            :class:`~couchbase.result.ExistsResult`: An instance of :class:`~couchbase.result.ExistsResult`.
+
+        Examples:
+
+            Simple exists operation::
+
+                bucket = cluster.bucket('travel-sample')
+                collection = bucket.scope('inventory').collection('airline')
+
+                key = 'airline_10'
+                res = collection.exists(key)
+                print(f'Document w/ key - {key} {"exists" if res.exists else "does not exist"}')
+
+
+            Simple exists operation with options::
+
+                from datetime import timedelta
+                from couchbase.options import ExistsOptions
+
+                # ... other code ...
+
+                key = 'airline_10'
+                res = collection.exists(key, ExistsOptions(timeout=timedelta(seconds=2)))
+                print(f'Document w/ key - {key} {"exists" if res.exists else "does not exist"}')
+
+        """
+        return ExistsResult(self._impl.exists(key, *opts, **kwargs))
 
     def get(self,
             key,  # type: str
@@ -96,11 +153,289 @@ class Collection(CollectionInterface):
         """
         return GetResult(self._impl.get(key, *opts, **kwargs))
 
-    def upsert(self,
-            key,  # type: str
-            *opts,  # type: UpsertOptions
-            **kwargs,  # type: Dict[str, Any]
-            ) -> MutationResult:
+    def insert(
+        self,
+        key,  # type: str
+        value,  # type: JSONType
+        *opts,  # type: InsertOptions
+        **kwargs,  # type: Dict[str, Any]
+    ) -> MutationResult:
+        """Inserts a new document to the collection, failing if the document already exists.
+
+        Args:
+            key (str): Document key to insert.
+            value (JSONType): The value of the document to insert.
+            opts (:class:`~couchbase.options.InsertOptions`): Optional parameters for this operation.
+            **kwargs (Dict[str, Any]): keyword arguments that can be used in place or to
+                override provided :class:`~couchbase.options.InsertOptions`
+
+        Returns:
+            :class:`~couchbase.result.MutationResult`: An instance of :class:`~couchbase.result.MutationResult`.
+
+        Raises:
+            :class:`~couchbase.exceptions.DocumentExistsException`: If the document already exists on the
+                server.
+
+        Examples:
+
+            Simple insert operation::
+
+                bucket = cluster.bucket('travel-sample')
+                collection = bucket.scope('inventory').collection('airline')
+
+                key = 'airline_8091'
+                airline = {
+                    "type": "airline",
+                    "id": 8091,
+                    "callsign": "CBS",
+                    "iata": None,
+                    "icao": None,
+                    "name": "Couchbase Airways",
+                }
+                res = collection.insert(key, doc)
+
+
+            Simple insert operation with options::
+
+                from couchbase.durability import DurabilityLevel, ServerDurability
+                from couchbase.options import InsertOptions
+
+                # ... other code ...
+
+                key = 'airline_8091'
+                airline = {
+                    "type": "airline",
+                    "id": 8091,
+                    "callsign": "CBS",
+                    "iata": None,
+                    "icao": None,
+                    "name": "Couchbase Airways",
+                }
+                durability = ServerDurability(level=DurabilityLevel.PERSIST_TO_MAJORITY)
+                res = collection.insert(key, doc, InsertOptions(durability=durability))
+
+        """
+        return MutationResult(self._impl.insert(key, value, *opts, **kwargs))
+
+    def lookup_in(
+        self,
+        key,  # type: str
+        spec,  # type: Iterable[Spec]
+        *opts,  # type: LookupInOptions
+        **kwargs,  # type: Dict[str, Any]
+    ) -> LookupInResult:
+        """Performs a lookup-in operation against a document, fetching individual fields or information
+        about specific fields inside the document value.
+
+        Args:
+            key (str): The key for the document look in.
+            spec (Iterable[:class:`~couchbase.subdocument.Spec`]):  A list of specs describing the data to fetch
+                from the document.
+            opts (:class:`~couchbase.options.LookupInOptions`): Optional parameters for this operation.
+            **kwargs (Dict[str, Any]): keyword arguments that can be used in place or to
+                override provided :class:`~couchbase.options.LookupInOptions`
+
+        Returns:
+            :class:`~couchbase.result.LookupInResult`: An instance of :class:`~couchbase.result.LookupInResult`.
+
+        Raises:
+            :class:`~couchbase.exceptions.DocumentNotFoundException`: If the key provided does not exist
+                on the server.
+
+        Examples:
+
+            Simple look-up in operation::
+
+                import couchbase.subdocument as SD
+
+                # ... other code ...
+
+                bucket = cluster.bucket('travel-sample')
+                collection = bucket.scope('inventory').collection('hotel')
+
+                key = 'hotel_10025'
+                res = collection.lookup_in(key, (SD.get("geo"),))
+                print(f'Hotel {key} coordinates: {res.content_as[dict](0)}')
+
+
+            Simple look-up in operation with options::
+
+                from datetime import timedelta
+
+                import couchbase.subdocument as SD
+                from couchbase.options import LookupInOptions
+
+                # ... other code ...
+
+                key = 'hotel_10025'
+                res = collection.lookup_in(key,
+                                            (SD.get("geo"),),
+                                            LookupInOptions(timeout=timedelta(seconds=2)))
+                print(f'Hotel {key} coordinates: {res.content_as[dict](0)}')
+
+        """
+        return LookupInResult(self._impl.lookup_in(key, spec, *opts, **kwargs))
+
+    def mutate_in(
+        self,
+        key,  # type: str
+        spec,  # type: Iterable[Spec]
+        *opts,  # type: MutateInOptions
+        **kwargs,  # type: Dict[str, Any]
+    ) -> MutateInResult:
+        """Performs a mutate-in operation against a document. Allowing atomic modification of specific fields
+        within a document. Also enables access to document extended-attributes (i.e. xattrs).
+
+        Args:
+            key (str): The key for the document look in.
+            spec (Iterable[:class:`~couchbase.subdocument.Spec`]):  A list of specs describing the operations to
+                perform on the document.
+            opts (:class:`~couchbase.options.MutateInOptions`): Optional parameters for this operation.
+            **kwargs (Dict[str, Any]): keyword arguments that can be used in place or to
+                override provided :class:`~couchbase.options.MutateInOptions`
+
+        Returns:
+            :class:`~couchbase.result.MutateInResult`: An instance of :class:`~couchbase.result.MutateInResult`.
+
+        Raises:
+            :class:`~couchbase.exceptions.DocumentNotFoundException`: If the key provided does not exist
+                on the server.
+
+        Examples:
+
+            Simple mutate-in operation::
+
+                import couchbase.subdocument as SD
+
+                # ... other code ...
+
+                bucket = cluster.bucket('travel-sample')
+                collection = bucket.scope('inventory').collection('hotel')
+
+                key = 'hotel_10025'
+                res = collection.mutate_in(key, (SD.replace("city", "New City"),))
+
+
+            Simple mutate-in operation with options::
+
+                from datetime import timedelta
+
+                import couchbase.subdocument as SD
+                from couchbase.options import MutateInOptions
+
+                # ... other code ...
+
+                key = 'hotel_10025'
+                res = collection.mutate_in(key,
+                                            (SD.replace("city", "New City"),),
+                                            MutateInOptions(timeout=timedelta(seconds=2)))
+
+        """
+        return MutateInResult(self._impl.mutate_in(key, spec, *opts, **kwargs))  
+
+    def remove(self,
+               key,  # type: str
+               *opts,  # type: RemoveOptions
+               **kwargs,  # type: Dict[str, Any]
+               ) -> MutationResult:
+        """Removes an existing document. Failing if the document does not exist.
+
+        Args:
+            key (str): Key for the document to remove.
+            opts (:class:`~couchbase.options.RemoveOptions`): Optional parameters for this operation.
+            **kwargs (Dict[str, Any]): keyword arguments that can be used in place or to
+                override provided :class:`~couchbase.options.RemoveOptions`
+
+        Returns:
+            :class:`~couchbase.result.MutationResult`: An instance of :class:`~couchbase.result.MutationResult`.
+
+        Raises:
+            :class:`~couchbase.exceptions.DocumentNotFoundException`: If the document does not exist on the
+                server.
+
+        Examples:
+
+            Simple remove operation::
+
+                bucket = cluster.bucket('travel-sample')
+                collection = bucket.scope('inventory').collection('airline')
+
+                res = collection.remove('airline_10')
+
+
+            Simple remove operation with options::
+
+                from couchbase.durability import DurabilityLevel, ServerDurability
+                from couchbase.options import RemoveOptions
+
+                # ... other code ...
+
+                durability = ServerDurability(level=DurabilityLevel.MAJORITY)
+                res = collection.remove('airline_10', RemoveOptions(durability=durability))
+
+        """
+        return MutationResult(self._impl.remove(key, *opts, **kwargs))
+
+    def replace(self,
+                key,  # type: str
+                value,  # type: JSONType
+                *opts,  # type: ReplaceOptions
+                **kwargs,  # type: Dict[str, Any]
+                ) -> MutationResult:
+        """Replaces the value of an existing document. Failing if the document does not exist.
+
+        Args:
+            key (str): Document key to replace.
+            value (JSONType): The value of the document to replace.
+            opts (:class:`~couchbase.options.ReplaceOptions`): Optional parameters for this operation.
+            **kwargs (Dict[str, Any]): keyword arguments that can be used in place or to
+                override provided :class:`~couchbase.options.ReplaceOptions`
+
+        Returns:
+            :class:`~couchbase.result.MutationResult`: An instance of :class:`~couchbase.result.MutationResult`.
+
+        Raises:
+            :class:`~couchbase.exceptions.DocumentNotFoundException`: If the document does not exist on the
+                server.
+
+        Examples:
+
+            Simple replace operation::
+
+                bucket = cluster.bucket('travel-sample')
+                collection = bucket.scope('inventory').collection('airline')
+
+                key = 'airline_8091'
+                res = collection.get(key)
+                content = res.content_as[dict]
+                airline["name"] = "Couchbase Airways!!"
+                res = collection.replace(key, doc)
+
+
+            Simple replace operation with options::
+
+                from couchbase.durability import DurabilityLevel, ServerDurability
+                from couchbase.options import ReplaceOptions
+
+                # ... other code ...
+
+                key = 'airline_8091'
+                res = collection.get(key)
+                content = res.content_as[dict]
+                airline["name"] = "Couchbase Airways!!"
+                durability = ServerDurability(level=DurabilityLevel.MAJORITY)
+                res = collection.replace(key, doc, InsertOptions(durability=durability))
+
+        """
+        return MutationResult(self._impl.replace(key, value, *opts, **kwargs))
+
+    def upsert(
+        self,
+        key,  # type: str
+        value,  # type: JSONType
+        *opts,  # type: UpsertOptions
+        **kwargs,  # type: Dict[str, Any]
+    ) -> MutationResult:
         """Upserts a document to the collection. This operation succeeds whether or not the document already exists.
 
         Args:
@@ -152,7 +487,7 @@ class Collection(CollectionInterface):
                 res = collection.upsert(key, doc, InsertOptions(durability=durability))
 
         """
-        return MutationResult(self._impl.upsert(key, *opts, **kwargs))
+        return MutationResult(self._impl.upsert(key, value, *opts, **kwargs))
 
     @staticmethod
     def default_name():

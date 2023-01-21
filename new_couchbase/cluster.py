@@ -20,27 +20,36 @@ from typing import (TYPE_CHECKING,
                     Dict,
                     Optional)
 
-from new_couchbase.impl import ClusterFactory
-from new_couchbase.api.cluster import ClusterInterface
+from new_couchbase.bucket import Bucket
 from new_couchbase.common.supportability import Supportability
 from new_couchbase.api import ApiImplementation
+from new_couchbase.n1ql import N1QLRequest
 
-from new_couchbase.result import DiagnosticsResult, PingResult
-from new_couchbase.api.bucket import BucketInterface
-from new_couchbase.api.serializer import SerializerInterface
-from new_couchbase.api.transcoder import TranscoderInterface
+from new_couchbase.result import (DiagnosticsResult,
+                                  PingResult,
+                                  QueryResult)
+
 
 if TYPE_CHECKING:
-    from new_couchbase.options import ClusterOptions, DiagnosticsOptions, PingOptions
+    from new_couchbase.options import (ClusterOptions,
+                                        DiagnosticsOptions,
+                                        PingOptions,
+                                        QueryOptions)
 
-class Cluster(ClusterInterface):
+class Cluster:
 
     def __init__(self,
                  connstr,  # type: str
                  *options,  # type: ClusterOptions
                  **kwargs,  # type: Dict[str, Any]
                  ) -> Cluster:
-        self._impl = ClusterFactory.create_cluster(connstr, *options, **kwargs)
+
+        if connstr.startswith('protostellar://'):
+            from new_couchbase.protostellar.cluster import Cluster as ProtostellarCluster
+            self._impl = ProtostellarCluster(connstr, *options, **kwargs)
+        else:
+            from new_couchbase.classic.cluster import Cluster as ClassicCluster
+            self._impl = ClassicCluster(connstr, *options, **kwargs)
 
     @property
     def api_implementation(self) -> ApiImplementation:
@@ -49,14 +58,6 @@ class Cluster(ClusterInterface):
     @property
     def connected(self) -> bool:
         return self._impl.connected
-
-    @property
-    def default_transcoder(self) -> TranscoderInterface:
-        return self._impl.default_transcoder
-
-    @property
-    def default_serializer(self) -> SerializerInterface:
-        return self._impl.default_serializer
 
     @property
     def server_version(self) -> Optional[str]:
@@ -76,8 +77,22 @@ class Cluster(ClusterInterface):
 
     def bucket(self,
                bucket_name # type: str
-               ) -> BucketInterface:
+               ) -> Bucket:
         return self._impl.bucket(bucket_name)
+
+    def close(self):
+        """Shuts down this cluster instance. Cleaning up all resources associated with it.
+
+        .. warning::
+            Use of this method is almost *always* unnecessary.  Cluster resources should be cleaned
+            up once the cluster instance falls out of scope.  However, in some applications tuning resources
+            is necessary and in those types of applications, this method might be beneficial.
+
+        """
+        self._impl.close()
+
+    def cluster_info(self):
+        return self._impl.cluster_info()
 
     def diagnostics(self,
                     *opts,  # type: Optional[DiagnosticsOptions]
@@ -90,6 +105,78 @@ class Cluster(ClusterInterface):
              **kwargs  # type: Dict[str, Any]
              ) -> PingResult:
         return self._impl.ping(*opts, **kwargs)
+
+    def query(
+        self,
+        statement,  # type: str
+        *opts,  # type: QueryOptions
+        **kwargs  # type: Dict[str, Any]
+    ) -> QueryResult:
+        """Executes a N1QL query against the cluster.
+
+        .. note::
+            The query is executed lazily in that it is executed once iteration over the
+            :class:`~couchbase.result.QueryResult` begins.
+
+        .. seealso::
+            * :class:`~couchbase.management.queries.QueryIndexManager`: for how to manage query indexes
+            * :meth:`couchbase.Scope.query`: For how to execute scope-level queries.
+
+        Args:
+            statement (str): The N1QL statement to execute.
+            options (:class:`~couchbase.options.QueryOptions`): Optional parameters for the query operation.
+            **kwargs (Dict[str, Any]): keyword arguments that can be used in place or to
+                override provided :class:`~couchbase.options.QueryOptions`
+
+        Returns:
+            :class:`~couchbase.result.QueryResult`: An instance of a :class:`~couchbase.result.QueryResult` which
+            provides access to iterate over the query results and access metadata and metrics about the query.
+
+        Examples:
+            Simple query::
+
+                q_res = cluster.query('SELECT * FROM `travel-sample` WHERE country LIKE 'United%' LIMIT 2;')
+                for row in q_res.rows():
+                    print(f'Found row: {row}')
+
+            Simple query with positional parameters::
+
+                from couchbase.options import QueryOptions
+
+                # ... other code ...
+
+                q_str = 'SELECT * FROM `travel-sample` WHERE country LIKE $1 LIMIT $2;'
+                q_res = cluster.query(q_str, QueryOptions(positional_parameters=['United%', 5]))
+                for row in q_res.rows():
+                    print(f'Found row: {row}')
+
+            Simple query with named parameters::
+
+                from couchbase.options import QueryOptions
+
+                # ... other code ...
+
+                q_str = 'SELECT * FROM `travel-sample` WHERE country LIKE $country LIMIT $lim;'
+                q_res = cluster.query(q_str, QueryOptions(named_parameters={'country': 'United%', 'lim':2}))
+                for row in q_res.rows():
+                    print(f'Found row: {row}')
+
+            Retrieve metadata and/or metrics from query::
+
+                from couchbase.options import QueryOptions
+
+                # ... other code ...
+
+                q_str = 'SELECT * FROM `travel-sample` WHERE country LIKE $country LIMIT $lim;'
+                q_res = cluster.query(q_str, QueryOptions(metrics=True))
+                for row in q_res.rows():
+                    print(f'Found row: {row}')
+
+                print(f'Query metadata: {q_res.metadata()}')
+                print(f'Query metrics: {q_res.metadata().metrics()}')
+
+        """
+        return QueryResult(self._impl.query(statement, *opts, **kwargs))
 
     @staticmethod
     def connect(connstr,  # type: str

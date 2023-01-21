@@ -21,9 +21,9 @@ from typing import (Any,
                     Union)
 from urllib.parse import quote
 
-from new_couchbase.api.transcoder import TranscoderInterface
-from new_couchbase.api.serializer import SerializerInterface
 from new_couchbase.exceptions import InvalidArgumentException
+from new_couchbase.serializer import Serializer
+from new_couchbase.transcoder import Transcoder
 
 JSONType = Union[str, int, float, bool,
                  None, Dict[str, Any], List[Any]]
@@ -99,10 +99,10 @@ def validate_projections(projections # type: List[str]
 
     return projections
 
-def validate_serializer(value # type: SerializerInterface
-        ) -> SerializerInterface:
-    if not issubclass(value, SerializerInterface):
-        raise InvalidArgumentException(message='Expected value to implement SerializerInterface.')
+def validate_serializer(value # type: Serializer
+        ) -> Serializer:
+    if not issubclass(value, Serializer):
+        raise InvalidArgumentException(message='Expected value to implement Serializer.')
     return value
 
 def validate_str(value  # type: str
@@ -111,8 +111,8 @@ def validate_str(value  # type: str
         raise InvalidArgumentException(message='Expected value to be of type str.')
     return value
 
-def validate_transcoder(value # type: TranscoderInterface
-        ) -> TranscoderInterface:
-    if not issubclass(value, TranscoderInterface):
-        raise InvalidArgumentException(message='Expected value to implement TranscoderInterface.')
+def validate_transcoder(value # type: Transcoder
+        ) -> Transcoder:
+    if not issubclass(value, Transcoder):
+        raise InvalidArgumentException(message='Expected value to implement Transcoder.')
     return value

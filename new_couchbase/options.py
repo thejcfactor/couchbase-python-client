@@ -20,31 +20,39 @@ from datetime import timedelta
 from typing import Any, Dict, List, Optional, Union, overload, TYPE_CHECKING
 
 from new_couchbase.common.options import AcceptableInts  # noqa: F401
-from couchbase.logic.options import Compression  # noqa: F401
-from couchbase.logic.options import IpProtocol  # noqa: F401
-from couchbase.logic.options import LockMode  # noqa: F401
-from couchbase.logic.options import TLSVerifyMode  # noqa: F401
+from new_couchbase.common.options import Compression  # noqa: F401
+from new_couchbase.common.options import IpProtocol  # noqa: F401
+from new_couchbase.common.options import LockMode  # noqa: F401
+from new_couchbase.common.options import TLSVerifyMode  # noqa: F401
 from new_couchbase.common.options import (ConfigProfile, 
+                                          ConstrainedIntBase,
                                           ClusterOptionsBase, 
                                           ClusterTimeoutOptionsBase, 
-                                          ClusterTracingOptionsBase, 
-                                          KnownConfigProfiles, 
-                                          OptionsBase,
-                                          GetOptionsBase,
-                                          UpsertOptionsBase,
-                                          WaitUntilReadyOptionsBase,
+                                          ClusterTracingOptionsBase,
+                                          DeltaValueBase,
                                           ExistsOptionsBase,
                                           GetAllReplicasOptionsBase,
                                           GetAndLockOptionsBase,
                                           GetAndTouchOptionsBase,
                                           GetAnyReplicaOptionsBase,
+                                          GetOptionsBase,
                                           InsertOptionsBase,
+                                          KnownConfigProfiles,
+                                          LookupInOptionsBase,
+                                          MutateInOptionsBase,
+                                          OptionsBase,
+                                          QueryOptionsBase,
                                           RemoveOptionsBase,
                                           ReplaceOptionsBase,
+                                          SignedInt64Base,
                                           TouchOptionsBase,
-                                          UnlockOptionsBase)
+                                          UnlockOptionsBase,
+                                          UnsignedInt32Base,
+                                          UnsignedInt64Base,
+                                          UpsertOptionsBase,
+                                          WaitUntilReadyOptionsBase)
 
-from couchbase.exceptions import InvalidArgumentException
+from new_couchbase.exceptions import InvalidArgumentException
 
 if TYPE_CHECKING:
     from new_couchbase.api.authentication import Authenticator
@@ -574,8 +582,115 @@ class UpsertOptions(UpsertOptionsBase):
 
 # Sub-document Operations
 
+class LookupInOptions(LookupInOptionsBase):
+    """Available options to for a subdocument lookup-in operation.
+
+    .. warning::
+        Importing options from ``couchbase.collection`` is deprecated.
+        All options should be imported from ``couchbase.options``.
+
+    Args:
+        timeout (timedelta, optional): The timeout for this operation. Defaults to global
+            subdocument operation timeout.
+    """
+
+
+class MutateInOptions(MutateInOptionsBase):
+    """Available options to for a subdocument mutate-in operation.
+
+    .. warning::
+        Importing options from ``couchbase.subdocument`` is deprecated.
+        All options should be imported from ``couchbase.options``.
+
+    Args:
+        cas (int, optional): If specified, indicates that operation should be failed if the CAS has changed from
+            this value, indicating that the document has changed.
+        timeout (timedelta, optional): The timeout for this operation. Defaults to global
+            subdocument operation timeout.
+        durability (:class:`~couchbase.durability.DurabilityType`, optional): Specifies the level of durability
+            for this operation.
+        preserve_expiry (bool, optional): Specifies that any existing expiry on the document should be preserved.
+        store_semantics (:class:`~couchbase.subdocument.StoreSemantics`, optional): Specifies the store semantics
+            to use for this operation.
+    """
+
 """
 
 Python SDK Streaming Operation Options
 
 """
+
+class QueryOptions(QueryOptionsBase):
+    """Available options to for a N1QL (SQL++) query.
+
+    .. warning::
+        Importing options from ``couchbase.cluster`` is deprecated.
+        All options should be imported from ``couchbase.options``.
+
+    Args:
+        timeout (timedelta, optional): The timeout for this operation. Defaults to global
+            query operation timeout.
+        read_only (bool, optional): Specifies that this query should be executed in read-only mode,
+            disabling the ability for the query to make any changes to the data. Defaults to False.
+        scan_consistency (:class:`~couchbase.n1ql.QueryScanConsistency`, optional): Specifies the consistency
+            requirements when executing the query.
+        adhoc (bool, optional): Specifies whether this is an ad-hoc query, or if it should be prepared for
+            faster execution in the future. Default to True.
+        client_context_id (str, optional): The returned client context id for this query. Defaults to None.
+        max_parallelism (int, optional): This is an advanced option, see the query service reference for more
+            information on the proper use and tuning of this option. Defaults to None.
+        positional_parameters (Iterable[JSONType], optional): Positional values to be used for the placeholders
+            within the query. Defaults to None.
+        named_parameters (Iterable[Dict[str, JSONType]], optional): Named values to be used for the placeholders
+            within the query. Defaults to None.
+        pipeline_batch (int, optional): This is an advanced option, see the query service reference for more
+            information on the proper use and tuning of this option. Defaults to None.
+        pipeline_cap (int, optional):  This is an advanced option, see the query service reference for more
+            information on the proper use and tuning of this option. Defaults to None.
+        profile (:class:`~couchbase.n1ql.QueryProfile`, optional): Specifies the level of profiling that should
+            be used for the query. Defaults to `Off`.
+        query_context (str, optional): Specifies the context within which this query should be executed. This can
+            be scoped to a scope or a collection within the dataset. Defaults to None.
+        scan_cap (int, optional):  This is an advanced option, see the query service reference for more
+            information on the proper use and tuning of this option. Defaults to None.
+        scan_wait (timedelta, optional):  This is an advanced option, see the query service reference for more
+            information on the proper use and tuning of this option. Defaults to None.
+        metrics (bool, optional): Specifies whether metrics should be captured as part of the execution of the query.
+            Defaults to False.
+        flex_index (bool, optional): Specifies whether flex-indexes should be enabled. Allowing the use of full-text
+            search from the query service. Defaults to False.
+        consistent_with (:class:`~couchbase.mutation_state.MutationState`, optional): Specifies a
+            :class:`~couchbase.mutation_state.MutationState` which the query should be consistent with. Defaults to
+            None.
+        serializer (:class:`~couchbase.serializer.Serializer`, optional): Specifies an explicit serializer
+            to use for this specific N1QL operation. Defaults to
+            :class:`~couchbase.serializer.DefaultJsonSerializer`.
+        raw (Dict[str, Any], optional): Specifies any additional parameters which should be passed to the query engine
+            when executing the query. Defaults to None.
+    """
+
+"""
+
+Couchbase Python SDK constrained integer classes
+
+"""
+
+
+class ConstrainedInt(ConstrainedIntBase):
+    pass
+
+
+class SignedInt64(SignedInt64Base):
+    pass
+
+
+class UnsignedInt32(UnsignedInt32Base):
+    pass
+
+
+class UnsignedInt64(UnsignedInt64Base):
+    pass
+
+
+class DeltaValue(DeltaValueBase):
+    pass

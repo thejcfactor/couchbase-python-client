@@ -16,5 +16,5 @@
 from enum import IntEnum
 
 class ApiImplementation(IntEnum):
-    SERVER = 0
+    CLASSIC = 0
     PROTOSTELLAR = 1

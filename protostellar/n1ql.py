@@ -163,6 +163,8 @@ class N1QLQuery:
         """
         self._params[name] = value
 
+
+
     @property
     def params(self) -> Dict[str, Any]:
         params = {}

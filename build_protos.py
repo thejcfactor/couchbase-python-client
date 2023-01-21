@@ -54,7 +54,7 @@ def build_protostellar_init_file(protos):
         lines.append('')
 
     # ps_dir = COUCHBASE_ROOT.joinpath('protostellar')
-    ps_dir = COUCHBASE_ROOT.joinpath('new_couchbase', 'impl', 'protostellar')
+    ps_dir = COUCHBASE_ROOT.joinpath('new_couchbase', 'protostellar')
 
     with open(os.path.join(ps_dir.absolute(), '__init__.py'), 'w') as output:
         output.write('\n'.join(lines))
@@ -67,7 +67,7 @@ def fix_imports(protos):
             for line in file:
                 match = re.match(pattern, line)
                 if match:
-                    new_line = line.replace('from couchbase.', 'from new_couchbase.impl.protostellar.proto.couchbase.')
+                    new_line = line.replace('from couchbase.', 'from new_couchbase.protostellar.proto.couchbase.')
                     print(new_line, end='')
                 else:
                     print(line, end='')
@@ -100,7 +100,7 @@ class BuildProtosCommand(Command):
             print(f'Building these protos: \n{protos_to_build}')
 
             # ps_proto_dir = COUCHBASE_ROOT.joinpath('protostellar', 'proto')
-            ps_proto_dir = COUCHBASE_ROOT.joinpath('new_couchbase', 'impl', 'protostellar', 'proto')
+            ps_proto_dir = COUCHBASE_ROOT.joinpath('new_couchbase', 'protostellar', 'proto')
             # clear our old protos
             shutil.rmtree(ps_proto_dir.absolute())
             os.makedirs(ps_proto_dir.absolute())

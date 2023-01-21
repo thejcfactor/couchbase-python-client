@@ -13,17 +13,25 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-from typing import Any, Dict, TYPE_CHECKING
+from __future__ import annotations
 
-from new_couchbase.api.cluster import ClusterInterface
-from new_couchbase.api.bucket import BucketInterface
-from new_couchbase.api.scope import ScopeInterface
-from new_couchbase.api.collection import CollectionInterface
+from typing import Any, Dict, Union, TYPE_CHECKING
+
+# from new_couchbase.api.cluster import ClusterInterface
+# from new_couchbase.api.bucket import BucketInterface
+# from new_couchbase.api.scope import ScopeInterface
+# from new_couchbase.api.collection import CollectionInterface
 from new_couchbase.api import ApiImplementation
 
 
 if TYPE_CHECKING:
     from new_couchbase.options import ClusterOptions
+    from new_couchbase.classic.bucket import Bucket as ClassicBucket
+    from new_couchbase.classic.cluster import Cluster as ClassicCluster
+    from new_couchbase.classic.scope import Scope as ClassicScope
+    from new_couchbase.protostellar.bucket import Bucket as ProtostellarBucket
+    from new_couchbase.protostellar.cluster import Cluster as ProtostellarCluster
+    from new_couchbase.protostellar.scope import Scope as ProtostellarScope
 
 class ClusterFactory:
 
@@ -31,59 +39,54 @@ class ClusterFactory:
     def create_cluster(connstr,  # type: str
                  *options,  # type: ClusterOptions
                  **kwargs,  # type: Dict[str, Any]
-                 ) -> ClusterInterface:
-
-        from new_couchbase.impl.protostellar.cluster import Cluster as ProtostellarCluster
-        from new_couchbase.impl.server.core.cluster import ClusterCore as ServerClusterCore
-        from new_couchbase.impl.server.cluster import Cluster as ServerCluster
-        
+                 ) -> Any:
 
         if connstr.startswith('protostellar://'):
-            return ProtostellarCluster(connstr, *options, **kwargs)
+            from new_couchbase.protostellar.cluster import Cluster
+            return Cluster(connstr, *options, **kwargs)
         else:
-            return ServerCluster(ServerClusterCore(connstr, *options, **kwargs))
+            from new_couchbase.classic.core.cluster import ClusterCore
+            from new_couchbase.classic.cluster import Cluster
+            return Cluster(ClusterCore(connstr, *options, **kwargs))
 
 class BucketFactory:
     @staticmethod
-    def create_bucket(cluster,  # type: ClusterInterface
+    def create_bucket(cluster,  # type: Union[ClassicCluster, ProtostellarCluster]
                  name, # type: str
-                 ) -> BucketInterface:
+                 ) -> Any:
         
-        from new_couchbase.impl.protostellar.bucket import Bucket as ProtostellarBucket
-        from new_couchbase.impl.server.bucket import Bucket as ServerBucket
-        from new_couchbase.impl.server.core.bucket import BucketCore as ServerBucketCore
-
         if cluster.api_implementation == ApiImplementation.PROTOSTELLAR:
-            return ProtostellarBucket(cluster, name)
+            from new_couchbase.protostellar.bucket import Bucket
+            return Bucket(cluster, name)
         else:
-            return ServerBucket(ServerBucketCore(cluster, name))
+            from new_couchbase.classic.bucket import Bucket
+            from new_couchbase.classic.core.bucket import BucketCore
+            return Bucket(BucketCore(cluster, name))
 
 
 class ScopeFactory:
     @staticmethod
-    def create_scope(bucket,  # type: BucketInterface
+    def create_scope(bucket,  # type: Union[ClassicBucket, ProtostellarBucket]
                  scope_name, # type: str
-                 ) -> ScopeInterface:
-        
-        from new_couchbase.impl.protostellar.scope import Scope as ProtostellarScope
-        from new_couchbase.impl.server.scope import Scope as ServerScope
+                 ) -> Any:
 
         if bucket.api_implementation == ApiImplementation.PROTOSTELLAR:
-            return ProtostellarScope(bucket, scope_name)
+            from new_couchbase.protostellar.scope import Scope
+            return Scope(bucket, scope_name)
         else:
-            return ServerScope(bucket, scope_name)
+            from new_couchbase.classic.scope import Scope
+            return Scope(bucket, scope_name)
 
 class CollectionFactory:
     @staticmethod
-    def create_collection(scope,  # type: ScopeInterface
+    def create_collection(scope,  # type: Union[ClassicScope, ProtostellarScope]
                  collection_name, # type: str
-                 ) -> CollectionInterface:
-
-        from new_couchbase.impl.protostellar.collection import Collection as ProtostellarCollection
-        from new_couchbase.impl.server.core.collection import CollectionCore as ServerCollectionCore
-        from new_couchbase.impl.server.collection import Collection as ServerCollection
+                 ) -> Any:
 
         if scope.api_implementation == ApiImplementation.PROTOSTELLAR:
-            return ProtostellarCollection(scope, collection_name)
+            from new_couchbase.protostellar.collection import Collection
+            return Collection(scope, collection_name)
         else:
-            return ServerCollection(ServerCollectionCore(scope, collection_name))
+            from new_couchbase.classic.core.collection import CollectionCore
+            from new_couchbase.classic.collection import Collection
+            return Collection(CollectionCore(scope, collection_name))

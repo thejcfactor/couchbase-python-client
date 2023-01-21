@@ -22,9 +22,24 @@ from typing import (TYPE_CHECKING,
                     Dict,
                     Optional)
 
-from new_couchbase.api.result import DiagnosticsResultInterface, GetResultInterface, MutationResultInterface, PingResultInterface
-from new_couchbase.common.diagnostics import ClusterState, EndpointDiagnosticsReport, EndpointPingReport, EndpointState, ServiceType
-from new_couchbase.common.mutation_state import MutationToken
+from new_couchbase.api.result import (ClusterInfoResultInterface,
+                                    DiagnosticsResultInterface,
+                                    ExistsResultInterface,
+                                    GetResultInterface,
+                                    LookupInResultInterface,
+                                    MutateInResultInterface,
+                                    MutationResultInterface,
+                                    PingResultInterface,
+                                    QueryResultInterface)
+from new_couchbase.diagnostics import (ClusterState,
+                                              EndpointDiagnosticsReport,
+                                              EndpointPingReport,
+                                              EndpointState,
+                                              ServiceType)
+from new_couchbase.mutation_state import MutationToken
+
+if TYPE_CHECKING:
+    from new_couchbase.n1ql import N1QLRequest
 
 """
 
@@ -32,263 +47,111 @@ Python SDK Diagnostic Operation Results
 
 """
 
-class ClusterInfoResult:
-    def __init__(
-        self,
-        result  # type: Dict[str, Any]
-    ):
-        self._raw_result = result
-        # version string should be X.Y.Z-XXXX-YYYY
-        self._server_version_raw = None
-        self._server_version = None
-        self._server_version_short = None
-        self._server_build = None
-        self._is_enterprise = None
+class ClusterInfoResult(ClusterInfoResultInterface):
+    def __init__(self, 
+                core_result # type: ClusterInfoResultInterface
+                ):
+        self._core_result = core_result
 
     @property
     def is_community(self) -> Optional[bool]:
-        """
-            bool: True if connected Couchbase Server is Community edition, false otherwise.
-        """
-        if not self._is_community:
-            self._set_server_version()
-
-        if self._server_version_raw:
-            tokens = self._server_version_raw.split("-")
-            if len(tokens) == 3:
-                self._is_community = tokens[2].upper() == "COMMUNITY"
-
-        return self._is_community
+        return self._core_result.is_community
 
     @property
     def is_enterprise(self) -> Optional[bool]:
-        """
-            bool: True if connected Couchbase Server is Enterprise edition, false otherwise.
-        """
-        if not self._is_enterprise:
-            self._set_server_version()
-
-        if self._server_version_raw:
-            tokens = self._server_version_raw.split("-")
-            if len(tokens) == 3:
-                self._is_enterprise = tokens[2].upper() == "ENTERPRISE"
-
-        return self._is_enterprise
+        return self._core_result.is_enterprise
 
     @property
-    def nodes(self):
-        return self._raw_result.get("nodes", None)
+    def nodes(self) -> Any:
+        return self._core_result.nodes
 
     @property
     def server_version(self) -> Optional[str]:
-        if not self._server_version:
-            self._set_server_version()
-
-        if self._server_version_raw:
-            self._server_version = self._server_version_raw[:10]
-
-        return self._server_version
+        return self._core_result.server_version
 
     @property
     def server_version_build(self) -> Optional[int]:
-        """
-            Optional[int]: The build version of the connected Couchbase Server.
-        """
-        if not self._server_build:
-            self._set_server_version()
-
-        if self._server_version_raw:
-            tokens = self._server_version_raw.split("-")
-            if len(tokens) == 3:
-                self._server_build = int(tokens[1])
-
-        return self._server_build
+        return self._core_result.server_version_build
 
     @property
     def server_version_full(self) -> Optional[str]:
-        """
-            Optional[str]: The full version details of the connected Couchbase Server.
-        """
-        if not self._server_version_raw:
-            self._set_server_version()
-
-        return self._server_version_raw
+        return self._core_result.server_version_full
 
     @property
     def server_version_short(self) -> Optional[float]:
-        """
-            Optional[float]: The version of the connected Couchbase Server in Major.Minor form.
-        """
-        if not self._server_version_short:
-            self._set_server_version()
+        return self._core_result.server_version_short
 
-        if self._server_version_raw:
-            self._server_version_short = float(self._server_version_raw[:3])
-
-        return self._server_version_short
-
-
-    def _set_server_version(self):
-        version = None
-        for n in self.nodes:
-            v = n["version"]
-            if version is None:
-                version = v
-            elif v != version:
-                # mixed versions -- not supported
-                version = None
-                break
-
-        self._server_version_raw = version
-
-    def __repr__(self):
-        return "ClusterInfoResult:{}".format(self._raw_result)
+    def __repr__(self) -> str:
+        return self._core_result.__repr__()
 
 class DiagnosticsResult(DiagnosticsResultInterface):
-    def __init__(self, result # type: Dict[str, Any]
-        ):
-        self._raw_result = result
-        svc_endpoints = self._raw_result.get("endpoints", None)
-        self._endpoints = {}
-        if svc_endpoints:
-            for service, endpoints in svc_endpoints.items():
-                service_type = ServiceType(service)
-                self._endpoints[service_type] = []
-                for endpoint in endpoints:
-                    self._endpoints[service_type].append(
-                        EndpointDiagnosticsReport(service_type, endpoint))
+    
+    def __init__(self, 
+                core_result # type: DiagnosticsResultInterface
+                ):
+        self._core_result = core_result
 
     @property
     def endpoints(self) -> Dict[str, Any]:
-        """
-            Dict[str, Any]: A map of service endpoints and their diagnostic status.
-        """
-        return self._endpoints
-    
+        return self._core_result.endpoints
+
     @property
     def id(self) -> str:
-        """
-            str: The unique identifier for this report.
-        """
-        return self._raw_result.get("id", None)
+        return self._core_result.id
 
     @property
     def sdk(self) -> str:
-        """
-            str: The name of the SDK which generated this report.
-        """
-        return self._raw_result.get("sdk", None)
+        return self._core_result.sdk
 
     @property
     def state(self) -> ClusterState:
-        """
-            :class:`~couchbase.diagnostics.ClusterState`: The cluster state.
-        """
-        num_found = 0
-        num_connected = 0
-        for endpoints in self._endpoints.values():
-            for endpoint in endpoints:
-                num_found += 1
-                if endpoint.state == EndpointState.Connected:
-                    num_connected += 1
-
-        if num_found == num_connected:
-            return ClusterState.Online
-        if num_connected > 0:
-            return ClusterState.Degraded
-        return ClusterState.Offline
-
-    @property
-    def version(self) -> int:
-        """
-            int: The version number of this report.
-        """
-        return self._raw_result.get("version", None)
-
-
-    def as_json(self) -> str:
-        """Returns a JSON formatted diagnostics report.
-
-        Returns:
-            str: JSON formatted diagnostics report.
-        """
-        return_val = {
-            'version': self.version,
-            'id': self.id,
-            'sdk': self.sdk,
-            'services': {k.value: list(map(lambda epr: epr.as_dict(), v)) for k, v in self.endpoints.items()}
-        }
-
-        return json.dumps(return_val)
-
-    def __repr__(self):
-        return "DiagnosticsResult:{}".format(self._raw_result)
-
-
-class PingResult(PingResultInterface):
-    def __init__(self, result # type: Dict[str, Any]
-        ):
-        self._raw_result = result
-        svc_endpoints = self._raw_result.get("endpoints", None)
-        self._endpoints = {}
-        if svc_endpoints:
-            for service, endpoints in svc_endpoints.items():
-                service_type = ServiceType(service)
-                self._endpoints[service_type] = []
-                for endpoint in endpoints:
-                    self._endpoints[service_type].append(
-                        EndpointPingReport(service_type, endpoint))
-
-    @property
-    def endpoints(self) -> Dict[str, Any]:
-        """
-            Dict[str, Any]: A map of service endpoints and their ping status.
-        """
-        return self._endpoints
-
-    @property
-    def id(self) -> str:
-        """
-            str: The unique identifier for this report.
-        """
-        return self._raw_result.get("id", None)
-
-    @property
-    def sdk(self) -> str:
-        """
-            str: The name of the SDK which generated this report.
-        """
-        return self._raw_result.get("sdk", None)
+        return self._core_result.state
 
     @property
     def success(self) -> bool:
-        return self._raw_result is not None and len(self._raw_result) > 0
+        return self._core_result.success
 
     @property
     def version(self) -> int:
-        """
-            int: The version number of this report.
-        """
-        return self._raw_result.get("version", None)
+        return self._core_result.version
 
     def as_json(self) -> str:
-        """Returns a JSON formatted diagnostics report.
+        return self._core_result.as_json()
 
-        Returns:
-            str: JSON formatted diagnostics report.
-        """
-        return_val = {
-            'version': self.version,
-            'id': self.id,
-            'sdk': self.sdk,
-            'services': {k.value: list(map(lambda epr: epr.as_dict(), v)) for k, v in self.endpoints.items()}
-        }
+    def __repr__(self) -> str:
+        return self._core_result.__repr__()
 
-        return json.dumps(return_val)
+class PingResult(PingResultInterface):
+    def __init__(self, 
+                core_result # type: PingResultInterface
+                ):
+        self._core_result = core_result
 
-    def __repr__(self):
-        return "PingResult:{}".format(self._raw_result)
+    @property
+    def endpoints(self) -> Dict[str, Any]:
+        return self._core_result.endpoints
 
+    @property
+    def id(self) -> str:
+        return self._core_result.id
+
+    @property
+    def sdk(self) -> str:
+        return self._core_result.sdk
+
+    @property
+    def success(self) -> bool:
+        return self._core_result.success
+
+    @property
+    def version(self) -> int:
+        return self._core_result.version
+
+    def as_json(self) -> str:
+        return self._core_result.as_json()
+
+    def __repr__(self) -> str:
+        return self._core_result.__repr__()
 
 """
 
@@ -296,6 +159,56 @@ Python SDK Key-Value Operation Results
 
 """
 
+class ExistsResult(ExistsResultInterface):
+    def __init__(self, 
+                core_result # type: ExistsResultInterface
+                ):
+        self._core_result = core_result
+
+    @property
+    def cas(self) -> Optional[int]:
+        """
+            Optional[int]: The CAS of the document, if it exists
+        """
+        return self._core_result.cas
+
+    @property
+    def exists(self) -> bool:
+        """
+            bool: True if the document exists, false otherwise.
+        """
+        return self._core_result.exists
+
+    @property
+    def flags(self) -> Optional[int]:
+        """
+            Optional[int]: Flags associated with the document.  Used for transcoding.
+        """
+        return self._core_result.flags
+
+    @property
+    def key(self) -> Optional[str]:
+        """
+            Optional[str]: Key for the operation, if it exists.
+        """
+        return self._core_result.key
+
+    @property
+    def success(self) -> bool:
+        """
+            bool: Indicates if the operation was successful or not.
+        """
+        return self._core_result.success
+
+    @property
+    def value(self) -> Optional[Any]:
+        """
+            Optional[Any]: The content of the document, if it exists.
+        """
+        return self._core_result.value
+
+    def __repr__(self):
+        return self._core_result.__repr__()
 
 class GetResult(GetResultInterface):
     def __init__(self, 
@@ -372,6 +285,7 @@ class GetResult(GetResultInterface):
     def __repr__(self):
         return self._core_result.__repr__()
 
+
 class MutationResult(MutationResultInterface):
     def __init__(self, 
                 core_result # type: MutationResultInterface
@@ -413,6 +327,188 @@ class MutationResult(MutationResultInterface):
             Optional[:class:`.MutationToken`]: The operation's mutation token.
         """
         return self._core_result.mutation_token()
+
+    def __repr__(self):
+        return self._core_result.__repr__()
+
+# Sub-document Operations
+
+class LookupInResult(LookupInResultInterface):
+    def __init__(self, 
+                core_result # type: LookupInResultInterface
+                ):
+        self._core_result = core_result
+
+    @property
+    def cas(self) -> Optional[int]:
+        """
+            Optional[int]: The CAS of the document, if it exists
+        """
+        return self._core_result.cas
+
+    @property
+    def content_as(self) -> Any:
+        """
+            :class:`.ContentSubdocProxy`: A proxy to return the value at the specified index.
+
+            Get first value as a dict::
+
+                res = collection.lookup_in(key, (SD.get("geo"), SD.exists("city")))
+                value = res.content_as[dict](0)
+        """
+        return self._core_result.content_as
+
+    @property
+    def flags(self) -> Optional[int]:
+        """
+            Optional[int]: Flags associated with the document.  Used for transcoding.
+        """
+        return self._core_result.flags
+
+    @property
+    def key(self) -> Optional[str]:
+        """
+            Optional[str]: Key for the operation, if it exists.
+        """
+        return self._core_result.key
+
+    @property
+    def success(self) -> bool:
+        """
+            bool: Indicates if the operation was successful or not.
+        """
+        return self._core_result.success
+
+    @property
+    def value(self) -> Optional[Any]:
+        """
+            Optional[Any]: The content of the document, if it exists.
+        """
+        return self._core_result.value
+
+    def exists(self,
+              index  # type: int
+            ) -> bool:
+        """Check if the subdocument path exists.
+
+        Raises:
+            :class:`~couchbase.exceptions.InvalidIndexException`: If the provided index is out of range.
+
+        Returns:
+            bool: True if the path exists.  False if the path does not exist.
+        """
+        return self._core_result.exists(index)
+
+    def __repr__(self):
+        return self._core_result.__repr__()
+
+class MutateInResult(MutateInResultInterface):
+    def __init__(self, 
+                core_result # type: MutateInResultInterface
+                ):
+        self._core_result = core_result
+
+    @property
+    def cas(self) -> Optional[int]:
+        """
+            Optional[int]: The CAS of the document, if it exists
+        """
+        return self._core_result.cas
+
+    @property
+    def content_as(self) -> Any:
+        """
+            :class:`.ContentSubdocProxy`: A proxy to return the value at the specified index.
+
+            Get first value as a str::
+
+                res = collection.mutate_in(key, (SD.upsert("city", "New City"),
+                                                SD.replace("faa", "CTY")))
+                value = res.content_as[str](0)
+        """
+        return self._core_result.content_as
+
+
+    @property
+    def flags(self) -> Optional[int]:
+        """
+            Optional[int]: Flags associated with the document.  Used for transcoding.
+        """
+        return self._core_result.flags
+
+    @property
+    def key(self) -> Optional[str]:
+        """
+            Optional[str]: Key for the operation, if it exists.
+        """
+        return self._core_result.key
+
+    @property
+    def success(self) -> bool:
+        """
+            bool: Indicates if the operation was successful or not.
+        """
+        return self._core_result.success
+
+    def mutation_token(self) -> Optional[MutationToken]:
+        """Get the operation's mutation token, if it exists.
+
+        Returns:
+            Optional[:class:`.MutationToken`]: The operation's mutation token.
+        """
+        return self._core_result.mutation_token()
+
+    def __repr__(self):
+        return self._core_result.__repr__()
+
+"""
+
+Python SDK Streaming Results
+
+"""
+
+class QueryResult(QueryResultInterface):
+    def __init__(self,
+                core_result # type: QueryResultInterface
+        ):
+        self._core_result = core_result
+
+    def rows(self):
+        """The rows which have been returned by the query.
+
+        .. note::
+            If using the *acouchbase* API be sure to use ``async for`` when looping over rows.
+
+        Returns:
+            Iterable: Either an iterable or async iterable.
+        """
+        return self._core_result.__iter__()
+
+    def execute(self):
+        """Convenience method to execute the query.
+
+        Returns:
+            List[Any]:  A list of query results.
+
+        Example:
+            q_rows = cluster.query('SELECT * FROM `travel-sample` WHERE country LIKE 'United%' LIMIT 2;').execute()
+
+        """
+        return self._core_result.execute()
+
+    def metadata(self):
+        """The meta-data which has been returned by the query.
+
+        Returns:
+            :class:`~couchbase.n1ql.QueryMetaData`: An instance of :class:`~couchbase.n1ql.QueryMetaData`.
+        """
+        return self._core_result.metadata()
+
+    def __iter__(self):
+        return self._core_result.__iter__()
+
+    def __aiter__(self):
+        return self._core_result.__aiter__()
 
     def __repr__(self):
         return self._core_result.__repr__()

@@ -15,7 +15,7 @@ testpaths = [
     "acouchbase/tests",
     "couchbase/tests",
     "txcouchbase/tests",
-    "protostellar/tests",
+    "new_couchbase/tests",
 ]
 python_classes = [
     "*Tests"

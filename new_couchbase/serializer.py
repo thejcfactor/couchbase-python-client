@@ -14,11 +14,34 @@
 #  limitations under the License.
 
 import json
+from abc import ABC, abstractmethod
 from typing import Any
 
-from new_couchbase.api.serializer import SerializerInterface
 
-class DefaultJsonSerializer(SerializerInterface):
+class Serializer(ABC):
+    """Interface a Custom Serializer must implement
+    """
+
+    @abstractmethod
+    def serialize(self,
+                  value  # type: Any
+                  ) -> bytes:
+        raise NotImplementedError
+
+    @abstractmethod
+    def deserialize(self,
+                    value  # type: bytes
+                    ) -> Any:
+        raise NotImplementedError
+
+    @classmethod
+    def __subclasshook__(cls, subclass):
+        return (hasattr(subclass, 'serialize') and
+                callable(subclass.serialize) and
+                hasattr(subclass, 'deserialize') and
+                callable(subclass.deserialize))
+
+class DefaultJsonSerializer(Serializer):
     def serialize(self,
                   value,  # type: Any
                   ) -> bytes:
