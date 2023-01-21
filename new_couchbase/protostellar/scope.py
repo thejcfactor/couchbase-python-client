@@ -40,7 +40,11 @@ class Scope:
                 ):
         self._bucket = bucket
         self._scope_name = scope_name
+<<<<<<< HEAD
         # self._query_service = query.QueryStub(self.connection)
+=======
+        self._query_service = query.QueryStub(self.connection)
+>>>>>>> 478f15c (rebase on master + more updates)
 
     @property
     def api_implementation(self) -> ApiImplementation:
@@ -81,7 +85,11 @@ class Scope:
         """
         **INTERNAL**
         """
+<<<<<<< HEAD
         return self._bucket._cluster.query_service
+=======
+        return self._query_service
+>>>>>>> 478f15c (rebase on master + more updates)
 
     def collection(self, 
                 collection_name # type: str

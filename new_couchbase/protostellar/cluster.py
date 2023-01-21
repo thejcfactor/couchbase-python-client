@@ -41,6 +41,8 @@ from new_couchbase.protostellar.n1ql import N1QLQuery, N1QLRequest
 from new_couchbase.protostellar.options import ValidClusterOptions
 from protostellar import query_grpc_module as query
 
+from new_couchbase.exceptions import InvalidArgumentException, FeatureUnavailableException
+from new_couchbase.protostellar.options import ValidClusterOptions
 
 
 if TYPE_CHECKING:
