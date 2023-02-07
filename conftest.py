@@ -16,8 +16,9 @@
 import pytest
 
 pytest_plugins = [
-    # "tests.helpers",
-    "tests.couchbase_config"
+    # "tests.helpers"
+    'tests.couchbase_config',
+    'tests.environments.test_environment'
 ]
 
 _DIAGNOSTIC_TESTS = [

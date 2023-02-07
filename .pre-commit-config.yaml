@@ -73,6 +73,7 @@ repos:
               couchbase/tests/|
               protostellar/tests/|
               tests/mock_server.py|
+              tests/environments/|
               simple_acouchbase.py|
               simple_couchbase.py|
               simple_txcouchbase.py|

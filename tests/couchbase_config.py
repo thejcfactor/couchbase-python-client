@@ -21,10 +21,11 @@ from typing import Optional
 
 import pytest
 
+from tests.environments import CouchbaseTestEnvironmentException
+
 from .mock_server import (LegacyMockBucketSpec,
                           MockServer,
                           MockServerType)
-from .test_environment import CouchbaseTestEnvironmentException
 
 BASEDIR = pathlib.Path(__file__).parent.parent
 CONFIG_FILE = os.path.join(pathlib.Path(__file__).parent, "test_config.ini")
@@ -83,7 +84,8 @@ class CouchbaseConfig:
 
             if test_config.getboolean('realserver', 'enabled', fallback=False):
                 couchbase_config.real_server_enabled = True
-                couchbase_config.protostellar_enabled = test_config.getboolean('realserver', 'is_protostellar', fallback=False)
+                couchbase_config.protostellar_enabled = test_config.getboolean(
+                    'realserver', 'is_protostellar', fallback=False)
                 couchbase_config.host = test_config.get('realserver', 'host')
                 couchbase_config.port = test_config.getint('realserver', 'port')
                 couchbase_config.admin_username = test_config.get(
@@ -116,9 +118,9 @@ class CouchbaseConfig:
                     mock_version = test_config.get('gocaves', 'version')
 
                 couchbase_config.mock_server = CouchbaseConfig.create_mock_server(MockServerType.GoCAVES,
-                                                            mock_path,
-                                                            mock_url,
-                                                            mock_version)
+                                                                                  mock_path,
+                                                                                  mock_url,
+                                                                                  mock_version)
                 couchbase_config.bucket_name = "default"
                 # cluster_info.port = cluster_info.mock_server.rest_port
                 # cluster_info.host = "127.0.0.1"
@@ -141,8 +143,8 @@ class CouchbaseConfig:
                     mock_url = test_config.get("mockserver", "url")
 
                 couchbase_config.mock_server = CouchbaseConfig.create_mock_server(MockServerType.Legacy,
-                                                            mock_path,
-                                                            mock_url)
+                                                                                  mock_path,
+                                                                                  mock_url)
                 couchbase_config.bucket_name = "default"
                 couchbase_config.port = couchbase_config.mock_server.rest_port
                 couchbase_config.host = "127.0.0.1"
@@ -159,12 +161,12 @@ class CouchbaseConfig:
 
     @staticmethod
     def create_mock_server(mock_type,  # type: MockServerType
-                        mock_path,  # type: str
-                        mock_download_url,  # type: Optional[str]
-                        mock_version,  # type: Optional[str]
-                        log_dir=None,  # type: Optional[str]
-                        log_filename=None,  # type: Optional[str]
-                        ) -> MockServer:
+                           mock_path,  # type: str
+                           mock_download_url,  # type: Optional[str]
+                           mock_version,  # type: Optional[str]
+                           log_dir=None,  # type: Optional[str]
+                           log_filename=None,  # type: Optional[str]
+                           ) -> MockServer:
 
         if mock_type == MockServerType.Legacy:
             bspec_dfl = LegacyMockBucketSpec('default', 'couchbase')
@@ -175,10 +177,10 @@ class CouchbaseConfig:
                                                         nodes=4)
         else:
             mock = MockServer.create_caves_mock_server(mock_path,
-                                                    mock_download_url,
-                                                    mock_version,
-                                                    log_dir,
-                                                    log_filename)
+                                                       mock_download_url,
+                                                       mock_version,
+                                                       log_dir,
+                                                       log_filename)
 
         try:
             mock.start()
@@ -189,7 +191,6 @@ class CouchbaseConfig:
                 f"Problem trying to start mock server:\n{ex}")
 
         return mock
-
 
     @staticmethod
     def restart_mock(mock) -> None:
