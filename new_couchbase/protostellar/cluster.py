@@ -33,10 +33,14 @@ from new_couchbase.common.connection_string import parse_connection_string, pars
 from new_couchbase.common.options import OptionTypes, parse_options
 
 from new_couchbase.result import (DiagnosticsResult,
-                              PingResult)
+                              PingResult,
+                              QueryResult)
 
 from new_couchbase.exceptions import InvalidArgumentException, FeatureUnavailableException
+from new_couchbase.protostellar.n1ql import N1QLQuery, N1QLRequest
 from new_couchbase.protostellar.options import ValidClusterOptions
+from protostellar import query_grpc_module as query
+
 
 
 if TYPE_CHECKING:
@@ -72,6 +76,7 @@ class Cluster:
         self._channel = grpc.insecure_channel(self._connstr)
         self._default_serializer = DefaultJsonSerializer()
         self._default_transcoder = JSONTranscoder()
+        self._query_service = query.QueryStub(self.connection)
 
     @property
     def api_implementation(self) -> ApiImplementation:
@@ -107,6 +112,13 @@ class Cluster:
         **INTERNAL**
         """
         return self._metadata
+    
+    @property
+    def query_service(self):
+        """
+        **INTERNAL**
+        """
+        return self._query_service
 
     @property
     def server_version(self) -> Optional[str]:
@@ -185,6 +197,10 @@ class Cluster:
         statement,  # type: str
         *opts,  # type: QueryOptions
         **kwargs  # type: Dict[str, Any]
-    ) -> Any:
-        raise FeatureUnavailableException(message=("Protostellar does not support query operations from a cluster object."
-                                                   " Use scope.query()."))
+    ) -> QueryResult:
+        # raise FeatureUnavailableException(message=("Protostellar does not support query operations from a cluster object."
+        #                                            " Use scope.query()."))
+        query = N1QLQuery.create_query_object(statement,
+                                              *opts,
+                                              **kwargs)
+        return QueryResult(N1QLRequest.generate_n1ql_request(self.query_service, query.params))

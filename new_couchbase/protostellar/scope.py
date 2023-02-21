@@ -40,7 +40,7 @@ class Scope:
                 ):
         self._bucket = bucket
         self._scope_name = scope_name
-        self._query_service = query.QueryStub(self.connection)
+        # self._query_service = query.QueryStub(self.connection)
 
     @property
     def api_implementation(self) -> ApiImplementation:
@@ -81,7 +81,7 @@ class Scope:
         """
         **INTERNAL**
         """
-        return self._query_service
+        return self._bucket._cluster.query_service
 
     def collection(self, 
                 collection_name # type: str

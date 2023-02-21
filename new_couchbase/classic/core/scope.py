@@ -14,13 +14,19 @@
 #  limitations under the License.
 
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, Dict
 
 
 from new_couchbase.serializer import Serializer
 from new_couchbase.transcoder import Transcoder
 from new_couchbase.api import ApiImplementation
 from new_couchbase.collection import Collection
+
+from new_couchbase.classic.core.n1ql import N1QLQuery
+from new_couchbase.classic.n1ql import N1QLRequest
+
+from new_couchbase.classic.result import QueryResult
+from new_couchbase.options import QueryOptions
 
 if TYPE_CHECKING:
     from new_couchbase.classic.bucket import Bucket
@@ -64,6 +70,28 @@ class ScopeCore:
                 collection_name # type: str
                 ) -> Collection:
         return Collection(self, collection_name)
+    
+    def query(
+        self,
+        statement,  # type: str
+        *opts,  # type: QueryOptions
+        **kwargs  # type: Dict[str, Any]
+    ) -> QueryResult:
+
+        opt = QueryOptions()
+        opts = list(opts)
+        for o in opts:
+            if isinstance(o, QueryOptions):
+                opt = o
+                opts.remove(o)
+        # set the query context as this bucket and scope if not provided
+        if not ('query_context' in opt or 'query_context' in kwargs):
+            kwargs['query_context'] = '`{}`.`{}`'.format(self.bucket_name, self.name)
+
+        query = N1QLQuery.create_query_object(
+            statement, opt, **kwargs)
+        return QueryResult(N1QLRequest.generate_n1ql_request(self.connection,
+                                                             query.params))
 
     @staticmethod
     def default_name():
