@@ -36,6 +36,8 @@ LEGACY_CONNSTR_QUERY_ARGS = {
     'sasl_mech_force': {'allowed_sasl_mechanisms': lambda x: x.split(',')}
 }
 
+DEFAULT_PROTOSTELLAR_TLS_PORT = 18098
+
 def parse_connection_string(connection_str  # type: str
                                 ) -> Tuple[str, Dict[str, Any], Dict[str, Any]]:
     """ **INTERNAL**
@@ -61,7 +63,10 @@ def parse_connection_string(connection_str  # type: str
 
     parsed_conn = urlparse(connection_str)
     conn_str = ''
-    if parsed_conn.scheme:
+    if parsed_conn.scheme and parsed_conn.scheme == 'protostellar':
+        port = parsed_conn.port or DEFAULT_PROTOSTELLAR_TLS_PORT
+        conn_str = f'{parsed_conn.scheme}://{parsed_conn.hostname}:{port}{parsed_conn.path}'
+    elif parsed_conn.scheme:
         conn_str = f'{parsed_conn.scheme}://{parsed_conn.netloc}{parsed_conn.path}'
     else:
         conn_str = f'{parsed_conn.netloc}{parsed_conn.path}'

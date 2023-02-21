@@ -25,7 +25,7 @@ from new_couchbase.collection import Collection
 from new_couchbase.protostellar.result import QueryResult
 
 from new_couchbase.protostellar.n1ql import N1QLQuery, N1QLRequest
-from protostellar import query_grpc_module as query
+from new_couchbase.protostellar import query_grpc_module as query
 
 
 if TYPE_CHECKING:
@@ -40,11 +40,6 @@ class Scope:
                 ):
         self._bucket = bucket
         self._scope_name = scope_name
-<<<<<<< HEAD
-        # self._query_service = query.QueryStub(self.connection)
-=======
-        self._query_service = query.QueryStub(self.connection)
->>>>>>> 478f15c (rebase on master + more updates)
 
     @property
     def api_implementation(self) -> ApiImplementation:
@@ -85,11 +80,7 @@ class Scope:
         """
         **INTERNAL**
         """
-<<<<<<< HEAD
         return self._bucket._cluster.query_service
-=======
-        return self._query_service
->>>>>>> 478f15c (rebase on master + more updates)
 
     def collection(self, 
                 collection_name # type: str

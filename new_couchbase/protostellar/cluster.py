@@ -39,7 +39,7 @@ from new_couchbase.result import (DiagnosticsResult,
 from new_couchbase.exceptions import InvalidArgumentException, FeatureUnavailableException
 from new_couchbase.protostellar.n1ql import N1QLQuery, N1QLRequest
 from new_couchbase.protostellar.options import ValidClusterOptions
-from protostellar import query_grpc_module as query
+from new_couchbase.protostellar import query_grpc_module as query
 
 from new_couchbase.exceptions import InvalidArgumentException, FeatureUnavailableException
 from new_couchbase.protostellar.options import ValidClusterOptions
@@ -50,6 +50,8 @@ if TYPE_CHECKING:
                                        DiagnosticsOptions,
                                        PingOptions,
                                        QueryOptions)
+
+MAX_MESSAGE_LENGTH = 1024 * 1024 * 20 # 20 MB max doc size
 
 class Cluster:
 
@@ -75,7 +77,9 @@ class Cluster:
         self._metadata = []
         self._auth = authenticator.as_dict()
         self._set_auth_metadata()
-        self._channel = grpc.insecure_channel(self._connstr)
+        self._channel = grpc.insecure_channel(self._connstr,
+                                              options=[('grpc.max_send_message_length', MAX_MESSAGE_LENGTH),
+                                                       ('grpc.max_receive_message_length', MAX_MESSAGE_LENGTH)])
         self._default_serializer = DefaultJsonSerializer()
         self._default_transcoder = JSONTranscoder()
         self._query_service = query.QueryStub(self.connection)

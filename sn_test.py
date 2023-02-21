@@ -15,7 +15,6 @@ print(res)
 # res = collection.exists('test_key')
 # print(res)
 
-<<<<<<< HEAD
 # bm = cluster.buckets()
 
 # bm.get_all_buckets()
@@ -28,8 +27,3 @@ print(res)
 #     print(f'Found row: {r}')
 
 # print(res.metadata())
-=======
-bm = cluster.buckets()
-
-bm.get_all_buckets()
->>>>>>> 0b9b09c (updates)

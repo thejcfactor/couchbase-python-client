@@ -85,12 +85,11 @@ class BuildProtosCommand(Command):
 
     def run(self) -> None:
         try:
-            import pkg_resources
             from importlib.resources import files, as_file
 
-            sn_protos = COUCHBASE_ROOT.joinpath('deps', 'stellar-nebula', 'proto', 'couchbase')
+            ps_protos = COUCHBASE_ROOT.joinpath('deps', 'protostellar', 'couchbase')
             proto_files = []
-            for root, _, files_ in os.walk(sn_protos.absolute()):
+            for root, _, files_ in os.walk(ps_protos.absolute()):
                 proto_files.extend([os.path.join(root, f) for f in files_ if f.endswith('.proto')])
 
             if len(proto_files) == 0:
@@ -116,7 +115,7 @@ class BuildProtosCommand(Command):
                                 '-m',
                                 'grpc_tools.protoc',
                                 f'--proto_path={proto_path.parent.absolute()}',
-                                f'--proto_path={sn_protos.parent.absolute()}',
+                                f'--proto_path={ps_protos.parent.absolute()}',
                                 f'--python_out={ps_proto_dir.absolute()}',
                                 f'--grpc_python_out={ps_proto_dir.absolute()}',
                                 proto, ]

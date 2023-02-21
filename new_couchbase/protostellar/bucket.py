@@ -69,6 +69,13 @@ class Bucket:
     @property
     def name(self) -> str:
         return self._bucket_name
+    
+    @property
+    def query_service(self):
+        """
+        **INTERNAL**
+        """
+        return self._cluster.query_service
 
     def collection(self, collection_name  # type: str
                    ) -> Collection:
