@@ -86,11 +86,12 @@ class BuildProtosCommand(Command):
     def run(self) -> None:
         try:
             import pkg_resources
+            from importlib.resources import files, as_file
 
             sn_protos = COUCHBASE_ROOT.joinpath('deps', 'stellar-nebula', 'proto', 'couchbase')
             proto_files = []
-            for root, _, files in os.walk(sn_protos.absolute()):
-                proto_files.extend([os.path.join(root, f) for f in files if f.endswith('.proto')])
+            for root, _, files_ in os.walk(sn_protos.absolute()):
+                proto_files.extend([os.path.join(root, f) for f in files_ if f.endswith('.proto')])
 
             if len(proto_files) == 0:
                 print('WARNING:  Unabled to find Couchbase SN proto files.')
@@ -104,20 +105,22 @@ class BuildProtosCommand(Command):
             # clear our old protos
             shutil.rmtree(ps_proto_dir.absolute())
             os.makedirs(ps_proto_dir.absolute())
-            proto_include = pkg_resources.resource_filename('grpc_tools', '_proto')
-            contrib_dir = COUCHBASE_ROOT.joinpath('deps', 'stellar-nebula', 'contrib', 'googleapis')
-
-            for proto in proto_files:
-                grpc_args = ['python',
-                             '-m',
-                             'grpc_tools.protoc',
-                             f'--proto_path={proto_include}',
-                             f'--proto_path={contrib_dir.absolute()}',
-                             f'--proto_path={sn_protos.parent.absolute()}',
-                             f'--python_out={ps_proto_dir.absolute()}',
-                             f'--grpc_python_out={ps_proto_dir.absolute()}',
-                             proto, ]
-                subprocess.check_call(grpc_args)  # nosec
+            # from grpcio-tools package
+            # since we have the grpcio-tools and googleapis-common-protos (only needed for the status.proto),
+            # if we just use the python site-packages as the path to use for the proto_path option, we should
+            # pick up all the needed Google protos
+            proto_ref = files('grpc_tools')
+            with as_file(proto_ref) as proto_path:
+                for proto in proto_files:
+                    grpc_args = ['python',
+                                '-m',
+                                'grpc_tools.protoc',
+                                f'--proto_path={proto_path.parent.absolute()}',
+                                f'--proto_path={sn_protos.parent.absolute()}',
+                                f'--python_out={ps_proto_dir.absolute()}',
+                                f'--grpc_python_out={ps_proto_dir.absolute()}',
+                                proto, ]
+                    subprocess.check_call(grpc_args)  # nosec
 
             built_protos = []
             for root, _, files in os.walk(ps_proto_dir.absolute()):
