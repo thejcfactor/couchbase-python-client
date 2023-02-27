@@ -31,10 +31,11 @@ from couchbase.pycbc_core import (binary_operation,
 from new_couchbase.exceptions import InvalidArgumentException
 from new_couchbase.transcoder import Transcoder
 from new_couchbase.classic.result import (ExistsResult,
-                                  GetResult,
-                                  LookupInResult,
-                                  MutateInResult,
-                                  MutationResult)
+                                          GetReplicaResult,
+                                          GetResult,
+                                          LookupInResult,
+                                          MutateInResult,
+                                          MutationResult)
 from new_couchbase.common._utils import timedelta_as_microseconds
 from new_couchbase.subdocument import (Spec,
                                    StoreSemantics,
@@ -106,11 +107,10 @@ class CollectionCore:
         """
         self._connection = self._scope.connection
 
-    def exists(
-        self,
-        key,  # type: str
-        **kwargs,  # type: Dict[str, Any]
-    ) -> ExistsResult:
+    def exists(self,
+               key,  # type: str
+               **kwargs,  # type: Dict[str, Any]
+               ) -> ExistsResult:
         """
         **INTERNAL**
         """
@@ -119,31 +119,90 @@ class CollectionCore:
             **self._get_connection_args(), key=key, op_type=op_type, op_args=kwargs
         )
 
-    def get(
-        self,
-        key,  # type: str
-        **kwargs,  # type: Dict[str, Any]
-    ) -> GetResult:
+    def get(self,
+            key,  # type: str
+            **kwargs,  # type: Dict[str, Any]
+            ) -> GetResult:
         """
         **INTERNAL**
         """
-        # projections = kwargs.get("project")
-        # if isinstance(projections, list) and len(projections) > 16:
-        #     raise InvalidArgumentException(
-        #         f"Maximum of 16 projects allowed. Provided {len(projections)}"
-        #     )
         op_type = operations.GET.value
         return kv_operation(**self._get_connection_args(),
                             key=key,
                             op_type=op_type,
                             op_args=kwargs)
 
-    def insert(
+    def get_all_replicas(
         self,
         key,  # type: str
-        value,  # type: JSONType
         **kwargs,  # type: Dict[str, Any]
-    ) -> MutationResult:
+    ) -> Iterable[GetReplicaResult]:
+        """**INTERNAL**
+
+        Key-Value *get_all_replicas* operation.  Should only be called by classes that inherit from the base
+            class :class:`~couchbase.logic.CollectionLogic`.
+
+        Args:
+            key (str): document key
+            kwargs (Dict[str, Any]): keyword arguments that can be used in place or to
+                overrride provided :class:`~.options.GetAllReplicasOptions`
+
+        Raises:
+            :class:`~.exceptions.DocumentNotFoundException`: If the provided document key does not exist.
+        """
+        op_type = operations.GET_ALL_REPLICAS.value
+        return kv_operation(**self._get_connection_args(),
+                            key=key,
+                            op_type=op_type,
+                            op_args=kwargs)
+
+    def get_and_lock(self,
+                     key,  # type: str
+                     **kwargs,  # type: Dict[str, Any]
+                     ) -> GetResult:
+        op_type = operations.GET_AND_LOCK.value
+        return kv_operation(
+            **self._get_connection_args(), key=key, op_type=op_type, op_args=kwargs
+        )
+
+    def get_and_touch(self,
+                      key,  # type: str
+                      **kwargs,  # type: Dict[str, Any]
+                      ) -> GetResult:
+        op_type = operations.GET_AND_TOUCH.value
+        return kv_operation(
+            **self._get_connection_args(), key=key, op_type=op_type, op_args=kwargs
+        )
+    
+    def get_any_replica(
+        self,
+        key,  # type: str
+        **kwargs,  # type: Dict[str, Any]
+    ) -> GetReplicaResult:
+        """**INTERNAL**
+
+        Key-Value *get_any_replica* operation.  Should only be called by classes that inherit from the base
+            class :class:`~couchbase.logic.CollectionLogic`.
+
+        Args:
+            key (str): document key
+            kwargs (Dict[str, Any]): keyword arguments that can be used in place or to
+                overrride provided :class:`~.options.GetAnyReplicaOptions`
+
+        Raises:
+            :class:`~.exceptions.DocumentNotFoundException`: If the provided document key does not exist.
+        """
+        op_type = operations.GET_ANY_REPLICA.value
+        return kv_operation(**self._get_connection_args(),
+                            key=key,
+                            op_type=op_type,
+                            op_args=kwargs)
+
+    def insert(self,
+               key,  # type: str
+               value,  # type: JSONType
+               **kwargs,  # type: Dict[str, Any]
+               ) -> MutationResult:
         """
         **INTERNAL**
         """
@@ -176,12 +235,11 @@ class CollectionCore:
             op_args=kwargs
         )
 
-    def mutate_in(   # noqa: C901
-        self,
-        key,  # type: str
-        spec,  # type: Iterable[Spec]
-        **kwargs,  # type: Dict[str, Any]
-    ) -> MutateInResult:   # noqa: C901
+    def mutate_in(self,  # noqa: C901
+                  key,  # type: str
+                  spec,  # type: Iterable[Spec]
+                  **kwargs,  # type: Dict[str, Any]
+                  ) -> MutateInResult:   # noqa: C901
         """
         **INTERNAL**
         """
@@ -294,6 +352,30 @@ class CollectionCore:
             value=transcoded_value,
             op_type=op_type,
             op_args=final_args
+        )
+    
+    def touch(self,
+              key,  # type: str
+              **kwargs,  # type: Dict[str, Any]
+              ) -> MutationResult:
+        op_type = operations.TOUCH.value
+        return kv_operation(
+            **self._get_connection_args(),
+            key=key,
+            op_type=op_type,
+            op_args=kwargs
+        )
+
+    def unlock(self,
+               key, # type: str
+               **kwargs,  # type: Dict[str, Any]
+               ) -> None:
+        op_type = operations.UNLOCK.value
+        return kv_operation(
+            **self._get_connection_args(),
+            key=key,
+            op_type=op_type,
+            op_args=kwargs
         )
 
     def upsert(

@@ -14,6 +14,7 @@
 #  limitations under the License.
 
 from datetime import datetime, timedelta
+from time import time
 from typing import Union
 
 from google.protobuf.timestamp_pb2 import Timestamp
@@ -34,7 +35,10 @@ def timedelta_as_timestamp(
         raise InvalidArgumentException(f'Expected expiry seconds of zero (for no expiry) or greater, got {seconds}.')
 
     ts = Timestamp()
-    ts.FromSeconds(seconds)
+    ts.FromSeconds(int(time()) + seconds)
+    # another possible route:
+    #   then = datetime.utcnow().replace(tzinfo=timezone.utc) + duration
+    #   ts.FromDatetime(then)
     return ts
 
 

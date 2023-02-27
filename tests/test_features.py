@@ -23,7 +23,7 @@ from typing import (List,
 import pytest
 
 from tests.mock_server import MockServerType
-
+from tests.environments import CouchbaseTestEnvironmentException
 
 class ServerFeatures(Enum):
     KeyValue = 'kv'
@@ -87,6 +87,10 @@ class EnvironmentFeatures:
                             ServerFeatures.ViewIndexManagement]
 
     FEATURES_IN_MOCK = [ServerFeatures.Txns]
+
+    FEATURES_IN_GO_CAVES = [ServerFeatures.BasicBucketManagement,
+                            ServerFeatures.Diagnostics,
+                            ServerFeatures.Xattr]
 
     # separate features into CBS versions, lets make 5.5 the earliest
     AT_LEAST_V5_5_0_FEATURES = [ServerFeatures.BucketManagement,
@@ -169,13 +173,7 @@ class EnvironmentFeatures:
         if is_mock_server and feature in map(lambda f: f.value, EnvironmentFeatures.FEATURES_IN_MOCK):
             return None
 
-        if feature in [ServerFeatures.Diagnostics.value, ServerFeatures.BasicBucketManagement.value]:
-            if is_real_server or mock_server_type == MockServerType.GoCAVES:
-                return None
-
-            return f'LegacyMockServer does not support feature: {feature}'
-
-        if feature in [ServerFeatures.Diagnostics.value, ServerFeatures.BasicBucketManagement.value]:
+        if feature in map(lambda f: f.value, EnvironmentFeatures.FEATURES_IN_GO_CAVES):
             if is_real_server or mock_server_type == MockServerType.GoCAVES:
                 return None
 
@@ -244,3 +242,5 @@ class EnvironmentFeatures:
                         f'Using server version: {server_version}.')
 
             return None
+        
+        raise CouchbaseTestEnvironmentException(f'Unable to determine if server has provided feature: {feature}')

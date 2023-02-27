@@ -28,6 +28,7 @@ from grpc import StatusCode
 
 
 from new_couchbase.api.result import (ExistsResultInterface,
+                                      GetReplicaResultInterface,
                                       GetResultInterface,
                                       LookupInResultInterface,
                                       MutateInResultInterface,
@@ -124,6 +125,73 @@ class ExistsResult(ExistsResultInterface):
     def __repr__(self):
         output = {k: v for k, v in self._raw_result.items() if v is not None}
         return 'ExistsResult:{}'.format(output)
+
+class GetReplicaResult(GetReplicaResultInterface):
+    def __init__(self,
+                raw_result # type: Dict[str, Any]
+        ):
+        self._raw_result = raw_result
+
+    @property
+    def cas(self) -> Optional[int]:
+        """
+            Optional[int]: The CAS of the document, if it exists
+        """
+        return self._raw_result.get('cas', None)
+
+    @property
+    def content_as(self) -> Any:
+        """
+            Any: The contents of the document.
+
+            Get the value as a dict::
+
+                res = collection.get(key)
+                value = res.content_as[dict]
+
+        """
+        return ContentProxy(self.value)
+
+
+    @property
+    def flags(self) -> Optional[int]:
+        """
+            Optional[int]: Flags associated with the document.  Used for transcoding.
+        """
+        return self._raw_result.get('flags', None)
+
+    @property
+    def is_replica(self) -> bool:
+        """
+            bool: True if the result is a replica, False otherwise.
+        """
+        return self._raw_result.get('is_replica', False)
+
+    @property
+    def key(self) -> Optional[str]:
+        """
+            Optional[str]: Key for the operation, if it exists.
+        """
+        return self._raw_result.get('key', None)
+
+    @property
+    def success(self) -> bool:
+        """
+            bool: Indicates if the operation was successful or not.
+        """
+        return self.cas is not None and self.cas != 0
+
+    @property
+    def value(self) -> Optional[Any]:
+        """
+            Optional[Any]: The content of the document, if it exists.
+        """
+        return self._raw_result.get('value', None)
+
+    def __repr__(self):
+        output = {k: v for k, v in self._raw_result.items() if v is not None}
+        return 'GetReplicaResult:{}'.format(output)
+
 
 class GetResult(GetResultInterface):
     def __init__(self,

@@ -87,7 +87,9 @@ class CouchbaseConfig:
                 couchbase_config.protostellar_enabled = test_config.getboolean(
                     'realserver', 'is_protostellar', fallback=False)
                 couchbase_config.host = test_config.get('realserver', 'host')
-                couchbase_config.port = test_config.getint('realserver', 'port')
+                port = test_config.getint('realserver', 'port', fallback=None)
+                if port is None:
+                    couchbase_config.port = 8091 if couchbase_config.protostellar_enabled is False else 18098
                 couchbase_config.admin_username = test_config.get(
                     'realserver', 'admin_username')
                 couchbase_config.admin_password = test_config.get(

@@ -26,6 +26,7 @@ from new_couchbase.api import ApiImplementation
 
 from new_couchbase.classic.core.collection import CollectionCore
 from new_couchbase.classic.result import (ExistsResult,
+                                          GetReplicaResult,
                                           GetResult,
                                           LookupInResult,
                                           MutateInResult,
@@ -36,15 +37,23 @@ from new_couchbase.classic.options import ValidKeyValueOptions
 
 
 if TYPE_CHECKING:
+    from datetime import timedelta
+
     from new_couchbase.classic.scope import Scope
     from new_couchbase.common._utils import JSONType
     from new_couchbase.options import (ExistsOptions,
                                         GetOptions,
+                                        GetAllReplicasOptions,
+                                        GetAndLockOptions,
+                                        GetAndTouchOptions,
+                                        GetAnyReplicaOptions,
                                         InsertOptions,
                                         LookupInOptions,
                                         MutateInOptions,
                                         RemoveOptions,
                                         ReplaceOptions,
+                                        TouchOptions,
+                                        UnlockOptions,
                                         UpsertOptions)
     from new_couchbase.subdocument import Spec
 
@@ -58,6 +67,54 @@ class Collection(CollectionCore):
     @property
     def api_implementation(self) -> ApiImplementation:
         return ApiImplementation.CLASSIC
+
+    @BlockingWrapper.block_and_decode(GetReplicaResult)
+    def _get_all_replicas_internal(
+        self,
+        key,  # type: str
+        **kwargs,  # type: Dict[str, Any]
+    ) -> Iterable[GetReplicaResult]:
+        """ **Internal Operation**
+
+        Internal use only.  Use :meth:`Collection.get_all_replicas` instead.
+        """
+        return super().get_all_replicas(key, **kwargs)
+
+    @BlockingWrapper.block_and_decode(GetResult)
+    def _get_and_lock_internal(self,
+                               key,  # type: str
+                               **kwargs,  # type: Dict[str, Any]
+                               ) -> GetResult:
+        """ **Internal Operation**
+
+        Internal use only.  Use :meth:`Collection.get_and_lock` instead.
+
+        """
+        return super().get_and_lock(key, **kwargs)
+
+    @BlockingWrapper.block_and_decode(GetResult)
+    def _get_and_touch_internal(self,
+                                key,  # type: str
+                                **kwargs,  # type: Dict[str, Any]
+                                ) -> GetResult:
+        """ **Internal Operation**
+
+        Internal use only.  Use :meth:`Collection.get_and_touch` instead.
+
+        """
+        return super().get_and_touch(key, **kwargs)
+
+    @BlockingWrapper.block_and_decode(GetReplicaResult)
+    def _get_any_replica_internal(
+        self,
+        key,  # type: str
+        **kwargs,  # type: Dict[str, Any]
+    ) -> GetReplicaResult:
+        """ **Internal Operation**
+
+        Internal use only.  Use :meth:`Collection.get_any_replica` instead.
+        """
+        return super().get_any_replica(key, **kwargs)
 
     @BlockingWrapper.block_and_decode(GetResult)
     def _get_internal(
@@ -106,6 +163,65 @@ class Collection(CollectionCore):
         final_args['transcoder'] = transcoder
 
         return self._get_internal(key, **final_args)
+    
+    def get_all_replicas(self,
+                         key,  # type: str
+                         *opts,  # type: GetAllReplicasOptions
+                         **kwargs,  # type: Dict[str, Any]
+                         ) -> Iterable[GetReplicaResult]:
+
+        final_args = parse_options(ValidKeyValueOptions.get_valid_options(OptionTypes.GetAllReplicas), kwargs, *opts)
+        transcoder = final_args.get('transcoder', None)
+        if not transcoder:
+            transcoder = self.default_transcoder
+        final_args['transcoder'] = transcoder
+
+        return self._get_all_replicas_internal(key, **final_args)
+
+    def get_and_lock(self,
+                     key,  # type: str
+                     lock_time,  # type: timedelta
+                     *opts,  # type: GetAndLockOptions
+                     **kwargs,  # type: Dict[str, Any]
+                     ) -> GetResult:
+        # add to kwargs for conversion to int
+        kwargs['lock_time'] = lock_time
+        final_args = parse_options(ValidKeyValueOptions.get_valid_options(OptionTypes.GetAndLock), kwargs, *opts)
+        transcoder = final_args.get('transcoder', None)
+        if not transcoder:
+            transcoder = self.default_transcoder
+        final_args['transcoder'] = transcoder
+
+        return self._get_and_lock_internal(key, **final_args)
+
+    def get_and_touch(self,
+                      key,  # type: str
+                      expiry,  # type: timedelta
+                      *opts,  # type: GetAndTouchOptions
+                      **kwargs,  # type: Dict[str, Any]
+                      ) -> GetResult:
+        # add to kwargs for conversion to int
+        kwargs['expiry'] = expiry
+        final_args = parse_options(ValidKeyValueOptions.get_valid_options(OptionTypes.GetAndTouch), kwargs, *opts)
+        transcoder = final_args.get('transcoder', None)
+        if not transcoder:
+            transcoder = self.default_transcoder
+        final_args['transcoder'] = transcoder
+
+        return self._get_and_touch_internal(key, **final_args)
+
+    def get_any_replica(self,
+                        key,  # type: str
+                        *opts,  # type: GetAnyReplicaOptions
+                        **kwargs,  # type: Dict[str, Any]
+                        ) -> GetReplicaResult:
+        final_args = parse_options(ValidKeyValueOptions.get_valid_options(OptionTypes.GetAnyReplica), kwargs, *opts)
+        transcoder = final_args.get('transcoder', None)
+        if not transcoder:
+            transcoder = self.default_transcoder
+        final_args['transcoder'] = transcoder
+
+        return self._get_any_replica_internal(key, **final_args)
 
     @BlockingWrapper.block(MutationResult)
     def insert(
@@ -162,6 +278,28 @@ class Collection(CollectionCore):
     ) -> MutationResult:
         final_args = parse_options(ValidKeyValueOptions.get_valid_options(OptionTypes.Replace), kwargs, *opts)
         return super().replace(key, value, **final_args)
+
+    @BlockingWrapper.block(MutationResult)
+    def touch(self,
+              key,  # type: str
+              expiry,  # type: timedelta
+              *opts,  # type: TouchOptions
+              **kwargs,  # type: Dict[str, Any]
+              ) -> MutationResult:
+        kwargs['expiry'] = expiry
+        final_args = parse_options(ValidKeyValueOptions.get_valid_options(OptionTypes.Touch), kwargs, *opts)
+        return super().touch(key, **final_args)
+
+    @BlockingWrapper.block(None)
+    def unlock(self,
+               key,  # type: str
+               cas,  # type: int
+               *opts,  # type: UnlockOptions
+               **kwargs,  # type: Dict[str, Any]
+               ) -> None:
+        kwargs['cas'] = cas
+        final_args = parse_options(ValidKeyValueOptions.get_valid_options(OptionTypes.Unlock), kwargs, *opts)
+        return super().unlock(key, **final_args)
 
     @BlockingWrapper.block(MutationResult)
     def upsert(

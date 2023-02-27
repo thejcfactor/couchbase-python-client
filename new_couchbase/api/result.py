@@ -194,6 +194,47 @@ class ExistsResultInterface(ABC):
         raise NotImplementedError
         
 
+class GetReplicaResultInterface(ABC):
+
+    @property
+    @abstractmethod
+    def cas(self) -> Optional[int]:
+        raise NotImplementedError
+
+    @property
+    @abstractmethod
+    def content_as(self) -> Any:
+        raise NotImplementedError
+
+    @property
+    @abstractmethod
+    def flags(self) -> Optional[int]:
+        raise NotImplementedError
+
+    @property
+    @abstractmethod
+    def is_replica(self) -> bool:
+        raise NotImplementedError
+
+    @property
+    @abstractmethod
+    def key(self) -> str:
+        raise NotImplementedError
+
+    @property
+    @abstractmethod
+    def success(self) -> bool:
+        raise NotImplementedError
+
+    @property
+    @abstractmethod
+    def value(self) -> Any:
+        raise NotImplementedError
+
+    @abstractmethod
+    def __repr__(self) -> str:
+        raise NotImplementedError
+
 class GetResultInterface(ABC):
 
     @property

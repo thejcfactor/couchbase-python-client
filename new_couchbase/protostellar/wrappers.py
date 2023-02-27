@@ -95,6 +95,8 @@ class BlockingWrapper:
                 try:
                     # response is a Tuple(response, metatdata, key, None)
                     ret = fn(self, *args, **kwargs)
+                    if return_cls is None:
+                        return
                     ret_val = {
                         'cas': ret.response.cas,
                         'key': ret.key,

@@ -248,7 +248,7 @@ class OptionTypes(Enum):
     GetAllReplicas = 'GetAllReplicasOptions'
     GetAndLock = 'GetAndLockOptions'
     GetAndTouch = 'GetAndTouchOptions'
-    GetAnyReplicas = 'GetAnyReplicasOptions'
+    GetAnyReplica = 'GetAnyReplicaOptions'
     Increment = 'IncrementOptions'
     Insert = 'InsertOptions'
     LookupIn = 'LookupInOptions'

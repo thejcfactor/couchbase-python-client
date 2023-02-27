@@ -29,18 +29,19 @@ from typing import (TYPE_CHECKING,
 
 import pytest
 
-from couchbase.auth import PasswordAuthenticator
-from couchbase.cluster import Cluster
-from couchbase.exceptions import (AmbiguousTimeoutException,
-                                  BucketAlreadyExistsException,
-                                  CollectionAlreadyExistsException,
+from new_couchbase.api import ApiImplementation
+from new_couchbase.auth import PasswordAuthenticator
+from new_couchbase.cluster import Cluster
+from new_couchbase.exceptions import (AmbiguousTimeoutException,
+                                #   BucketAlreadyExistsException,
+                                #   CollectionAlreadyExistsException,
                                   CouchbaseException,
-                                  ScopeAlreadyExistsException,
-                                  ScopeNotFoundException,
+                                #   ScopeAlreadyExistsException,
+                                #   ScopeNotFoundException,
                                   UnAmbiguousTimeoutException)
-from couchbase.management.buckets import BucketType, CreateBucketSettings
-from couchbase.management.collections import CollectionSpec
-from couchbase.options import ClusterOptions
+# from new_couchbase.management.buckets import BucketType, CreateBucketSettings
+# from new_couchbase.management.collections import CollectionSpec
+from new_couchbase.options import ClusterOptions
 from tests.data_provider import DataProvider
 from tests.environments import CollectionType, CouchbaseTestEnvironmentException
 from tests.test_features import EnvironmentFeatures
@@ -127,7 +128,11 @@ class TestEnvironment:
 
     @property
     def is_developer_preview(self) -> Optional[bool]:
-        return self._cluster.is_developer_preview
+        if self._cluster.api_implementation == ApiImplementation.CLASSIC:
+            return self._cluster.is_developer_preview
+        else:
+            # @TODO(jc):  Determine PS cluster info
+            return False
 
     @property
     def is_mock_server(self) -> bool:
@@ -164,15 +169,27 @@ class TestEnvironment:
 
     @property
     def server_version(self) -> Optional[str]:
-        return self._cluster.server_version
+        if self._cluster.api_implementation == ApiImplementation.CLASSIC:
+            return self._cluster.server_version
+        else:
+            # @TODO(jc):  Determine PS cluster info
+            return '7.5.0'
 
     @property
     def server_version_full(self) -> Optional[str]:
-        return self._cluster.server_version_full
+        if self._cluster.api_implementation == ApiImplementation.CLASSIC:
+            return self._cluster.server_version_full
+        else:
+            # @TODO(jc):  Determine PS cluster info
+            return '7.5.0-1234'
 
     @property
     def server_version_short(self) -> Optional[float]:
-        return self._cluster.server_version_short
+        if self._cluster.api_implementation == ApiImplementation.CLASSIC:
+            return self._cluster.server_version_short
+        else:
+            # @TODO(jc):  Determine PS cluster info
+            return 7.5
 
     @property
     def sixm(self) -> Optional[Any]:
@@ -200,15 +217,16 @@ class TestEnvironment:
         return self._vixm if hasattr(self, '_vixm') else None
 
     def create_bucket(self, bucket_name):
-        try:
-            self.bm.create_bucket(
-                CreateBucketSettings(
-                    name=bucket_name,
-                    bucket_type=BucketType.COUCHBASE,
-                    ram_quota_mb=100))
-        except BucketAlreadyExistsException:
-            pass
-        TestEnvironment.try_n_times(10, 1, self.bm.get_bucket, bucket_name)
+        pass
+        # try:
+        #     self.bm.create_bucket(
+        #         CreateBucketSettings(
+        #             name=bucket_name,
+        #             bucket_type=BucketType.COUCHBASE,
+        #             ram_quota_mb=100))
+        # except BucketAlreadyExistsException:
+        #     pass
+        # TestEnvironment.try_n_times(10, 1, self.bm.get_bucket, bucket_name)
 
     def disable_analytics_mgmt(self) -> TestEnvironment:
         EnvironmentFeatures.check_if_feature_supported('analytics',
@@ -499,25 +517,26 @@ class TestEnvironment:
         self._test_bucket_cm = self._test_bucket.collections()
 
     def setup_named_collections(self):
-        try:
-            self.cm.create_scope(self.TEST_SCOPE)
-        except ScopeAlreadyExistsException:
-            self.cm.drop_scope(self.TEST_SCOPE)
-            self.cm.create_scope(self.TEST_SCOPE)
+        pass
+        # try:
+        #     self.cm.create_scope(self.TEST_SCOPE)
+        # except ScopeAlreadyExistsException:
+        #     self.cm.drop_scope(self.TEST_SCOPE)
+        #     self.cm.create_scope(self.TEST_SCOPE)
 
-        self._collection_spec = CollectionSpec(self.TEST_COLLECTION, self.TEST_SCOPE)
-        try:
-            self.cm.create_collection(self._collection_spec)
-        except CollectionAlreadyExistsException:
-            self.cm.drop_collection(self._collection_spec)
-            self.cm.create_collection(self._collection_spec)
+        # self._collection_spec = CollectionSpec(self.TEST_COLLECTION, self.TEST_SCOPE)
+        # try:
+        #     self.cm.create_collection(self._collection_spec)
+        # except CollectionAlreadyExistsException:
+        #     self.cm.drop_collection(self._collection_spec)
+        #     self.cm.create_collection(self._collection_spec)
 
-        c = self.get_collection(self.TEST_SCOPE, self.TEST_COLLECTION, bucket_name=self.bucket.name)
-        if c is None:
-            raise CouchbaseTestEnvironmentException("Unabled to create collection for name collection testing")
+        # c = self.get_collection(self.TEST_SCOPE, self.TEST_COLLECTION, bucket_name=self.bucket.name)
+        # if c is None:
+        #     raise CouchbaseTestEnvironmentException("Unabled to create collection for name collection testing")
 
-        self._named_scope = self.bucket.scope(self.TEST_SCOPE)
-        self._named_collection = self._named_scope.collection(self.TEST_COLLECTION)
+        # self._named_scope = self.bucket.scope(self.TEST_SCOPE)
+        # self._named_collection = self._named_scope.collection(self.TEST_COLLECTION)
 
     def teardown(self,
                  collection_type=None,  # type: Optional[CollectionType]
@@ -533,16 +552,17 @@ class TestEnvironment:
             self.disable_named_collections()
 
     def teardown_named_collections(self):
-        self.cm.drop_scope(self.TEST_SCOPE)
-        TestEnvironment.try_n_times_till_exception(10,
-                                                   1,
-                                                   self.cm.drop_scope,
-                                                   self.TEST_SCOPE,
-                                                   expected_exceptions=(ScopeNotFoundException,)
-                                                   )
-        self._collection_spec = None
-        self._scope = None
-        self._named_collection = None
+        pass
+        # self.cm.drop_scope(self.TEST_SCOPE)
+        # TestEnvironment.try_n_times_till_exception(10,
+        #                                            1,
+        #                                            self.cm.drop_scope,
+        #                                            self.TEST_SCOPE,
+        #                                            expected_exceptions=(ScopeNotFoundException,)
+        #                                            )
+        # self._collection_spec = None
+        # self._scope = None
+        # self._named_collection = None
 
     def verify_mutation_tokens(self, bucket_name, result):
         mutation_token = result.mutation_token()
@@ -597,7 +617,8 @@ class TestEnvironment:
                 print(f'Cluster: {id(cluster)}')
                 bucket = cluster.bucket(f'{config.bucket_name}')
                 env_args['bucket'] = bucket
-                cluster.cluster_info()
+                if cluster.api_implementation == ApiImplementation.CLASSIC:
+                    cluster.cluster_info()
                 env_args['default_collection'] = bucket.default_collection()
                 break
             except (UnAmbiguousTimeoutException, AmbiguousTimeoutException):

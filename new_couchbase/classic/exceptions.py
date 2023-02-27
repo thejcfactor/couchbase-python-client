@@ -355,9 +355,9 @@ class ExceptionMap(Enum):
     # DurabilityImpossibleException = 108
     # DurabilitySyncWriteAmbiguousException = 109
     # DurabilitySyncWriteInProgressException = 110
-    # PathNotFoundException = 113
-    # PathMismatchException = 114
-    # InvalidValueException = 119
+    PathNotFoundException = 113
+    PathMismatchException = 114
+    InvalidValueException = 119
     # PathExistsException = 123
     # DatasetNotFoundException = 303
     # DataverseNotFoundException = 304

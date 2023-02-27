@@ -200,9 +200,31 @@ class ValidKeyValueOptions:
         elif opt_type == OptionTypes.Get:
             valid_opts = copy.copy(ValidKeyValueOptions._VALID_OPTS)
             valid_opts.update({
-                'project': {'with_expiry': validate_projections},
+                'project': {'project': validate_projections},
                 'transcoder': {'transcoder': validate_transcoder},
                 'with_expiry': {'with_expiry': validate_bool},
+            })
+        elif opt_type == OptionTypes.GetAllReplicas:
+            valid_opts = copy.copy(ValidKeyValueOptions._VALID_OPTS)
+            valid_opts.update({
+                'transcoder': {'transcoder': validate_transcoder},
+            })
+        elif opt_type == OptionTypes.GetAndLock:
+            valid_opts = copy.copy(ValidKeyValueOptions._VALID_OPTS)
+            valid_opts.update({
+                'lock_time': {'lock_time': lambda x: int(x.total_seconds())},
+                'transcoder': {'transcoder': validate_transcoder},
+            })
+        elif opt_type == OptionTypes.GetAndTouch:
+            valid_opts = copy.copy(ValidKeyValueOptions._VALID_OPTS)
+            valid_opts.update({
+                'expiry': {'expiry': timedelta_as_timestamp},
+                'transcoder': {'transcoder': validate_transcoder},
+            })
+        elif opt_type == OptionTypes.GetAnyReplica:
+            valid_opts = copy.copy(ValidKeyValueOptions._VALID_OPTS)
+            valid_opts.update({
+                'transcoder': {'transcoder': validate_transcoder},
             })
         elif opt_type == OptionTypes.Insert:
             valid_opts = copy.copy(ValidKeyValueOptions._VALID_DURABLE_OPTS)
@@ -236,6 +258,9 @@ class ValidKeyValueOptions:
             valid_opts = copy.copy(ValidKeyValueOptions._VALID_OPTS)
         elif opt_type == OptionTypes.Unlock:
             valid_opts = copy.copy(ValidKeyValueOptions._VALID_OPTS)
+            valid_opts.update({
+                'cas': {'cas': validate_int},
+            })
         elif opt_type == OptionTypes.Upsert:
             valid_opts = copy.copy(ValidKeyValueOptions._VALID_DURABLE_OPTS)
             valid_opts.update({
