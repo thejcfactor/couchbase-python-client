@@ -13,8 +13,7 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-import math
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta
 from time import time
 
 import pytest
@@ -649,8 +648,8 @@ class ClassicCollectionTests(CollectionTestSuite):
 class ProtostellarCollectionTests(CollectionTestSuite):
     SKIP_LIST = {
         # 'test_document_expiry_values': '',
-        'test_does_not_exists': 'ING-58',
-        'test_exists': 'ING-58',
+        'test_does_not_exists': 'ING-58, ING-362',
+        'test_exists': 'ING-58, ING-362',
         # 'test_expiry_really_expires': '',
         # 'test_get': '',
         'test_get_after_lock': 'ING-370',
@@ -679,7 +678,7 @@ class ProtostellarCollectionTests(CollectionTestSuite):
         # 'test_replace_preserve_expiry': '',
         # 'test_replace_preserve_expiry_fail': '',
         'test_replace_preserve_expiry_not_used': 'STG default is to preserve, no way to reset',
-        'test_replace_with_cas': 'ING-58',
+        'test_replace_with_cas': 'ING-355',
         'test_touch': 'ING-370',
         'test_touch_no_expire': 'ING-370',
         'test_unlock': 'ING-370',

@@ -19,7 +19,7 @@ from __future__ import annotations
 import random
 import time
 
-from couchbase.exceptions import AmbiguousTimeoutException, UnAmbiguousTimeoutException
+from new_couchbase.exceptions import AmbiguousTimeoutException, UnAmbiguousTimeoutException
 from tests.environments import CollectionType
 from tests.environments.test_environment import TestEnvironment
 

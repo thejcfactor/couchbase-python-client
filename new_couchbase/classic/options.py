@@ -238,8 +238,12 @@ class ValidKeyValueOptions:
             valid_opts = copy.copy(ValidKeyValueOptions._VALID_DURABLE_OPTS)
             valid_opts.update({
                 'cas': {'cas': validate_int},
+                'expiry': {'expiry': timedelta_as_timestamp},
+                'insert_doc': {'insert_doc': validate_bool},
                 'preserve_expiry': {'preserve_expiry': validate_bool},
+                'replace_doc': {'replace_doc': validate_bool},
                 'store_semantics': {'store_semantics': lambda x: x},
+                'upsert_doc': {'upsert_doc': validate_bool},
             })
         elif opt_type == OptionTypes.Replace:
             valid_opts = copy.copy(ValidKeyValueOptions._VALID_DURABLE_OPTS)
