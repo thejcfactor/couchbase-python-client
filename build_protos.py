@@ -85,6 +85,8 @@ class BuildProtosCommand(Command):
 
     def run(self) -> None:
         try:
+            # instead of pakcage_resources
+            #  SEE https://importlib-resources.readthedocs.io/en/latest/migration.html
             from importlib.resources import files, as_file
 
             ps_protos = COUCHBASE_ROOT.joinpath('deps', 'protostellar', 'couchbase')

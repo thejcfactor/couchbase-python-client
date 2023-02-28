@@ -23,6 +23,7 @@ from typing import (TYPE_CHECKING,
                     Optional)
 
 from new_couchbase.api.result import (ClusterInfoResultInterface,
+                                      CounterResultInterface,
                                     DiagnosticsResultInterface,
                                     ExistsResultInterface,
                                     GetReplicaResultInterface,
@@ -159,6 +160,58 @@ class PingResult(PingResultInterface):
 Python SDK Key-Value Operation Results
 
 """
+
+class CounterResult(CounterResultInterface):
+    def __init__(self, 
+                core_result # type: CounterResultInterface
+                ):
+        self._core_result = core_result
+
+    @property
+    def cas(self) -> Optional[int]:
+        """
+            Optional[int]: The CAS of the document, if it exists
+        """
+        return self._core_result.cas
+
+    @property
+    def content(self) -> Optional[int]:
+        """
+            Optional[int]: The value of the document after the operation completed.
+        """
+        return self._core_result.content
+
+    @property
+    def flags(self) -> Optional[int]:
+        """
+            Optional[int]: Flags associated with the document.  Used for transcoding.
+        """
+        return self._core_result.flags
+
+    @property
+    def key(self) -> Optional[str]:
+        """
+            Optional[str]: Key for the operation, if it exists.
+        """
+        return self._core_result.key
+
+    @property
+    def success(self) -> bool:
+        """
+            bool: Indicates if the operation was successful or not.
+        """
+        return self._core_result.success
+
+    @property
+    def value(self) -> Optional[Any]:
+        """
+            Optional[Any]: The content of the document, if it exists.
+        """
+        return self._core_result.value
+
+    def __repr__(self):
+        return self._core_result.__repr__()
+    
 
 class ExistsResult(ExistsResultInterface):
     def __init__(self, 

@@ -29,10 +29,12 @@ from typing import (TYPE_CHECKING,
 from new_couchbase.serializer import DefaultJsonSerializer
 from new_couchbase.api import ApiImplementation
 
-from new_couchbase.exceptions import CouchbaseException, ValueFormatException
+from new_couchbase.exceptions import (CouchbaseException,
+                                      InvalidArgumentException,
+                                      ValueFormatException)
 
 if TYPE_CHECKING:
-    from new_couchbase.api.serializer import SerializerInterface
+    from new_couchbase.serializer import Serializer
 
 
 class TranscoderFormat(IntEnum):
@@ -129,7 +131,7 @@ class Transcoder(ABC):
 
 class JSONTranscoder(Transcoder):
 
-    def __init__(self, serializer=None  # type: SerializerInterface
+    def __init__(self, serializer=None  # type: Serializer
                  ):
 
         if not serializer:
@@ -181,112 +183,117 @@ class JSONTranscoder(Transcoder):
                 "Unrecognized format provided: {}".format(format))
 
 
-# class RawJSONTranscoder(Transcoder):
+class RawJSONTranscoder(Transcoder):
 
-#     def encode_value(self,
-#                      value  # type: Union[str,bytes,bytearray]
-#                      ) -> Tuple[bytes, int]:
+    def encode_value(self,
+                     value,  # type: Union[str,bytes,bytearray]
+                     **kwargs, # type: Dict[str, Any]
+                     ) -> Tuple[bytes, int]:
 
-#         if isinstance(value, str):
-#             return value.encode("utf-8"), FMT_JSON
-#         elif isinstance(value, (bytes, bytearray)):
-#             if isinstance(value, bytearray):
-#                 value = bytes(value)
-#             return value, FMT_JSON
-#         else:
-#             raise ValueFormatException(
-#                 "Only binary and string data supported by RawJSONTranscoder")
+        fmt_json = get_format_flags(TranscoderFormat.FMT_JSON, kwargs.get('implementation', None))
 
-#     def decode_value(self,
-#                      value,  # type: bytes
-#                      flags  # type: int
-#                      ) -> Union[str, bytes]:
+        if isinstance(value, str):
+            return value.encode('utf-8'), fmt_json
+        elif isinstance(value, (bytes, bytearray)):
+            if isinstance(value, bytearray):
+                value = bytes(value)
+            return value, fmt_json
+        else:
+            raise ValueFormatException("Only binary and string data supported by RawJSONTranscoder")
 
-#         format = get_decode_format(flags)
+    def decode_value(self,
+                     value,  # type: bytes
+                     flags,  # type: int
+                     **kwargs, # type: Dict[str, Any]
+                     ) -> Union[str, bytes]:
 
-#         if format == FMT_BYTES:
-#             raise ValueFormatException(
-#                 "Binary format type not supported by RawJSONTranscoder")
-#         elif format == FMT_UTF8:
-#             raise ValueFormatException(
-#                 "String format type not supported by RawJSONTranscoder")
-#         elif format == FMT_JSON:
-#             if isinstance(value, str):
-#                 return value.decode("utf-8")
-#             elif isinstance(value, (bytes, bytearray)):
-#                 if isinstance(value, bytearray):
-#                     value = bytes(value)
-#                 return value
-#             else:
-#                 raise ValueFormatException(
-#                     "Only binary and string data supported by RawJSONTranscoder")
-#         else:
-#             raise InvalidArgumentException("Unexpected flags value.")
+        impl = kwargs.get('implementation', None)
+        format = get_decode_format(flags, impl)
 
-
-# class RawStringTranscoder(Transcoder):
-
-#     def encode_value(self,
-#                      value  # type: str
-#                      ) -> Tuple[bytes, int]:
-
-#         if isinstance(value, str):
-#             return value.encode("utf-8"), FMT_UTF8
-#         else:
-#             raise ValueFormatException(
-#                 "Only string data supported by RawStringTranscoder")
-
-#     def decode_value(self,
-#                      value,  # type: bytes
-#                      flags  # type: int
-#                      ) -> Union[str, bytes]:
-
-#         format = get_decode_format(flags)
-
-#         if format == FMT_BYTES:
-#             raise ValueFormatException(
-#                 "Binary format type not supported by RawStringTranscoder")
-#         elif format == FMT_UTF8:
-#             return value.decode("utf-8")
-#         elif format == FMT_JSON:
-#             raise ValueFormatException(
-#                 "JSON format type not supported by RawStringTranscoder")
-#         else:
-#             raise InvalidArgumentException("Unexpected flags value.")
+        if format == get_format_flags(TranscoderFormat.FMT_BYTES, impl):
+            raise ValueFormatException("Binary format type not supported by RawJSONTranscoder")
+        elif format == get_format_flags(TranscoderFormat.FMT_STRING, impl):
+            raise ValueFormatException("String format type not supported by RawJSONTranscoder")
+        elif format == get_format_flags(TranscoderFormat.FMT_JSON, impl):
+            if isinstance(value, str):
+                return value.decode('utf-8')
+            elif isinstance(value, (bytes, bytearray)):
+                if isinstance(value, bytearray):
+                    value = bytes(value)
+                return value
+            else:
+                raise ValueFormatException("Only binary and string data supported by RawJSONTranscoder")
+        else:
+            raise InvalidArgumentException("Unexpected flags value.")
 
 
-# class RawBinaryTranscoder(Transcoder):
-#     def encode_value(self,
-#                      value  # type: Union[bytes,bytearray]
-#                      ) -> Tuple[bytes, int]:
+class RawStringTranscoder(Transcoder):
 
-#         if isinstance(value, (bytes, bytearray)):
-#             if isinstance(value, bytearray):
-#                 value = bytes(value)
-#             return value, FMT_BYTES
-#         else:
-#             raise ValueFormatException(
-#                 "Only binary data supported by RawBinaryTranscoder")
+    def encode_value(self,
+                     value,  # type: str
+                     **kwargs, # type: Dict[str, Any]
+                     ) -> Tuple[bytes, int]:
 
-#     def decode_value(self,
-#                      value,  # type: bytes
-#                      flags  # type: int
-#                      ) -> bytes:
+        fmt_utf8 = get_format_flags(TranscoderFormat.FMT_STRING, kwargs.get('implementation', None))
 
-#         format = get_decode_format(flags)
+        if isinstance(value, str):
+            return value.encode('utf-8'), fmt_utf8
+        else:
+            raise ValueFormatException("Only string data supported by RawStringTranscoder")
 
-#         if format == FMT_BYTES:
-#             if isinstance(value, bytearray):
-#                 value = bytes(value)
-#             return value
-#         elif format == FMT_UTF8:
-#             raise ValueFormatException(
-#                 "String format type not supported by RawBinaryTranscoder")
-#         elif format == FMT_JSON:
-#             raise ValueFormatException(
-#                 "JSON format type not supported by RawBinaryTranscoder")
-#         else:
-#             raise InvalidArgumentException("Unexpected flags value.")
+    def decode_value(self,
+                     value,  # type: bytes
+                     flags,  # type: int
+                     **kwargs, # type: Dict[str, Any]
+                     ) -> Union[str, bytes]:
+
+        impl = kwargs.get('implementation', None)
+        format = get_decode_format(flags, impl)
+
+        if format == get_format_flags(TranscoderFormat.FMT_BYTES, impl):
+            raise ValueFormatException("Binary format type not supported by RawStringTranscoder")
+        elif format == get_format_flags(TranscoderFormat.FMT_STRING, impl):
+            return value.decode('utf-8')
+        elif format == get_format_flags(TranscoderFormat.FMT_JSON, impl):
+            raise ValueFormatException("JSON format type not supported by RawStringTranscoder")
+        else:
+            raise InvalidArgumentException("Unexpected flags value.")
+
+
+class RawBinaryTranscoder(Transcoder):
+    def encode_value(self,
+                     value,  # type: Union[bytes,bytearray]
+                     **kwargs, # type: Dict[str, Any]
+                     ) -> Tuple[bytes, int]:
+
+        fmt_bytes = get_format_flags(TranscoderFormat.FMT_BYTES, kwargs.get('implementation', None))
+
+        if isinstance(value, (bytes, bytearray)):
+            if isinstance(value, bytearray):
+                value = bytes(value)
+            return value, fmt_bytes
+        else:
+            raise ValueFormatException("Only binary data supported by RawBinaryTranscoder")
+
+    def decode_value(self,
+                     value,  # type: bytes
+                     flags,  # type: int
+                     **kwargs, # type: Dict[str, Any]
+                     ) -> bytes:
+
+        impl = kwargs.get('implementation', None)
+        format = get_decode_format(flags, impl)
+
+        if format == get_format_flags(TranscoderFormat.FMT_BYTES, impl):
+            if isinstance(value, bytearray):
+                value = bytes(value)
+            return value
+        elif format == get_format_flags(TranscoderFormat.FMT_STRING, impl):
+            raise ValueFormatException("String format type not supported by RawBinaryTranscoder")
+        elif format == get_format_flags(TranscoderFormat.FMT_JSON, impl):
+            raise ValueFormatException("JSON format type not supported by RawBinaryTranscoder")
+        else:
+            raise InvalidArgumentException("Unexpected flags value.")
 
 
 # class LegacyTranscoder(Transcoder):

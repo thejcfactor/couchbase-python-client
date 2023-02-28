@@ -23,6 +23,7 @@ from typing import (TYPE_CHECKING,
                     Optional)
 
 from new_couchbase.api.result import (ClusterInfoResultInterface,
+                                      CounterResultInterface,
                                       DiagnosticsResultInterface,
                                       ExistsResultInterface,
                                       GetReplicaResultInterface,
@@ -321,6 +322,58 @@ Python SDK Key-Value Operation Results
 """
 
 # Binary Operations
+
+class CounterResult(CounterResultInterface):
+
+    def __init__(self,
+                 orig # type: result
+            ):
+        self._orig = orig
+
+    @property
+    def cas(self) -> Optional[int]:
+        """
+            Optional[int]: The CAS of the document, if it exists
+        """
+        return self._orig.raw_result.get('cas', None)
+
+    @property
+    def content(self) -> Optional[int]:
+        """
+            Optional[int]: The value of the document after the operation completed.
+        """
+        return self._orig.raw_result.get('content', None)
+
+    @property
+    def flags(self) -> Optional[int]:
+        """
+            Optional[int]: Flags associated with the document.  Used for transcoding.
+        """
+        return self._orig.raw_result.get('flags', None)
+
+    @property
+    def key(self) -> Optional[str]:
+        """
+            Optional[str]: Key for the operation, if it exists.
+        """
+        return self._orig.raw_result.get('key', None)
+
+    @property
+    def success(self) -> bool:
+        """
+            bool: Indicates if the operation was successful or not.
+        """
+        return self.cas is not None and self.cas != 0
+
+    @property
+    def value(self) -> Optional[Any]:
+        """
+            Optional[Any]: The content of the document, if it exists.
+        """
+        return self._orig.raw_result.get('value', None)
+
+    def __repr__(self):
+        return 'CounterResult:{}'.format(self._orig)
 
 # Multi Operations
 

@@ -30,7 +30,8 @@ from couchbase.pycbc_core import (binary_operation,
 
 from new_couchbase.exceptions import InvalidArgumentException
 from new_couchbase.transcoder import Transcoder
-from new_couchbase.classic.result import (ExistsResult,
+from new_couchbase.classic.result import (CounterResult,
+                                          ExistsResult,
                                           GetReplicaResult,
                                           GetResult,
                                           LookupInResult,
@@ -106,6 +107,79 @@ class CollectionCore:
         **INTERNAL**
         """
         self._connection = self._scope.connection
+
+    def append(
+        self,
+        key,  # type: str
+        value,  # type: Union[str,bytes,bytearray]
+        **kwargs,  # type: Dict[str, Any]
+    ) -> Optional[MutationResult]:
+        final_args = self._parse_durability_timeout(**kwargs)
+        if isinstance(value, str):
+            value = value.encode('utf-8')
+        elif isinstance(value, bytearray):
+            value = bytes(value)
+
+        if not isinstance(value, bytes):
+            raise ValueError("The value provided must of type str, bytes or bytearray.")
+
+        op_type = operations.APPEND.value
+        return binary_operation(**self._get_connection_args(),
+                                key=key,
+                                op_type=op_type,
+                                value=value,
+                                op_args=final_args)
+
+    def decrement(self,
+                  key,  # type: str
+                  **kwargs,  # type: Dict[str, Any]
+                  ) -> Optional[CounterResult]:
+        final_args = self._parse_durability_timeout(**kwargs)
+
+        op_type = operations.DECREMENT.value
+        final_args['initial'] = int(final_args['initial'])
+        final_args['delta'] = int(final_args['delta'])
+        return binary_operation(**self._get_connection_args(),
+                                key=key,
+                                op_type=op_type,
+                                op_args=final_args)
+
+    def increment(self,
+                  key,  # type: str
+                  **kwargs,  # type: Dict[str, Any]
+    ) -> Optional[CounterResult]:
+        final_args = self._parse_durability_timeout(**kwargs)
+
+        op_type = operations.INCREMENT.value
+        final_args['initial'] = int(final_args['initial'])
+        final_args['delta'] = int(final_args['delta'])
+        return binary_operation(**self._get_connection_args(),
+                                key=key,
+                                op_type=op_type,
+                                op_args=final_args)
+
+    def prepend(
+        self,
+        key,  # type: str
+        value,  # type: Union[str,bytes,bytearray]
+        **kwargs,  # type: Dict[str, Any]
+    ) -> Optional[MutationResult]:
+        final_args = self._parse_durability_timeout(**kwargs)
+        if isinstance(value, str):
+            value = value.encode('utf-8')
+        elif isinstance(value, bytearray):
+            value = bytes(value)
+
+        if not isinstance(value, bytes):
+            raise ValueError(
+                "The value provided must of type str, bytes or bytearray.")
+
+        op_type = operations.PREPEND.value
+        return binary_operation(**self._get_connection_args(),
+                                key=key,
+                                op_type=op_type,
+                                value=value,
+                                op_args=final_args)
 
     def exists(self,
                key,  # type: str

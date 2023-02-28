@@ -40,7 +40,8 @@ from new_couchbase.transcoder import JSONTranscoder, Transcoder
 
 from new_couchbase.api import ApiImplementation
 
-from new_couchbase.protostellar.result import (ExistsResult,
+from new_couchbase.protostellar.result import (CounterResult,
+                                               ExistsResult,
                                                GetReplicaResult,
                                                GetResult,
                                                LookupInResult,
@@ -51,6 +52,7 @@ from new_couchbase.protostellar.result import (ExistsResult,
 from new_couchbase.common.options import OptionTypes, parse_options
 from new_couchbase.exceptions import InvalidArgumentException, FeatureUnavailableException
 from new_couchbase.protostellar._utils import timedelta_as_timestamp
+from new_couchbase.protostellar.binary_collection import BinaryCollection
 from new_couchbase.protostellar.options import ValidKeyValueOptions
 from new_couchbase.protostellar.subdocument import to_protostellar_lookup_in_spec, to_protostellar_mutate_in_spec
 
@@ -121,6 +123,45 @@ class Collection:
     def name(self) -> str:
         return self._collection_name
 
+    @BlockingWrapper.decode_mutation_op(MutationResult)
+    def _append(self,
+               key,  # type: str
+               value,  # type: JSONType
+               **kwargs,  # type: Dict[str, Any]
+               ) -> MutationResult:
+        call_args = self._get_call_args(**kwargs)
+        req_args = self._get_namespace_args()
+        req_args['key'] = key
+
+        if isinstance(value, str):
+            value = value.encode('utf-8')
+        elif isinstance(value, bytearray):
+            value = bytes(value)
+        if not isinstance(value, bytes):
+            raise ValueError("The value provided must of type str, bytes or bytearray.")        
+        req_args['content'] = value
+        if 'cas' in kwargs:
+            req_args['cas'] = kwargs.get('cas')
+        req = v1_pb2.AppendRequest(**req_args)
+        response, call = self._kv.Append.with_call(req, **call_args)
+        return ProtostellarResponse(response, call, key, None)
+
+    @BlockingWrapper.decode_read_op(CounterResult)
+    def _decrement(self,
+                   key,  # type: str               
+                   **kwargs,  # type: Dict[str, Any]
+                   ) -> CounterResult:
+        call_args = self._get_call_args(**kwargs)
+        req_args = self._get_namespace_args()
+        req_args['key'] = key
+        req_args['initial'] = int(kwargs['initial'])
+        req_args['delta'] = int(kwargs['delta'])
+        if 'expiry' in kwargs:
+            req_args['expiry'] = kwargs.get('expiry')
+        req = v1_pb2.DecrementRequest(**req_args)
+        response, call = self._kv.Decrement.with_call(req, **call_args)
+        return ProtostellarResponse(response, call, key, None)
+
     def _get_call_args(self, 
                       **options, # type: Dict[str, Any]
                       ) -> Dict[str, Any]:
@@ -139,6 +180,48 @@ class Collection:
             'scope_name': self._scope.name,
             'collection_name': self.name,
         }
+    
+    @BlockingWrapper.decode_read_op(CounterResult)
+    def _increment(self,
+                   key,  # type: str
+                   **kwargs,  # type: Dict[str, Any]
+                   ) -> CounterResult:
+        call_args = self._get_call_args(**kwargs)
+        req_args = self._get_namespace_args()
+        req_args['key'] = key
+        req_args['initial'] = int(kwargs['initial'])
+        req_args['delta'] = int(kwargs['delta'])
+        if 'expiry' in kwargs:
+            req_args['expiry'] = kwargs.get('expiry')
+        req = v1_pb2.IncrementRequest(**req_args)
+        response, call = self._kv.Increment.with_call(req, **call_args)
+        return ProtostellarResponse(response, call, key, None)
+    
+    @BlockingWrapper.decode_mutation_op(MutationResult)
+    def _prepend(self,
+               key,  # type: str
+               value,  # type: JSONType
+               **kwargs,  # type: Dict[str, Any]
+               ) -> MutationResult:
+        call_args = self._get_call_args(**kwargs)
+        req_args = self._get_namespace_args()
+        req_args['key'] = key
+
+        if isinstance(value, str):
+            value = value.encode('utf-8')
+        elif isinstance(value, bytearray):
+            value = bytes(value)
+        if not isinstance(value, bytes):
+            raise ValueError("The value provided must of type str, bytes or bytearray.")        
+        req_args['content'] = value
+        if 'cas' in kwargs:
+            req_args['cas'] = kwargs.get('cas')
+        req = v1_pb2.PrependRequest(**req_args)
+        response, call = self._kv.Prepend.with_call(req, **call_args)
+        return ProtostellarResponse(response, call, key, None)
+
+    def binary(self) -> BinaryCollection:
+        return BinaryCollection(self)
 
     @BlockingWrapper.decode_read_op(ExistsResult)
     def exists(self,

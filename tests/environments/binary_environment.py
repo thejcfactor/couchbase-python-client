@@ -20,8 +20,8 @@ import random
 import time
 from typing import Optional
 
-from couchbase.exceptions import AmbiguousTimeoutException, UnAmbiguousTimeoutException
-from couchbase.transcoder import RawBinaryTranscoder, RawStringTranscoder
+from new_couchbase.exceptions import AmbiguousTimeoutException, UnAmbiguousTimeoutException
+from new_couchbase.transcoder import RawBinaryTranscoder, RawStringTranscoder
 from tests.environments import CollectionType
 from tests.environments.test_environment import TestEnvironment
 

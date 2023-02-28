@@ -637,6 +637,69 @@ Python SDK Key-Value Operation Options Base Classes
 
 # Binary Operations
 
+class IncrementOptionsBase(OptionsDurabilityBase):
+    @overload
+    def __init__(self,
+                 timeout=None,      # type: Optional[timedelta]
+                 expiry=None,       # type: Optional[timedelta]
+                 durability=None,   # type: Optional[DurabilityType]
+                 delta=None,         # type: Optional[DeltaValueBase]
+                 initial=None,      # type: Optional[SignedInt64Base]
+                 span=None         # type: Optional[Any]
+                 ):
+        pass
+
+    def __init__(self, **kwargs):
+        kwargs = {k: v for k, v in kwargs.items() if v is not None}
+        super().__init__(**kwargs)
+
+
+class DecrementOptionsBase(OptionsDurabilityBase):
+    @overload
+    def __init__(self,
+                 timeout=None,      # type: Optional[timedelta]
+                 expiry=None,       # type: Optional[timedelta]
+                 durability=None,   # type: Optional[DurabilityType]
+                 delta=None,         # type: Optional[DeltaValueBase]
+                 initial=None,      # type: Optional[SignedInt64Base]
+                 span=None         # type: Optional[Any]
+                 ):
+        pass
+
+    def __init__(self, **kwargs):
+        kwargs = {k: v for k, v in kwargs.items() if v is not None}
+        super().__init__(**kwargs)
+
+
+class AppendOptionsBase(OptionsDurabilityBase):
+    @overload
+    def __init__(self,
+                 timeout=None,      # type: Optional[timedelta]
+                 durability=None,   # type: Optional[DurabilityType]
+                 cas=None,          # type: Optional[int]
+                 span=None         # type: Optional[Any]
+                 ):
+        pass
+
+    def __init__(self, **kwargs):
+        kwargs = {k: v for k, v in kwargs.items() if v is not None}
+        super().__init__(**kwargs)
+
+
+class PrependOptionsBase(OptionsDurabilityBase):
+    @overload
+    def __init__(self,
+                 timeout=None,      # type: Optional[timedelta]
+                 durability=None,   # type: Optional[DurabilityType]
+                 cas=None,          # type: Optional[int]
+                 span=None         # type: Optional[Any]
+                 ):
+        pass
+
+    def __init__(self, **kwargs):
+        kwargs = {k: v for k, v in kwargs.items() if v is not None}
+        super().__init__(**kwargs)
+
 # Multi Operations
 
 # Standard Operations

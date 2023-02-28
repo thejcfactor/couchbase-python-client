@@ -55,10 +55,13 @@ class BlockingWrapper:
                                                     ret.response.content_type,
                                                     implementation=ApiImplementation.PROTOSTELLAR)
                         ret_val['value'] = value
+                    elif hasattr(ret.response, 'content'): # increment/decrement
+                        ret_val['content'] = ret.response.content
                     if hasattr(ret.response, 'expiry') and ret.response.expiry != BASE_TIMESTAMP:
                         ret_val['expiry'] = timestamp_as_datetime(ret.response.expiry)
                     if hasattr(ret.response, 'result'):
                         ret_val['result'] = ret.response.result
+                        
                     # lookup-in result
                     if hasattr(ret.response, 'specs'):
                         ret_val['value'] = []

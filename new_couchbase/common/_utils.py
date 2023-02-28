@@ -17,10 +17,12 @@ from datetime import timedelta
 from typing import (Any,
                     Dict,
                     List,
+                    Optional,
                     TypeVar,
                     Union)
 from urllib.parse import quote
 
+from new_couchbase.common.options import DeltaValueBase, SignedInt64Base
 from new_couchbase.exceptions import InvalidArgumentException
 from new_couchbase.serializer import Serializer
 from new_couchbase.transcoder import Transcoder
@@ -81,6 +83,18 @@ def validate_bool(value  # type: bool
         raise InvalidArgumentException(message='Expected value to be of type bool.')
     return value
 
+def validate_binary_counter_delta(value  # type: Optional[DeltaValueBase]
+                  ) -> DeltaValueBase:
+    if not DeltaValueBase.is_valid(value):
+        raise InvalidArgumentException(message='Expected value to be of type DeltaValue.')
+    return value
+
+def validate_binary_counter_initial(value  # type: Optional[SignedInt64Base]
+                  ) -> SignedInt64Base:
+    if not SignedInt64Base.is_valid(value):
+        raise InvalidArgumentException(message='Expected value to be of type SignedInt64.')
+    return value
+
 def validate_int(value  # type: int
                  ) -> int:
     if not isinstance(value, int):
@@ -101,7 +115,7 @@ def validate_projections(projections # type: List[str]
 
 def validate_serializer(value # type: Serializer
         ) -> Serializer:
-    if not issubclass(value, Serializer):
+    if not issubclass(value.__class__, Serializer):
         raise InvalidArgumentException(message='Expected value to implement Serializer.')
     return value
 
@@ -113,6 +127,6 @@ def validate_str(value  # type: str
 
 def validate_transcoder(value # type: Transcoder
         ) -> Transcoder:
-    if not issubclass(value, Transcoder):
+    if not issubclass(value.__class__, Transcoder):
         raise InvalidArgumentException(message='Expected value to implement Transcoder.')
     return value

@@ -153,6 +153,42 @@ Python SDK Key-Value Operation Results
 
 # Binary Operations
 
+class CounterResultInterface(ABC):
+
+    @property
+    @abstractmethod
+    def cas(self) -> Optional[int]:
+        raise NotImplementedError
+
+    @property
+    @abstractmethod
+    def content(self) -> Optional[int]:
+        raise NotImplementedError
+
+    @property
+    @abstractmethod
+    def flags(self) -> Optional[int]:
+        raise NotImplementedError
+
+    @property
+    @abstractmethod
+    def key(self) -> str:
+        raise NotImplementedError
+
+    @property
+    @abstractmethod
+    def success(self) -> bool:
+        raise NotImplementedError
+
+    @property
+    @abstractmethod
+    def value(self) -> Any:
+        raise NotImplementedError
+
+    @abstractmethod
+    def __repr__(self) -> str:
+        raise NotImplementedError
+
 # Multi Operations
 
 # Standard Operations

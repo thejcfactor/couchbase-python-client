@@ -15,7 +15,7 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Dict, Iterable
+from typing import TYPE_CHECKING, Any, Dict, Iterable, Union
 
 
 from new_couchbase.classic.core import BlockingWrapper
@@ -25,7 +25,8 @@ from new_couchbase.classic.exceptions import ErrorMapper
 from new_couchbase.api import ApiImplementation
 
 from new_couchbase.classic.core.collection import CollectionCore
-from new_couchbase.classic.result import (ExistsResult,
+from new_couchbase.classic.result import (CounterResult,
+                                          ExistsResult,
                                           GetReplicaResult,
                                           GetResult,
                                           LookupInResult,
@@ -33,6 +34,7 @@ from new_couchbase.classic.result import (ExistsResult,
                                           MutationResult)
 
 from new_couchbase.common.options import OptionTypes, parse_options
+from new_couchbase.classic.binary_collection import BinaryCollection
 from new_couchbase.classic.options import ValidKeyValueOptions
 
 
@@ -42,19 +44,19 @@ if TYPE_CHECKING:
     from new_couchbase.classic.scope import Scope
     from new_couchbase.common._utils import JSONType
     from new_couchbase.options import (ExistsOptions,
-                                        GetOptions,
-                                        GetAllReplicasOptions,
-                                        GetAndLockOptions,
-                                        GetAndTouchOptions,
-                                        GetAnyReplicaOptions,
-                                        InsertOptions,
-                                        LookupInOptions,
-                                        MutateInOptions,
-                                        RemoveOptions,
-                                        ReplaceOptions,
-                                        TouchOptions,
-                                        UnlockOptions,
-                                        UpsertOptions)
+                                       GetOptions,
+                                       GetAllReplicasOptions,
+                                       GetAndLockOptions,
+                                       GetAndTouchOptions,
+                                       GetAnyReplicaOptions,
+                                       InsertOptions,
+                                       LookupInOptions,
+                                       MutateInOptions,
+                                       RemoveOptions,
+                                       ReplaceOptions,
+                                       TouchOptions,
+                                       UnlockOptions,
+                                       UpsertOptions)
     from new_couchbase.subdocument import Spec
 
 class Collection(CollectionCore):
@@ -68,6 +70,31 @@ class Collection(CollectionCore):
     def api_implementation(self) -> ApiImplementation:
         return ApiImplementation.CLASSIC
 
+    @BlockingWrapper.block(MutationResult)
+    def _append(
+        self,
+        key,  # type: str
+        value,  # type: Union[str,bytes,bytearray]
+        **kwargs,  # type: Dict[str, Any]
+    ) -> MutationResult:
+        """ **Internal Operation**
+
+        Internal use only.  Use :meth:`.BinaryCollection.append` instead.
+
+        """
+        return super().append(key, value, **kwargs)
+
+    @BlockingWrapper.block(CounterResult)
+    def _decrement(
+        self,
+        key,  # type: str
+        **kwargs,  # type: Dict[str, Any]
+    ) -> CounterResult:
+        """ **Internal Operation**
+        Internal use only.  Use :meth:`.BinaryCollection.decrement` instead.
+        """
+        return super().decrement(key, **kwargs)
+
     @BlockingWrapper.block_and_decode(GetReplicaResult)
     def _get_all_replicas_internal(
         self,
@@ -75,7 +102,6 @@ class Collection(CollectionCore):
         **kwargs,  # type: Dict[str, Any]
     ) -> Iterable[GetReplicaResult]:
         """ **Internal Operation**
-
         Internal use only.  Use :meth:`Collection.get_all_replicas` instead.
         """
         return super().get_all_replicas(key, **kwargs)
@@ -86,9 +112,7 @@ class Collection(CollectionCore):
                                **kwargs,  # type: Dict[str, Any]
                                ) -> GetResult:
         """ **Internal Operation**
-
         Internal use only.  Use :meth:`Collection.get_and_lock` instead.
-
         """
         return super().get_and_lock(key, **kwargs)
 
@@ -98,49 +122,63 @@ class Collection(CollectionCore):
                                 **kwargs,  # type: Dict[str, Any]
                                 ) -> GetResult:
         """ **Internal Operation**
-
         Internal use only.  Use :meth:`Collection.get_and_touch` instead.
-
         """
         return super().get_and_touch(key, **kwargs)
 
     @BlockingWrapper.block_and_decode(GetReplicaResult)
-    def _get_any_replica_internal(
-        self,
-        key,  # type: str
-        **kwargs,  # type: Dict[str, Any]
-    ) -> GetReplicaResult:
+    def _get_any_replica_internal(self,
+                                  key,  # type: str
+                                  **kwargs,  # type: Dict[str, Any]
+                                  ) -> GetReplicaResult:
         """ **Internal Operation**
-
         Internal use only.  Use :meth:`Collection.get_any_replica` instead.
         """
         return super().get_any_replica(key, **kwargs)
 
     @BlockingWrapper.block_and_decode(GetResult)
-    def _get_internal(
-        self,
-        key,  # type: str
-        **kwargs,  # type: Dict[str, Any]
-    ) -> GetResult:
+    def _get_internal(self,key,  # type: str
+                      **kwargs,  # type: Dict[str, Any]
+                      ) -> GetResult:
         """ **Internal Operation**
-
         Internal use only.  Use :meth:`Collection.get` instead.
         """
         return super().get(key, **kwargs)
 
-    @BlockingWrapper.block_and_decode(LookupInResult)
-    def _lookup_in_internal(
-        self,
-        key,  # type: str
-        spec,  # type: Iterable[Spec]
-        **kwargs,  # type: Dict[str, Any]
-    ) -> LookupInResult:
+    @BlockingWrapper.block(CounterResult)
+    def _increment(self,
+                   key,  # type: str
+                   **kwargs,  # type: Dict[str, Any]
+                   ) -> CounterResult:
         """ **Internal Operation**
+        Internal use only.  Use :meth:`.BinaryCollection.increment` instead.
+        """
+        return super().increment(key, **kwargs)
 
+    @BlockingWrapper.block_and_decode(LookupInResult)
+    def _lookup_in_internal(self,
+                            key,  # type: str
+                            spec,  # type: Iterable[Spec]
+                            **kwargs,  # type: Dict[str, Any]
+                            ) -> LookupInResult:
+        """ **Internal Operation**
         Internal use only.  Use :meth:`Collection.lookup_in` instead.
-
         """
         return super().lookup_in(key, spec, **kwargs)
+
+    @BlockingWrapper.block(MutationResult)
+    def _prepend(self,
+                 key,  # type: str
+                 value,  # type: Union[str,bytes,bytearray]
+                 **kwargs,  # type: Dict[str, Any]
+                 ) -> MutationResult:
+        """ **Internal Operation**
+        Internal use only.  Use :meth:`.BinaryCollection.prepend` instead.
+        """
+        return super().prepend(key, value, **kwargs)
+
+    def binary(self) -> BinaryCollection:
+        return BinaryCollection(self)
 
     @BlockingWrapper.block(ExistsResult)
     def exists(

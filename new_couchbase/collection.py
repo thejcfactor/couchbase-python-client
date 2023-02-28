@@ -23,8 +23,9 @@ from typing import (TYPE_CHECKING,
                     Union)
 
 from new_couchbase.api import ApiImplementation
-
-from new_couchbase.result import (ExistsResult,
+from new_couchbase.binary_collection import BinaryCollection
+from new_couchbase.result import (CounterResult,
+                                  ExistsResult,
                                   GetReplicaResult,
                                   GetResult,
                                   LookupInResult,
@@ -38,15 +39,19 @@ if TYPE_CHECKING:
     from new_couchbase.common._utils import JSONType
     from new_couchbase.classic.scope import Scope as ClassicScope
     from new_couchbase.protostellar.scope import Scope as ProtostellarScope
-    from new_couchbase.options import (ExistsOptions,
+    from new_couchbase.options import (AppendOptions,
+                                       DecrementOptions,
+                                       ExistsOptions,
                                        GetOptions,
                                        GetAllReplicasOptions,
                                        GetAndLockOptions,
                                        GetAndTouchOptions,
                                        GetAnyReplicaOptions,
+                                       IncrementOptions,
                                        InsertOptions,
                                        LookupInOptions,
                                        MutateInOptions,
+                                       PrependOptions,
                                        RemoveOptions,
                                        ReplaceOptions,
                                        TouchOptions,
@@ -74,6 +79,19 @@ class Collection:
     @property
     def name(self) -> str:
         return self._impl.name
+
+    def binary(self) -> BinaryCollection:
+        """Creates a BinaryCollection instance, allowing access to various binary operations
+        possible against a collection.
+
+        .. seealso::
+            :class:`~couchbase.binary_collection.BinaryCollection`
+
+        Returns:
+            :class:`~couchbase.binary_collection.BinaryCollection`: A BinaryCollection instance.
+
+        """
+        return BinaryCollection(self)
 
     def exists(
         self,

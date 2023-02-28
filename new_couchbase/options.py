@@ -24,11 +24,13 @@ from new_couchbase.common.options import Compression  # noqa: F401
 from new_couchbase.common.options import IpProtocol  # noqa: F401
 from new_couchbase.common.options import LockMode  # noqa: F401
 from new_couchbase.common.options import TLSVerifyMode  # noqa: F401
-from new_couchbase.common.options import (ConfigProfile, 
+from new_couchbase.common.options import (AppendOptionsBase,
+                                          ConfigProfile, 
                                           ConstrainedIntBase,
                                           ClusterOptionsBase, 
                                           ClusterTimeoutOptionsBase, 
                                           ClusterTracingOptionsBase,
+                                          DecrementOptionsBase,
                                           DeltaValueBase,
                                           ExistsOptionsBase,
                                           GetAllReplicasOptionsBase,
@@ -36,11 +38,13 @@ from new_couchbase.common.options import (ConfigProfile,
                                           GetAndTouchOptionsBase,
                                           GetAnyReplicaOptionsBase,
                                           GetOptionsBase,
+                                          IncrementOptionsBase,
                                           InsertOptionsBase,
                                           KnownConfigProfiles,
                                           LookupInOptionsBase,
                                           MutateInOptionsBase,
                                           OptionsBase,
+                                          PrependOptionsBase, 
                                           QueryOptionsBase,
                                           RemoveOptionsBase,
                                           ReplaceOptionsBase,
@@ -385,6 +389,72 @@ Python SDK Key-Value Operation Options
 """
 
 # Binary Operations
+
+class AppendOptions(AppendOptionsBase):
+    """Available options to for a binary append operation.
+
+    .. warning::
+        Importing options from ``couchbase.collection`` is deprecated.
+        All options should be imported from ``couchbase.options``.
+
+    Args:
+        cas (int, optional): If specified, indicates that operation should be failed if the CAS has changed from
+            this value, indicating that the document has changed.
+        timeout (timedelta, optional): The timeout for this operation. Defaults to global
+            subdocument operation timeout.
+        durability (:class:`~couchbase.durability.DurabilityType`, optional): Specifies the level of durability
+            for this operation.
+    """
+
+class DecrementOptions(DecrementOptionsBase):
+    """Available options to for a decrement append operation.
+
+    .. warning::
+        Importing options from ``couchbase.collection`` is deprecated.
+        All options should be imported from ``couchbase.options``.
+
+    Args:
+        timeout (timedelta, optional): The timeout for this operation. Defaults to global
+            subdocument operation timeout.
+        durability (:class:`~couchbase.durability.DurabilityType`, optional): Specifies the level of durability
+            for this operation.
+        delta (:class:`.DeltaValue`, optional): The amount to increment the key. Defaults to 1.
+        initial (:class:`.SignedInt64`, optional): The initial value to use for the document if it does not already
+            exist. Defaults to 0.
+    """
+
+class IncrementOptions(IncrementOptionsBase):
+    """Available options to for a binary increment operation.
+
+    .. warning::
+        Importing options from ``couchbase.collection`` is deprecated.
+        All options should be imported from ``couchbase.options``.
+
+    Args:
+        timeout (timedelta, optional): The timeout for this operation. Defaults to global
+            subdocument operation timeout.
+        durability (:class:`~couchbase.durability.DurabilityType`, optional): Specifies the level of durability
+            for this operation.
+        delta (:class:`.DeltaValue`, optional): The amount to increment the key. Defaults to 1.
+        initial (:class:`.SignedInt64`, optional): The initial value to use for the document if it does not already
+            exist. Defaults to 0.
+    """
+
+class PrependOptions(PrependOptionsBase):
+    """Available options to for a binary prepend operation.
+
+    .. warning::
+        Importing options from ``couchbase.collection`` is deprecated.
+        All options should be imported from ``couchbase.options``.
+
+    Args:
+        cas (int, optional): If specified, indicates that operation should be failed if the CAS has changed from
+            this value, indicating that the document has changed.
+        timeout (timedelta, optional): The timeout for this operation. Defaults to global
+            subdocument operation timeout.
+        durability (:class:`~couchbase.durability.DurabilityType`, optional): Specifies the level of durability
+            for this operation.
+    """
 
 # Multi Operations
 

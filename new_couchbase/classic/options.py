@@ -21,7 +21,9 @@ from typing import Any, Dict, List, Optional
 from new_couchbase.common.options import IpProtocol, TLSVerifyMode, OptionTypes
 from new_couchbase.diagnostics import parse_service_types, validate_desired_state
 from new_couchbase.common._utils import (timedelta_as_microseconds,
-                                                validate_bool, 
+                                                validate_bool,
+                                                validate_binary_counter_delta,
+                                                validate_binary_counter_initial,
                                                 validate_int, 
                                                 validate_str, 
                                                 validate_projections,
@@ -275,4 +277,44 @@ class ValidKeyValueOptions:
         else:
             raise InvalidArgumentException(f"Invalid option type: {opt_type}")
 
+        return valid_opts
+    
+class ValidBinaryOptions:
+
+    _VALID_OPTS = {
+        'timeout': {'timeout': timedelta_as_microseconds},
+        'span': {'span': lambda x: x},
+        'durability': {'durability': DurabilityParser.parse_durability},
+    }
+
+    @staticmethod
+    def get_valid_options(opt_type # type: OptionTypes
+        ) -> Dict[str, Any]:
+        if opt_type == OptionTypes.Append:
+            valid_opts = copy.copy(ValidKeyValueOptions._VALID_OPTS)
+            valid_opts.update({
+                'cas': {'cas': validate_int},
+            })
+        elif opt_type == OptionTypes.Decrement:
+            valid_opts = copy.copy(ValidKeyValueOptions._VALID_OPTS)
+            valid_opts.update({
+                'delta': {'delta': validate_binary_counter_delta},
+                'expiry': {'expiry': timedelta_as_timestamp},
+                'initial': {'initial': validate_binary_counter_initial},
+            })
+        elif opt_type == OptionTypes.Increment:
+            valid_opts = copy.copy(ValidKeyValueOptions._VALID_OPTS)
+            valid_opts.update({
+                'delta': {'delta': validate_binary_counter_delta},
+                'expiry': {'expiry': timedelta_as_timestamp},
+                'initial': {'initial': validate_binary_counter_initial},
+            })
+        elif opt_type == OptionTypes.Prepend:
+            valid_opts = copy.copy(ValidKeyValueOptions._VALID_OPTS)
+            valid_opts.update({
+                'cas': {'cas': validate_int},
+            })
+        else:
+            raise InvalidArgumentException(f"Invalid option type: {opt_type}")
+        
         return valid_opts
