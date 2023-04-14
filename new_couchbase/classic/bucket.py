@@ -67,8 +67,8 @@ class Bucket(BucketCore):
             self._close_bucket()
 
     def collection(self, 
-                collection_name # type: str
-                ) -> Collection:
+                   collection_name # type: str
+                   ) -> Collection:
         """Creates a :class:`~couchbase.collection.Collection` instance of the specified collection.
 
         Args:

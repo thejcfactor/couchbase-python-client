@@ -19,6 +19,7 @@ from time import time
 import pytest
 
 import new_couchbase.subdocument as SD
+from new_couchbase.api import ApiImplementation
 from new_couchbase.diagnostics import ServiceType
 from new_couchbase.exceptions import (AmbiguousTimeoutException,
                                   CasMismatchException,
@@ -179,8 +180,11 @@ class CollectionTestSuite:
         assert result.cas != 0
 
         TestEnvironment.sleep(3.0)
-        with pytest.raises(DocumentNotFoundException):
-            cb_env.collection.get(key)
+        TestEnvironment.try_n_times_till_exception(10,
+                                                   1,
+                                                   cb_env.collection.get,
+                                                   key,
+                                                   expected_exceptions=(DocumentNotFoundException,))
 
     def test_get(self, cb_env):
         key, value = cb_env.get_existing_doc()
@@ -212,43 +216,61 @@ class CollectionTestSuite:
     @pytest.mark.usefixtures("check_replicas")
     def test_get_all_replicas(self, cb_env):
         key, value = cb_env.get_existing_doc()
-        result = TestEnvironment.try_n_times(10, 3, cb_env.collection.get_all_replicas, key)
-        # make sure we can iterate over results
-        while True:
-            try:
-                res = next(result)
-                assert isinstance(res, GetReplicaResult)
-                assert isinstance(res.is_replica, bool)
-                assert value == res.content_as[dict]
-            except StopIteration:
-                break
+        # @TODO(jc): remove if/else
+        if cb_env.cluster.api_implementation == ApiImplementation.PROTOSTELLAR:
+            from new_couchbase.exceptions import FeatureUnavailableException
+            with pytest.raises(FeatureUnavailableException):
+                cb_env.collection.get_all_replica(key)
+        else:
+            result = TestEnvironment.try_n_times(10, 3, cb_env.collection.get_all_replicas, key)
+            # make sure we can iterate over results
+            while True:
+                try:
+                    res = next(result)
+                    assert isinstance(res, GetReplicaResult)
+                    assert isinstance(res.is_replica, bool)
+                    assert value == res.content_as[dict]
+                except StopIteration:
+                    break
 
     @pytest.mark.usefixtures("check_multi_node")
     @pytest.mark.usefixtures("check_replicas")
     def test_get_all_replicas_fail(self, cb_env):
-        with pytest.raises(DocumentNotFoundException):
-            cb_env.collection.get_all_replicas('not-a-key')
+        # @TODO(jc): remove if/else
+        if cb_env.cluster.api_implementation == ApiImplementation.PROTOSTELLAR:
+            from new_couchbase.exceptions import FeatureUnavailableException
+            with pytest.raises(FeatureUnavailableException):
+                cb_env.collection.get_all_replica('not-a-key')
+        else:
+            with pytest.raises(DocumentNotFoundException):
+                cb_env.collection.get_all_replicas('not-a-key')
 
     @pytest.mark.flaky(reruns=5, reruns_delay=1)
     @pytest.mark.usefixtures("check_multi_node")
     @pytest.mark.usefixtures("check_replicas")
     def test_get_all_replicas_results(self, cb_env, num_replicas):
         key, value = cb_env.get_existing_doc()
-        result = TestEnvironment.try_n_times(10, 3, cb_env.collection.get_all_replicas, key)
-        active_cnt = 0
-        replica_cnt = 0
-        for res in result:
-            assert isinstance(res, GetReplicaResult)
-            assert isinstance(res.is_replica, bool)
-            assert value == res.content_as[dict]
-            if res.is_replica:
-                replica_cnt += 1
-            else:
-                active_cnt += 1
+        # @TODO(jc): remove if/else
+        if cb_env.cluster.api_implementation == ApiImplementation.PROTOSTELLAR:
+            from new_couchbase.exceptions import FeatureUnavailableException
+            with pytest.raises(FeatureUnavailableException):
+                cb_env.collection.get_all_replica(key)
+        else:
+            result = TestEnvironment.try_n_times(10, 3, cb_env.collection.get_all_replicas, key)
+            active_cnt = 0
+            replica_cnt = 0
+            for res in result:
+                assert isinstance(res, GetReplicaResult)
+                assert isinstance(res.is_replica, bool)
+                assert value == res.content_as[dict]
+                if res.is_replica:
+                    replica_cnt += 1
+                else:
+                    active_cnt += 1
 
-        assert active_cnt == 1
-        if num_replicas > 0:
-            assert replica_cnt >= active_cnt
+            assert active_cnt == 1
+            if num_replicas > 0:
+                assert replica_cnt >= active_cnt
 
     def test_get_and_lock(self, cb_env):
         key, value = cb_env.get_existing_doc()
@@ -284,12 +306,15 @@ class CollectionTestSuite:
         result = cb_env.collection.get_and_touch(key, timedelta(seconds=2))
         assert isinstance(result, GetResult)
         TestEnvironment.sleep(3.0)
-        with pytest.raises(DocumentNotFoundException):
-            cb_env.collection.get(key)
+        TestEnvironment.try_n_times_till_exception(10,
+                                                   1,
+                                                   cb_env.collection.get,
+                                                   key,
+                                                   expected_exceptions=(DocumentNotFoundException,))
 
     @pytest.mark.flaky(reruns=3, reruns_delay=1)
     def test_get_and_touch_no_expire(self, cb_env):
-        key, value = cb_env.get_existing_doc()
+        key, value = cb_env.get_new_doc()
         # @TODO(jc):  GoCAVES does not seem to like nested doc structures in this scenario, fails
         #               on the last get consistently
         if cb_env.is_mock_server and 'manufacturer' in value:
@@ -307,15 +332,27 @@ class CollectionTestSuite:
     @pytest.mark.usefixtures("check_replicas")
     def test_get_any_replica(self, cb_env):
         key, value = cb_env.get_existing_doc()
-        result = TestEnvironment.try_n_times(10, 3, cb_env.collection.get_any_replica, key)
-        assert isinstance(result, GetReplicaResult)
-        assert isinstance(result.is_replica, bool)
-        assert value == result.content_as[dict]
+        # @TODO(jc): remove if/else
+        if cb_env.cluster.api_implementation == ApiImplementation.PROTOSTELLAR:
+            from new_couchbase.exceptions import FeatureUnavailableException
+            with pytest.raises(FeatureUnavailableException):
+                cb_env.collection.get_any_replica(key)
+        else:
+            result = TestEnvironment.try_n_times(10, 3, cb_env.collection.get_any_replica, key)
+            assert isinstance(result, GetReplicaResult)
+            assert isinstance(result.is_replica, bool)
+            assert value == result.content_as[dict]
 
     @pytest.mark.usefixtures("check_replicas")
     def test_get_any_replica_fail(self, cb_env):
-        with pytest.raises(DocumentUnretrievableException):
-            cb_env.collection.get_any_replica('not-a-key')
+        # @TODO(jc): remove if/else
+        if cb_env.cluster.api_implementation == ApiImplementation.PROTOSTELLAR:
+            from new_couchbase.exceptions import FeatureUnavailableException
+            with pytest.raises(FeatureUnavailableException):
+                cb_env.collection.get_any_replica('not-a-key')
+        else:
+            with pytest.raises(DocumentUnretrievableException):
+                cb_env.collection.get_any_replica('not-a-key')
 
     def test_get_options(self, cb_env):
         key, value = cb_env.get_existing_doc()
@@ -475,8 +512,11 @@ class CollectionTestSuite:
         assert expiry1 == expiry2
         # if expiry was set, should be expired by now
         TestEnvironment.sleep(3.0)
-        with pytest.raises(DocumentNotFoundException):
-            cb_env.collection.get(key)
+        TestEnvironment.try_n_times_till_exception(10,
+                                                   1,
+                                                   cb_env.collection.get,
+                                                   key,
+                                                   expected_exceptions=(DocumentNotFoundException,))
 
     @pytest.mark.usefixtures('check_preserve_expiry_supported')
     def test_replace_preserve_expiry_fail(self, cb_env):
@@ -592,8 +632,11 @@ class CollectionTestSuite:
         assert expiry1 == expiry2
         # if expiry was set, should be expired by now
         TestEnvironment.sleep(3.0)
-        with pytest.raises(DocumentNotFoundException):
-            cb_env.collection.get(key)
+        TestEnvironment.try_n_times_till_exception(10,
+                                                   1,
+                                                   cb_env.collection.get,
+                                                   key,
+                                                   expected_exceptions=(DocumentNotFoundException,))
 
     @pytest.mark.usefixtures('check_preserve_expiry_supported')
     def test_upsert_preserve_expiry_not_used(self, cb_env):
@@ -647,46 +690,18 @@ class ClassicCollectionTests(CollectionTestSuite):
 
 class ProtostellarCollectionTests(CollectionTestSuite):
     SKIP_LIST = {
-        # 'test_document_expiry_values': '',
-        'test_does_not_exists': 'ING-58, ING-362',
-        'test_exists': 'ING-58, ING-362',
-        # 'test_expiry_really_expires': '',
-        # 'test_get': '',
         'test_get_after_lock': 'ING-370',
-        'test_get_all_replicas': 'ING-373',
-        'test_get_all_replicas_fail': 'ING-373',
-        'test_get_all_replicas_results': 'ING-373',
-        'test_get_and_lock': 'ING-370',
+        # 'test_get_all_replicas': 'ING-373',
+        # 'test_get_all_replicas_fail': 'ING-373',
+        # 'test_get_all_replicas_results': 'ING-373',
         'test_get_and_lock_replace_with_cas': 'ING-370',
-        'test_get_and_touch': 'ING-370',
-        'test_get_and_touch_no_expire': 'ING-370',
-        'test_get_any_replica': 'ING-373',
-        'test_get_any_replica_fail': 'ING-373',
-        # 'test_get_fails': '',
-        # 'test_get_options': '',
-        # 'test_get_with_expiry': '',
-        # 'test_insert': '',
-        # 'test_insert_document_exists': '',
+        # 'test_get_any_replica': 'ING-373',
+        # 'test_get_any_replica_fail': 'ING-373',
         'test_project': 'ING-369',
         'test_project_bad_path': 'ING-369',
-        # 'test_project_project_not_list': '',
-        # 'test_project_too_many_projections': '',
-        # 'test_remove': '',
-        # 'test_remove_fail': '',
-        # 'test_replace': '',
-        # 'test_replace_fail': '',
-        # 'test_replace_preserve_expiry': '',
-        # 'test_replace_preserve_expiry_fail': '',
-        'test_replace_preserve_expiry_not_used': 'STG default is to preserve, no way to reset',
-        'test_replace_with_cas': 'ING-355',
-        'test_touch': 'ING-370',
-        'test_touch_no_expire': 'ING-370',
-        'test_unlock': 'ING-370',
         'test_unlock_wrong_cas': 'ING-370',
-        # 'test_upsert': '',
-        # 'test_upsert_preserve_expiry': '',
-        'test_upsert_preserve_expiry_not_used': 'STG default is to preserve, no way to reset',
     }
+
     @pytest.fixture(scope='function', autouse=True)
     def can_run_test(self, request):
         test_name = request.function.__name__

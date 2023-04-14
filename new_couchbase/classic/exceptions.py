@@ -352,7 +352,7 @@ class ExceptionMap(Enum):
     DocumentLockedException = 103
     DocumentExistsException = 105
     # DurabilityInvalidLevelException = 107
-    # DurabilityImpossibleException = 108
+    DurabilityImpossibleException = 108
     # DurabilitySyncWriteAmbiguousException = 109
     # DurabilitySyncWriteInProgressException = 110
     PathNotFoundException = 113
@@ -395,6 +395,37 @@ class ErrorMapper:
         return None
 
     @staticmethod
+    def _parse_http_context(err_ctx,  # type: HTTPErrorContext
+                            mapping=None,  # type: Dict[str, CouchbaseException]
+                            err_info=None  # type: Dict[str, Any]
+                            ) -> Optional[CouchbaseException]:
+        from couchbase._utils import is_null_or_empty
+
+        compiled_map = {}
+        if mapping:
+            compiled_map = {{str: re.compile}.get(
+                type(k), lambda x: x)(k): v for k, v in mapping.items()}
+
+        exc_msg = err_info.get('error_message', None) if err_info else None
+        if not is_null_or_empty(exc_msg):
+            exc_class = ErrorMapper._process_mapping(compiled_map, exc_msg)
+            if exc_class is not None:
+                return exc_class
+
+        if not is_null_or_empty(err_ctx.response_body):
+            err_text = err_ctx.response_body
+            exc_class = ErrorMapper._process_mapping(compiled_map, err_text)
+            if exc_class is not None:
+                return exc_class
+
+            exc_class = ErrorMapper._parse_http_response_body(compiled_map, err_text)
+            if exc_class is not None:
+                return exc_class
+
+        return None
+
+
+    @staticmethod
     def _parse_kv_context(err_ctx,  # type: KeyValueErrorContext
                           mapping,  # type: Dict[str, CouchbaseException]
                           err_content=None  # type: str
@@ -432,8 +463,8 @@ class ErrorMapper:
             err_ctx = ErrorContext.from_dict(**ctx)
             err_info = base_exc.error_info()
 
-            # if isinstance(err_ctx, HTTPErrorContext):
-            #     exc_class = ErrorMapper._parse_http_context(err_ctx, mapping, err_info=err_info)
+            if isinstance(err_ctx, HTTPErrorContext):
+                exc_class = ErrorMapper._parse_http_context(err_ctx, mapping, err_info=err_info)
 
             if isinstance(err_ctx, KeyValueErrorContext):
                 if mapping is None:

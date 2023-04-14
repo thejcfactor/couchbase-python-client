@@ -24,6 +24,7 @@ from new_couchbase.bucket import Bucket
 from new_couchbase.common.supportability import Supportability
 from new_couchbase.api import ApiImplementation
 from new_couchbase.n1ql import N1QLRequest
+from new_couchbase.management.buckets import BucketManager
 
 from new_couchbase.result import (DiagnosticsResult,
                                   PingResult,
@@ -78,7 +79,18 @@ class Cluster:
     def bucket(self,
                bucket_name # type: str
                ) -> Bucket:
-        return self._impl.bucket(bucket_name)
+        #return self._impl.bucket(bucket_name)
+        return Bucket(self._impl, bucket_name)
+
+    def buckets(self) -> BucketManager:
+        """
+        Get a :class:`~couchbase.management.buckets.BucketManager` which can be used to manage the buckets
+        of this cluster.
+
+        Returns:
+            :class:`~couchbase.management.buckets.BucketManager`: A :class:`~couchbase.management.buckets.BucketManager` instance.
+        """  # noqa: E501
+        return BucketManager(self._impl)
 
     def close(self):
         """Shuts down this cluster instance. Cleaning up all resources associated with it.
@@ -91,8 +103,10 @@ class Cluster:
         """
         self._impl.close()
 
-    def cluster_info(self):
-        return self._impl.cluster_info()
+    def cluster_info(self,
+                     refresh=True # type: Optional[bool]
+                     ) -> Any:
+        return self._impl.cluster_info(refresh=refresh)
 
     def diagnostics(self,
                     *opts,  # type: Optional[DiagnosticsOptions]

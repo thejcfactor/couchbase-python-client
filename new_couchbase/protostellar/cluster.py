@@ -39,7 +39,8 @@ from new_couchbase.result import (DiagnosticsResult,
 from new_couchbase.exceptions import InvalidArgumentException, FeatureUnavailableException
 from new_couchbase.protostellar.n1ql import N1QLQuery, N1QLRequest
 from new_couchbase.protostellar.options import ValidClusterOptions
-from new_couchbase.protostellar import query_grpc_module as query
+from new_couchbase.protostellar import query_pb2_grpc as query
+from new_couchbase.protostellar.management.buckets import BucketManager
 
 from new_couchbase.exceptions import InvalidArgumentException, FeatureUnavailableException
 from new_couchbase.protostellar.options import ValidClusterOptions
@@ -82,7 +83,7 @@ class Cluster:
                                                        ('grpc.max_receive_message_length', MAX_MESSAGE_LENGTH)])
         self._default_serializer = DefaultJsonSerializer()
         self._default_transcoder = JSONTranscoder()
-        self._query_service = query.QueryStub(self.connection)
+        self._query_service = query.QueryServiceStub(self.connection)
 
     @property
     def api_implementation(self) -> ApiImplementation:
@@ -147,6 +148,7 @@ class Cluster:
         pw = self._auth.get('password', None)
         auth = f'{username}:{pw}'.encode(encoding='utf-8')
         token = base64.b64encode(auth)
+        # need to decode to go from bytes -> str
         auth_str = f'Basic {token.decode(encoding="utf-8")}'
         # all metadata keys must be lowercase: https://github.com/grpc/grpc/issues/9863
         self._metadata.append(('authorization', auth_str))
@@ -176,6 +178,16 @@ class Cluster:
 
         return Bucket(self, bucket_name)
 
+    def buckets(self) -> BucketManager:
+        """
+        Get a :class:`~couchbase.protostellar.management.buckets.BucketManager` which can be used to manage the buckets
+        of this cluster.
+
+        Returns:
+            :class:`~couchbase.protostellar.management.buckets.BucketManager`: A :class:`~couchbase.management.buckets.BucketManager` instance.
+        """  # noqa: E501
+        return BucketManager(self)
+
     def close(self):
         """Shuts down this cluster instance. Cleaning up all resources associated with it.
 
@@ -183,7 +195,9 @@ class Cluster:
         if self.connected:
             self._channel.close()
 
-    def cluster_info(self):
+    def cluster_info(self,
+                     refresh=True # type: Optional[bool]
+                     ) -> Any:
         raise FeatureUnavailableException
 
     def diagnostics(self,

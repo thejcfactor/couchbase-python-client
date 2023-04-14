@@ -31,9 +31,14 @@ import grpc
 from grpc import StatusCode
 
 from new_couchbase.exceptions import (CouchbaseException,
-                                        DocumentNotFoundException,
-                                        DocumentExistsException,
-                                        FeatureUnavailableException)
+                                      CasMismatchException,
+                                      DocumentExistsException,
+                                      DocumentLockedException,
+                                      DocumentNotFoundException,
+                                      FeatureUnavailableException,
+                                      InvalidValueException,
+                                      PathExistsException,
+                                      PathMismatchException)
 
 COUCHBASE_ROOT = pathlib.Path(__file__).parent.parent
 
@@ -60,13 +65,13 @@ class ExceptionMap(Enum):
     DocumentLockedException = 103
     DocumentExistsException = 105
     # DurabilityInvalidLevelException = 107
-    # DurabilityImpossibleException = 108
+    DurabilityImpossibleException = 108
     # DurabilitySyncWriteAmbiguousException = 109
     # DurabilitySyncWriteInProgressException = 110
     # PathNotFoundException = 113
-    # PathMismatchException = 114
-    # InvalidValueException = 119
-    # PathExistsException = 123
+    PathMismatchException = 114
+    InvalidValueException = 119
+    PathExistsException = 123
     # DatasetNotFoundException = 303
     # DataverseNotFoundException = 304
     # DatasetAlreadyExistsException = 305
@@ -77,6 +82,18 @@ class ExceptionMap(Enum):
     # UnsuccessfulOperationException = 5002
 
 PYCBC_ERROR_MAP = {e.value: getattr(sys.modules['new_couchbase.exceptions'], e.name) for e in ExceptionMap}
+
+#"Subdocument path 'b' already existed in 'simple-key' in 'default/_default/_default'."
+ALREADY_EXISTS_MAPPING = {
+    r'.*[sS]ubdocument path.*already existed': PathExistsException,
+    }
+
+PRECONDITION_FAILURE_MAPPING = {
+    r'.*specified CAS.*did not match.*': CasMismatchException,
+    r'.*locked document.*': DocumentLockedException,
+    r'.*[sS]ubdocument operation.*invalidate.*JSON.*': InvalidValueException,
+    r'.*[dD]ocument structure implied by path.*did not match document.*': PathMismatchException,
+    }
 
 class ErrorMapper:
     @classmethod
@@ -98,11 +115,20 @@ class ErrorMapper:
             }
             return DocumentNotFoundException(**kwargs)
         elif ex.code() == StatusCode.ALREADY_EXISTS:
+            compiled_map = {re.compile(k): v for k, v in ALREADY_EXISTS_MAPPING.items()}
+            matches = None
             kwargs = {
                 'message': ex.details(),
                 'error_code': ex.code().value[0],
                 'exc_info': {'inner_cause': ex.debug_error_string()}
             }
+            for pattern, exc_class in compiled_map.items():
+                try:
+                    matches = pattern.match(kwargs['message'])
+                except Exception:  # nosec
+                    pass
+                if matches:
+                    return exc_class(**kwargs)
             return DocumentExistsException(**kwargs)
         elif ex.code() == StatusCode.UNIMPLEMENTED:
             kwargs = {
@@ -111,3 +137,25 @@ class ErrorMapper:
                 'exc_info': {'inner_cause': ex.debug_error_string()}
             }
             return FeatureUnavailableException(**kwargs)
+        elif ex.code() == StatusCode.FAILED_PRECONDITION:
+            compiled_map = {re.compile(k): v for k, v in PRECONDITION_FAILURE_MAPPING.items()}
+            matches = None
+            kwargs = {
+                'message': ex.details(),
+                'error_code': ex.code().value[0],
+                'exc_info': {'inner_cause': ex.debug_error_string()}
+            }
+            for pattern, exc_class in compiled_map.items():
+                try:
+                    matches = pattern.match(kwargs['message'])
+                except Exception:  # nosec
+                    pass
+                if matches:
+                    return exc_class(**kwargs)
+        elif ex.code() == StatusCode.UNKNOWN:
+            kwargs = {
+                'message': ex.details(),
+                'error_code': ex.code().value[0],
+                'exc_info': {'inner_cause': ex.debug_error_string()}
+            }
+            return CouchbaseException(**kwargs)

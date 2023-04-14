@@ -73,8 +73,18 @@ class CasMismatchException(CouchbaseException):
 
 CASMismatchException = CasMismatchException
 
+class DurabilityImpossibleException(CouchbaseException):
+    """Given durability requirements are impossible to achieve"""
+
 class FeatureUnavailableException(CouchbaseException):
     """Raised when feature that is not available with the current server version is used."""
+    def __init__(self, msg=None, **kwargs):
+        if msg:
+            kwargs['message'] = msg
+        super().__init__(**kwargs)
+
+class HTTPException(CouchbaseException):
+    """HTTP error"""
 
 class InternalSDKException(CouchbaseException):
     """
@@ -189,3 +199,21 @@ class QueryIndexNotFoundException(CouchbaseException):
 
 class ScopeNotFoundException(CouchbaseException):
     """The scope was not found"""
+
+
+"""
+
+Python SDK Bucket Management Exceptions
+
+"""
+
+class BucketAlreadyExistsException(CouchbaseException):
+    pass
+
+
+class BucketDoesNotExistException(CouchbaseException):
+    pass
+
+
+class BucketNotFlushableException(CouchbaseException):
+    pass

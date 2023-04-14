@@ -15,7 +15,7 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Dict, Iterable, Union
+from typing import Any, Dict, Iterable, Optional, Union, TYPE_CHECKING
 
 
 from new_couchbase.classic.core import BlockingWrapper
@@ -62,7 +62,7 @@ if TYPE_CHECKING:
 class Collection(CollectionCore):
     def __init__(self,
                  scope, #type: Scope
-                 collection_name # type: str
+                 collection_name=None # type: Optional[str]
                  ) -> None:
         super().__init__(scope, collection_name)
 
@@ -349,7 +349,3 @@ class Collection(CollectionCore):
     ) -> MutationResult:
         final_args = parse_options(ValidKeyValueOptions.get_valid_options(OptionTypes.Upsert), kwargs, *opts)
         return super().upsert(key, value, **final_args)
-
-    @staticmethod
-    def default_name():
-        return "_default"

@@ -27,7 +27,7 @@ from typing import (TYPE_CHECKING,
 import grpc
 from google.protobuf.duration_pb2 import Duration
 
-from new_couchbase.protostellar.proto.couchbase.query import v1_pb2
+from new_couchbase.protostellar.proto.couchbase.query.v1 import query_pb2
 
 from new_couchbase.protostellar._utils import timedelta_as_duration, to_seconds
 from new_couchbase.exceptions import AlreadyQueriedException, InvalidArgumentException
@@ -43,54 +43,54 @@ from new_couchbase.options import QueryOptions
 
 # from protostellar.options import QueryOptions
 
-if TYPE_CHECKING:
-    from protostellar.mutation_state import MutationState  # noqa: F401
+# if TYPE_CHECKING:
+#     from protostellar. import MutationState  # noqa: F401
 
 def to_protostellar_query_scan_consistency(consistency # type: Union[str, QueryScanConsistency]
-    ) -> v1_pb2.QueryRequest.QueryScanConsistency:
+    ) -> query_pb2.QueryRequest.ScanConsistency:
     if isinstance(consistency, str):
         consistency = QueryScanConsistency(consistency)
     if consistency == QueryScanConsistency.REQUEST_PLUS:
-        return v1_pb2.QueryRequest.QueryScanConsistency.REQUEST_PLUS
+        return query_pb2.QueryRequest.ScanConsistency.SCAN_CONSISTENCY_REQUEST_PLUS
     elif consistency == QueryScanConsistency.NOT_BOUNDED:
-        return v1_pb2.QueryRequest.QueryScanConsistency.NOT_BOUNDED
+        return query_pb2.QueryRequest.ScanConsistency.SCAN_CONSISTENCY_NOT_BOUNDED
     else:
         raise InvalidArgumentException(f'Invalid QueryScanConsistency for Protostellar: {consistency}')
 
 def to_protostellar_query_profile_mode(mode # type: Union[str, QueryProfile]
-    ) -> v1_pb2.QueryRequest.QueryProfileMode:
+    ) -> query_pb2.QueryRequest.ProfileMode:
     if isinstance(mode, str):
         mode = QueryProfile(mode)
     if mode == QueryProfile.OFF:
-        return v1_pb2.QueryRequest.QueryProfileMode.OFF
+        return query_pb2.QueryRequest.ProfileMode.PROFILE_MODE_OFF
     elif mode == QueryProfile.PHASES:
-        return v1_pb2.QueryRequest.QueryProfileMode.PHASES
+        return query_pb2.QueryRequest.ProfileMode.PROFILE_MODE_PHASES
     elif mode == QueryProfile.TIMINGS:
-        return v1_pb2.QueryRequest.QueryProfileMode.TIMINGS
+        return query_pb2.QueryRequest.ProfileMode.PROFILE_MODE_TIMINGS
     else:
         raise InvalidArgumentException(f'Invalid QueryProfileMode for Protostellar: {mode}')
 
-def from_protostellar_metadata_status(status # type: v1_pb2.QueryResponse.MetaDataStatus
+def from_protostellar_metadata_status(status # type: query_pb2.QueryResponse.Status
     ) -> QueryStatus:
-    if status == v1_pb2.QueryResponse.MetaData.MetaDataStatus.RUNNING:
+    if status == query_pb2.QueryResponse.MetaData.Status.STATUS_RUNNING:
         return QueryStatus.RUNNING
-    elif status == v1_pb2.QueryResponse.MetaData.MetaDataStatus.SUCCESS:
+    elif status == query_pb2.QueryResponse.MetaData.Status.STATUS_SUCCESS:
         return QueryStatus.SUCCESS
-    elif status == v1_pb2.QueryResponse.MetaData.MetaDataStatus.ERRORS:
+    elif status == query_pb2.QueryResponse.MetaData.Status.STATUS_ERRORS:
         return QueryStatus.ERRORS
-    elif status == v1_pb2.QueryResponse.MetaData.MetaDataStatus.COMPLETED:
+    elif status == query_pb2.QueryResponse.MetaData.Status.STATUS_COMPLETED:
         return QueryStatus.COMPLETED
-    elif status == v1_pb2.QueryResponse.MetaData.MetaDataStatus.STOPPED:
+    elif status == query_pb2.QueryResponse.MetaData.Status.STATUS_STOPPED:
         return QueryStatus.STOPPED
-    elif status == v1_pb2.QueryResponse.MetaData.MetaDataStatus.TIMEOUT:
+    elif status == query_pb2.QueryResponse.MetaData.Status.STATUS_TIMEOUT:
         return QueryStatus.TIMEOUT
-    elif status == v1_pb2.QueryResponse.MetaData.MetaDataStatus.CLOSED:
+    elif status == query_pb2.QueryResponse.MetaData.Status.STATUS_CLOSED:
         return QueryStatus.CLOSED
-    elif status == v1_pb2.QueryResponse.MetaData.MetaDataStatus.FATAL:
+    elif status == query_pb2.QueryResponse.MetaData.Status.STATUS_FATAL:
         return QueryStatus.FATAL
-    elif status == v1_pb2.QueryResponse.MetaData.MetaDataStatus.ABORTED:
+    elif status == query_pb2.QueryResponse.MetaData.Status.STATUS_ABORTED:
         return QueryStatus.ABORTED
-    elif status == v1_pb2.QueryResponse.MetaData.MetaDataStatus.UNKNOWN:
+    elif status == query_pb2.QueryResponse.MetaData.Status.STATUS_UNKNOWN:
         return QueryStatus.UNKNOWN
 
 class N1QLQuery(N1QLQueryBase):
@@ -375,7 +375,7 @@ class N1QLRequest:
             return
 
         self._started_streaming = True
-        req = v1_pb2.QueryRequest(**self._query_params)
+        req = query_pb2.QueryRequest(**self._query_params)
         self._streaming_result = self._query_service.Query(req)
 
     def _set_metadata(self):

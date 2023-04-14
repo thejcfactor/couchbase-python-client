@@ -19,7 +19,7 @@ from __future__ import annotations
 import random
 import uuid
 
-from couchbase.exceptions import BucketDoesNotExistException
+from new_couchbase.exceptions import BucketDoesNotExistException
 from tests.environments.test_environment import TestEnvironment
 
 

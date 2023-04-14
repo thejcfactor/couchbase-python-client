@@ -25,6 +25,7 @@ from new_couchbase.api import ApiImplementation
 from new_couchbase.bucket import Bucket
 from new_couchbase.classic.core import BlockingWrapper
 from new_couchbase.classic.core.cluster import ClusterCore
+from new_couchbase.classic.management.buckets import BucketManager
 
 from new_couchbase.classic.exceptions import exception as BaseCouchbaseException
 from new_couchbase.classic.exceptions import ErrorMapper
@@ -55,8 +56,6 @@ class Cluster(ClusterCore):
     @property
     def api_implementation(self) -> ApiImplementation:
         return ApiImplementation.CLASSIC
-
-
 
 
     @BlockingWrapper.block(True)
@@ -99,6 +98,16 @@ class Cluster(ClusterCore):
             raise RuntimeError("Cluster not yet connected.")
 
         return Bucket(self, bucket_name)
+    
+    def buckets(self) -> BucketManager:
+        """
+        Get a :class:`~couchbase.classic.management.buckets.BucketManager` which can be used to manage the buckets
+        of this cluster.
+
+        Returns:
+            :class:`~couchbase.classic.management.buckets.BucketManager`: A :class:`~couchbase.management.buckets.BucketManager` instance.
+        """  # noqa: E501
+        return BucketManager(self)
 
     def close(self):
         """Shuts down this cluster instance. Cleaning up all resources associated with it.
@@ -112,7 +121,9 @@ class Cluster(ClusterCore):
         if self.connected:
             self._close_cluster()
 
-    def cluster_info(self) -> ClusterInfoResult:
+    def cluster_info(self,
+                     refresh=True # type: Optional[bool]
+                     ) -> ClusterInfoResult:
         """Retrieve the Couchbase cluster information
 
         .. note::
@@ -133,10 +144,13 @@ class Cluster(ClusterCore):
         if not self.connected:
             raise RuntimeError(
                 "Cluster is not connected, cannot get cluster info.")
-        cluster_info = None
-        cluster_info = self._get_cluster_info()
-        self._cluster_info = cluster_info
-        return cluster_info
+        if not refresh and self._cluster_info:
+            return self._cluster_info
+        else:
+            cluster_info = None
+            cluster_info = self._get_cluster_info()
+            self._cluster_info = cluster_info
+            return cluster_info
 
     @BlockingWrapper.block(DiagnosticsResult)
     def diagnostics(self,

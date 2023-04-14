@@ -25,7 +25,7 @@ from new_couchbase.collection import Collection
 from new_couchbase.protostellar.result import QueryResult
 
 from new_couchbase.protostellar.n1ql import N1QLQuery, N1QLRequest
-from new_couchbase.protostellar import query_grpc_module as query
+from new_couchbase.protostellar import query_pb2_grpc as query
 
 
 if TYPE_CHECKING:
@@ -36,10 +36,10 @@ if TYPE_CHECKING:
 class Scope:
     def __init__(self, 
                 bucket, # type: Bucket
-                scope_name # type: str
+                scope_name=None # type: Optional[str]
                 ):
         self._bucket = bucket
-        self._scope_name = scope_name
+        self._scope_name = Scope.default_name() if scope_name is None else scope_name
 
     @property
     def api_implementation(self) -> ApiImplementation:

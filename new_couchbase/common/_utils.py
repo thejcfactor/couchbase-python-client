@@ -15,11 +15,13 @@
 
 from datetime import timedelta
 from typing import (Any,
+                    Callable,
                     Dict,
                     List,
                     Optional,
                     TypeVar,
-                    Union)
+                    Union,
+                    TYPE_CHECKING)
 from urllib.parse import quote
 
 from new_couchbase.common.options import DeltaValueBase, SignedInt64Base
@@ -27,29 +29,53 @@ from new_couchbase.exceptions import InvalidArgumentException
 from new_couchbase.serializer import Serializer
 from new_couchbase.transcoder import Transcoder
 
+if TYPE_CHECKING:
+    from enum import Enum
+
 JSONType = Union[str, int, float, bool,
                  None, Dict[str, Any], List[Any]]
 
+
+def enum_to_str(value, # type: Enum
+                enum, # type: Enum
+                conversion_fn=None, # type: Optional[Callable]
+                ) -> str:
+    if isinstance(value, str) and value in map(lambda x: x.value, enum):
+        # TODO: use warning?
+        # warn("Using deprecated string parameter {}".format(value))
+        return value
+    if not isinstance(value, enum):
+        raise InvalidArgumentException(f"Argument must be of type {enum} but got {value}")
+    if conversion_fn:
+        try:
+            return conversion_fn(value)
+        except Exception:
+            raise InvalidArgumentException(f"Unable to convert enum value {value} to str.")
+
+    return value.value
+
+def identity(x  # type: Any
+             ) -> Any:
+    return x
 
 def is_null_or_empty(
     value  # type: str
 ) -> bool:
     return not (value and not value.isspace())
 
-
-def to_form_str(params  # type: Dict[str, Any]
-                ):
-    encoded_params = []
-    for k, v in params.items():
-        encoded_params.append('{0}={1}'.format(quote(k), quote(str(v))))
-
-    return '&'.join(encoded_params)
-
-
-def identity(x  # type: Any
-             ) -> Any:
-    return x
-
+def str_to_enum(value, # type: str
+                enum, # type: Enum
+                conversion_fn=None, # type: Optional[Callable]
+                ) -> str:
+    if not isinstance(value, str):
+        raise InvalidArgumentException(f"Argument must be of type str but got {type(value)}.")
+    try:
+        if conversion_fn:
+            return conversion_fn(value)
+        return enum(value)
+    except Exception:
+        raise InvalidArgumentException(f"Unable to convert {value} to enum of type {enum}.")
+    
 
 def timedelta_as_microseconds(
     duration,  # type: timedelta
@@ -60,22 +86,43 @@ def timedelta_as_microseconds(
         )
     return int(duration.total_seconds() * 1e6 if duration else 0)
 
+def to_form_str(params  # type: Dict[str, Any]
+                ):
+    encoded_params = []
+    for k, v in params.items():
+        encoded_params.append('{0}={1}'.format(quote(k), quote(str(v))))
+
+    return '&'.join(encoded_params)
 
 def to_microseconds(
-    timeout  # type: Union[timedelta, float, int]
+    value  # type: Union[timedelta, float, int]
 ) -> int:
-    if timeout and not isinstance(timeout, (timedelta, float, int)):
-        raise InvalidArgumentException(message=("Excepted timeout to be of type "
-                                                f"Union[timedelta, float, int] instead of {timeout}"))
-    if not timeout:
+    if value and not isinstance(value, (timedelta, float, int)):
+        raise InvalidArgumentException(message=("Excepted value to be of type "
+                                                f"Union[timedelta, float, int] instead of {value}"))
+    if not value:
         total_us = 0
-    elif isinstance(timeout, timedelta):
-        total_us = int(timeout.total_seconds() * 1e6)
+    elif isinstance(value, timedelta):
+        total_us = int(value.total_seconds() * 1e6)
     else:
-        total_us = int(timeout * 1e6)
+        total_us = int(value * 1e6)
 
     return total_us
 
+def to_seconds(
+    value  # type: Union[timedelta, float, int]
+) -> int:
+    if value and not isinstance(value, (timedelta, float, int)):
+        raise InvalidArgumentException(message=("Excepted value to be of type "
+                                                f"Union[timedelta, float, int] instead of {value}"))
+    if not value:
+        total_secs = 0
+    elif isinstance(value, timedelta):
+        total_secs = int(value.total_seconds())
+    else:
+        total_secs = int(value)
+
+    return total_secs
 
 def validate_bool(value  # type: bool
                   ) -> bool:

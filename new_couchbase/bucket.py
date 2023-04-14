@@ -53,21 +53,32 @@ class Bucket:
         return self._impl.connected
 
     @property
+    def connection(self):
+        """
+        **INTERNAL**
+        """
+        return self._impl.connection
+
+    @property
     def name(self) -> str:
         return self._impl.name
 
     def collection(self, 
-                collection_name # type: str
-                ) -> Collection:
-        return self._impl.collection(collection_name)
+                   collection_name # type: str
+                   ) -> Collection:
+        scope = self.default_scope()
+        return scope.collection(collection_name)
 
     def default_collection(self) -> Collection:
-        return self._impl.default_collection()
+        scope = self.default_scope()
+        return scope.collection()
+        # return self._impl.default_collection()
 
     def default_scope(self) -> Scope:
-        return self._impl.default_scope()
+        return Scope(self._impl)
+        # return self._impl.default_scope()
 
     def scope(self, 
-                scope_name # type: str
-                ) -> Scope:
-        return self._impl.scope(scope_name)
+              scope_name # type: str
+              ) -> Scope:
+        return Scope(self._impl, scope_name)

@@ -132,8 +132,8 @@ class BuildProtosCommand(Command):
             # 2 built *.py files for each *.proto file
             if len(proto_files)*2 == len(built_protos):
                 print('Successfully built Couchbase SN proto files.')
-                build_protostellar_init_file(built_protos)
-                print('Successfullly built Protostellar __init__.py.')
+                # build_protostellar_init_file(built_protos)
+                # print('Successfullly built Protostellar __init__.py.')
                 fix_imports(built_protos)
                 print('Successfullly fixed stub imports.')
             else:

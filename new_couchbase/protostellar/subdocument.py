@@ -18,43 +18,42 @@ import json
 from typing import TYPE_CHECKING
 
 from new_couchbase.exceptions import InvalidArgumentException
-from new_couchbase.api import ApiImplementation
 
 from new_couchbase.subdocument import Spec  # noqa: F401
 from new_couchbase.subdocument import StoreSemantics  # noqa: F401
-from new_couchbase.subdocument import SubDocOp  # noqa: F401
+from new_couchbase.subdocument import SubDocOp
 from new_couchbase.subdocument import exists  # noqa: F401
 from new_couchbase.subdocument import get  # noqa: F401
 from new_couchbase.subdocument import count  # noqa: F401
 
-from new_couchbase.protostellar.proto.couchbase.kv import v1_pb2
+from new_couchbase.protostellar.proto.couchbase.kv.v1 import kv_pb2
 
 if TYPE_CHECKING:
     from new_couchbase.transcoder import Transcoder
 
 def to_protostellar_lookup_in_spec(spec # type: Spec
-    ) -> v1_pb2.LookupInRequest.Spec:
+    ) -> kv_pb2.LookupInRequest.Spec:
     (op, path, xattr) = spec
     params = {
         'path': path,
     }
     if op == SubDocOp.EXISTS:
-        params['operation'] = v1_pb2.LookupInRequest.Spec.Operation.EXISTS
-        params['flags'] = v1_pb2.LookupInRequest.Spec.Flags(xattr=xattr)
+        params['operation'] = kv_pb2.LookupInRequest.Spec.Operation.OPERATION_EXISTS
+        params['flags'] = kv_pb2.LookupInRequest.Spec.Flags(xattr=xattr)
     elif op == SubDocOp.GET:
-        params['operation'] = v1_pb2.LookupInRequest.Spec.Operation.GET
-        params['flags'] = v1_pb2.LookupInRequest.Spec.Flags(xattr=xattr)
+        params['operation'] = kv_pb2.LookupInRequest.Spec.Operation.OPERATION_GET
+        params['flags'] = kv_pb2.LookupInRequest.Spec.Flags(xattr=xattr)
     elif op == SubDocOp.GET_COUNT:
-        params['operation'] = v1_pb2.LookupInRequest.Spec.Operation.COUNT
-        params['flags'] = v1_pb2.LookupInRequest.Spec.Flags(xattr=xattr)
+        params['operation'] = kv_pb2.LookupInRequest.Spec.Operation.OPERATION_COUNT
+        params['flags'] = kv_pb2.LookupInRequest.Spec.Flags(xattr=xattr)
     else:
         raise InvalidArgumentException(f'Unable to determine lookup-in spec: {spec}')
 
-    return v1_pb2.LookupInRequest.Spec(**params)
+    return kv_pb2.LookupInRequest.Spec(**params)
 
 def to_protostellar_mutate_in_spec(spec, # type: Spec
                                     transcoder, # type: Transcoder
-    ) -> v1_pb2.MutateInRequest.Spec:
+    ) -> kv_pb2.MutateInRequest.Spec:
     value = None
     if len(spec) == 6:
         op, path, create_path, xattr, macros, value = spec
@@ -64,49 +63,59 @@ def to_protostellar_mutate_in_spec(spec, # type: Spec
         'path': path,
     }
     if op == SubDocOp.DICT_ADD:
-        params['operation'] = v1_pb2.MutateInRequest.Spec.Operation.INSERT
-        params['flags'] = v1_pb2.MutateInRequest.Spec.Flags(create_path=create_path,
+        params['operation'] = kv_pb2.MutateInRequest.Spec.Operation.OPERATION_INSERT
+        params['flags'] = kv_pb2.MutateInRequest.Spec.Flags(create_path=create_path,
                                                             xattr=xattr)
     elif op == SubDocOp.DICT_UPSERT:
-        params['operation'] = v1_pb2.MutateInRequest.Spec.Operation.UPSERT
-        params['flags'] = v1_pb2.MutateInRequest.Spec.Flags(create_path=create_path,
+        params['operation'] = kv_pb2.MutateInRequest.Spec.Operation.OPERATION_UPSERT
+        params['flags'] = kv_pb2.MutateInRequest.Spec.Flags(create_path=create_path,
                                                             xattr=xattr)
     elif op == SubDocOp.REPLACE:
-        params['operation'] = v1_pb2.MutateInRequest.Spec.Operation.REPLACE
-        params['flags'] = v1_pb2.MutateInRequest.Spec.Flags(create_path=create_path,
+        params['operation'] = kv_pb2.MutateInRequest.Spec.Operation.OPERATION_REPLACE
+        params['flags'] = kv_pb2.MutateInRequest.Spec.Flags(create_path=create_path,
                                                             xattr=xattr)
     elif op == SubDocOp.REMOVE:
-        params['operation'] = v1_pb2.MutateInRequest.Spec.Operation.REMOVE
-        params['flags'] = v1_pb2.MutateInRequest.Spec.Flags(create_path=create_path,
+        params['operation'] = kv_pb2.MutateInRequest.Spec.Operation.OPERATION_REMOVE
+        params['flags'] = kv_pb2.MutateInRequest.Spec.Flags(create_path=create_path,
                                                             xattr=xattr)
     elif op == SubDocOp.ARRAY_PUSH_LAST:
-        params['operation'] = v1_pb2.MutateInRequest.Spec.Operation.ARRAY_APPEND
-        params['flags'] = v1_pb2.MutateInRequest.Spec.Flags(create_path=create_path,
+        params['operation'] = kv_pb2.MutateInRequest.Spec.Operation.OPERATION_ARRAY_APPEND
+        params['flags'] = kv_pb2.MutateInRequest.Spec.Flags(create_path=create_path,
                                                             xattr=xattr)
     elif op == SubDocOp.ARRAY_PUSH_FIRST:
-        params['operation'] = v1_pb2.MutateInRequest.Spec.Operation.ARRAY_PREPEND
-        params['flags'] = v1_pb2.MutateInRequest.Spec.Flags(create_path=create_path,
+        params['operation'] = kv_pb2.MutateInRequest.Spec.Operation.OPERATION_ARRAY_PREPEND
+        params['flags'] = kv_pb2.MutateInRequest.Spec.Flags(create_path=create_path,
                                                             xattr=xattr)
     elif op == SubDocOp.ARRAY_INSERT:
-        params['operation'] = v1_pb2.MutateInRequest.Spec.Operation.ARRAY_INSERT
-        params['flags'] = v1_pb2.MutateInRequest.Spec.Flags(create_path=create_path,
+        params['operation'] = kv_pb2.MutateInRequest.Spec.Operation.OPERATION_ARRAY_INSERT
+        params['flags'] = kv_pb2.MutateInRequest.Spec.Flags(create_path=create_path,
                                                             xattr=xattr)
     elif op == SubDocOp.ARRAY_ADD_UNIQUE:
-        params['operation'] = v1_pb2.MutateInRequest.Spec.Operation.ARRAY_ADD_UNIQUE
-        params['flags'] = v1_pb2.MutateInRequest.Spec.Flags(create_path=create_path,
+        params['operation'] = kv_pb2.MutateInRequest.Spec.Operation.OPERATION_ARRAY_ADD_UNIQUE
+        params['flags'] = kv_pb2.MutateInRequest.Spec.Flags(create_path=create_path,
                                                             xattr=xattr)
     elif op == SubDocOp.COUNTER:
-        params['operation'] = v1_pb2.MutateInRequest.Spec.Operation.COUNTER
-        params['flags'] = v1_pb2.MutateInRequest.Spec.Flags(create_path=create_path,
+        params['operation'] = kv_pb2.MutateInRequest.Spec.Operation.OPERATION_COUNTER
+        params['flags'] = kv_pb2.MutateInRequest.Spec.Flags(create_path=create_path,
                                                             xattr=xattr)
     else:
         raise InvalidArgumentException(f'Unable to determine mutate-in spec: {spec}')
 
-    if value:
-        content, _ = transcoder.encode_value(value, implementation=ApiImplementation.PROTOSTELLAR)
-        params['content'] = content
+    multi_ops = [SubDocOp.ARRAY_PUSH_FIRST,
+                 SubDocOp.ARRAY_PUSH_LAST,
+                 SubDocOp.ARRAY_ADD_UNIQUE,
+                 SubDocOp.ARRAY_INSERT]
 
-    return v1_pb2.MutateInRequest.Spec(**params)
+    if value:
+        if op in multi_ops:
+            tmp_value = json.dumps(value, ensure_ascii=False)
+            # need to remove the brackets from the array
+            params['content'] = tmp_value[1:len(tmp_value)-1].encode('utf-8')
+        else:
+            content, _ = transcoder.encode_value(value)
+            params['content'] = content
+
+    return kv_pb2.MutateInRequest.Spec(**params)
 
     
 

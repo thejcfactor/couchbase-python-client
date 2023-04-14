@@ -27,10 +27,9 @@ from new_couchbase.exceptions import (InternalSDKException,
                                       ServiceUnavailableException, 
                                       UnAmbiguousTimeoutException)
 
-from new_couchbase.api import ApiImplementation
+from new_couchbase.constants import FMT_JSON
 from new_couchbase.protostellar._utils import timestamp_as_datetime
 from new_couchbase.protostellar.exceptions import ErrorMapper
-from new_couchbase.protostellar.proto.couchbase.kv import v1_pb2
 
 
 
@@ -50,10 +49,9 @@ class BlockingWrapper:
                     }
                     if hasattr(ret.response, 'cas'):
                         ret_val['cas'] = ret.response.cas
-                    if hasattr(ret.response, 'content_type'):
+                    if hasattr(ret.response, 'content_flags'):
                         value = ret.transcoder.decode_value(ret.response.content, 
-                                                    ret.response.content_type,
-                                                    implementation=ApiImplementation.PROTOSTELLAR)
+                                                            ret.response.content_flags)
                         ret_val['value'] = value
                     elif hasattr(ret.response, 'content'): # increment/decrement
                         ret_val['content'] = ret.response.content
@@ -67,13 +65,12 @@ class BlockingWrapper:
                         ret_val['value'] = []
                         for spec in ret.response.specs:
                             if spec.status.code == StatusCode.OK.value[0]:
-                                decoded = ret.transcoder.decode_value(spec.content,
-                                                                    v1_pb2.JSON,
-                                                                    implementation=ApiImplementation.PROTOSTELLAR)
+                                decoded = ret.transcoder.decode_value(spec.content, FMT_JSON)
                             else:
                                 decoded = None
                             ret_val['value'].append({
                                 'value': decoded,
+                                # @TODO(jc):  Is this correct?  Maybe need to translate?
                                 'status': spec.status,
                             })
                     return return_cls(ret_val)
@@ -109,9 +106,9 @@ class BlockingWrapper:
                     if hasattr(ret.response, 'specs'):
                         ret_val['value'] = []
                         for spec in ret.response.specs:
-                            decoded = ret.transcoder.decode_value(spec.content,
-                                                                v1_pb2.JSON,
-                                                                implementation=ApiImplementation.PROTOSTELLAR)
+                            decoded = None
+                            if hasattr(spec, 'content') and len(spec.content) > 0:
+                                decoded = ret.transcoder.decode_value(spec.content, FMT_JSON)
                             ret_val['value'].append({
                                 'value': decoded,
                             })

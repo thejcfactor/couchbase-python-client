@@ -33,7 +33,7 @@ from __future__ import annotations
 from __future__ import annotations
 
 from datetime import timedelta
-from typing import TYPE_CHECKING, Any, Dict, Iterable, List, Tuple
+from typing import Any, Dict, Iterable, List, Optional, Tuple, TYPE_CHECKING, Union
 
 from new_couchbase.scope import Scope
 from new_couchbase.transcoder import JSONTranscoder, Transcoder
@@ -51,15 +51,16 @@ from new_couchbase.protostellar.result import (CounterResult,
 
 from new_couchbase.common.options import OptionTypes, parse_options
 from new_couchbase.exceptions import InvalidArgumentException, FeatureUnavailableException
-from new_couchbase.protostellar._utils import timedelta_as_timestamp
+from new_couchbase.protostellar._utils import timedelta_as_timestamp, to_seconds
 from new_couchbase.protostellar.binary_collection import BinaryCollection
 from new_couchbase.protostellar.options import ValidKeyValueOptions
 from new_couchbase.protostellar.subdocument import to_protostellar_lookup_in_spec, to_protostellar_mutate_in_spec
 
-from new_couchbase.protostellar import kv_grpc_module as kv
+from new_couchbase.protostellar import kv_pb2_grpc as kv
 
-from new_couchbase.protostellar.proto.couchbase.kv import v1_pb2
+from new_couchbase.protostellar.proto.couchbase.kv.v1 import kv_pb2
 from new_couchbase.protostellar.wrappers import BlockingWrapper
+from new_couchbase.subdocument import SubDocOp
 
 
 if TYPE_CHECKING:
@@ -86,16 +87,16 @@ if TYPE_CHECKING:
 class Collection:
     def __init__(self, 
                 scope, # type: Scope
-                collection_name # type: str
+                collection_name=None # type: Optional[str]
                 ):
         # if not scope:
         #     raise InvalidArgumentException(message="Collection must be given a scope")
         # if not scope.connection:
         #     raise RuntimeError("No connection provided")
         self._scope = scope
-        self._collection_name = collection_name
+        self._collection_name = Collection.default_name() if collection_name is None else collection_name
         self._connection = scope.connection
-        self._kv = kv.KvStub(self._connection)
+        self._kv = kv.KvServiceStub(self._connection)
 
     @property
     def api_implementation(self) -> ApiImplementation:
@@ -142,7 +143,12 @@ class Collection:
         req_args['content'] = value
         if 'cas' in kwargs:
             req_args['cas'] = kwargs.get('cas')
-        req = v1_pb2.AppendRequest(**req_args)
+        durability = kwargs.get('durability', None)
+        if durability:
+            if isinstance(durability, dict):
+                raise FeatureUnavailableException('Protostellar does not support legacy durability.')
+            req_args['durability_level'] = durability
+        req = kv_pb2.AppendRequest(**req_args)
         response, call = self._kv.Append.with_call(req, **call_args)
         return ProtostellarResponse(response, call, key, None)
 
@@ -158,7 +164,12 @@ class Collection:
         req_args['delta'] = int(kwargs['delta'])
         if 'expiry' in kwargs:
             req_args['expiry'] = kwargs.get('expiry')
-        req = v1_pb2.DecrementRequest(**req_args)
+        durability = kwargs.get('durability', None)
+        if durability:
+            if isinstance(durability, dict):
+                raise FeatureUnavailableException('Protostellar does not support legacy durability.')
+            req_args['durability_level'] = durability
+        req = kv_pb2.DecrementRequest(**req_args)
         response, call = self._kv.Decrement.with_call(req, **call_args)
         return ProtostellarResponse(response, call, key, None)
 
@@ -171,6 +182,8 @@ class Collection:
         }
         if timeout:
             call_args['timeout'] = timeout
+        elif 'durability' in options:
+            call_args['timeout'] = to_seconds(timedelta(seconds=10))
 
         return call_args
 
@@ -193,7 +206,12 @@ class Collection:
         req_args['delta'] = int(kwargs['delta'])
         if 'expiry' in kwargs:
             req_args['expiry'] = kwargs.get('expiry')
-        req = v1_pb2.IncrementRequest(**req_args)
+        req = kv_pb2.IncrementRequest(**req_args)
+        durability = kwargs.get('durability', None)
+        if durability:
+            if isinstance(durability, dict):
+                raise FeatureUnavailableException('Protostellar does not support legacy durability.')
+            req_args['durability_level'] = durability
         response, call = self._kv.Increment.with_call(req, **call_args)
         return ProtostellarResponse(response, call, key, None)
     
@@ -216,7 +234,12 @@ class Collection:
         req_args['content'] = value
         if 'cas' in kwargs:
             req_args['cas'] = kwargs.get('cas')
-        req = v1_pb2.PrependRequest(**req_args)
+        durability = kwargs.get('durability', None)
+        if durability:
+            if isinstance(durability, dict):
+                raise FeatureUnavailableException('Protostellar does not support legacy durability.')
+            req_args['durability_level'] = durability
+        req = kv_pb2.PrependRequest(**req_args)
         response, call = self._kv.Prepend.with_call(req, **call_args)
         return ProtostellarResponse(response, call, key, None)
 
@@ -238,7 +261,7 @@ class Collection:
 
         req_args = self._get_namespace_args()
         req_args['key'] = key
-        req = v1_pb2.ExistsRequest(**req_args)
+        req = kv_pb2.ExistsRequest(**req_args)
         response, call = self._kv.Exists.with_call(req, **call_args)
         return ProtostellarResponse(response, call, key, transcoder)
 
@@ -256,7 +279,7 @@ class Collection:
 
         req_args = self._get_namespace_args()
         req_args['key'] = key
-        req = v1_pb2.GetRequest(**req_args)
+        req = kv_pb2.GetRequest(**req_args)
         response, call = self._kv.Get.with_call(req, **call_args)
         return ProtostellarResponse(response, call, key, transcoder)
 
@@ -272,12 +295,11 @@ class Collection:
         if not transcoder:
             transcoder = self.default_transcoder
 
-        raise FeatureUnavailableException('Protostellar does not yet implement replica reads.  See ING-373.')
-        # req_args = self._get_namespace_args()
-        # req_args['key'] = key
-        # req = v1_pb2.GetReplicaRequest(**req_args)
-        # response, call = self._kv.GetReplica.with_call(req, **call_args)
-        # return ProtostellarResponse(response, call, key, transcoder)
+        req_args = self._get_namespace_args()
+        req_args['key'] = key
+        req = kv_pb2.GetReplicaRequest(**req_args)
+        response, call = self._kv.GetReplica.with_call(req, **call_args)
+        return ProtostellarResponse(response, call, key, transcoder)
 
     @BlockingWrapper.decode_read_op(GetResult)
     def get_and_lock(self,
@@ -296,7 +318,7 @@ class Collection:
 
         req_args = self._get_namespace_args()
         req_args['key'] = key
-        req = v1_pb2.GetAndLockRequest(**req_args)
+        req = kv_pb2.GetAndLockRequest(**req_args)
         response, call = self._kv.GetAndLock.with_call(req, **call_args)
         return ProtostellarResponse(response, call, key, transcoder)
     
@@ -309,7 +331,7 @@ class Collection:
                      ) -> GetResult:
         # add to kwargs for conversion to int
         kwargs['expiry'] = expiry
-        final_args = parse_options(ValidKeyValueOptions.get_valid_options(OptionTypes.GetAndLock), kwargs, *opts)
+        final_args = parse_options(ValidKeyValueOptions.get_valid_options(OptionTypes.GetAndTouch), kwargs, *opts)
         call_args = self._get_call_args(**final_args)
         transcoder = final_args.get('transcoder', None)
         if not transcoder:
@@ -317,8 +339,8 @@ class Collection:
 
         req_args = self._get_namespace_args()
         req_args['key'] = key
-        req_args['expiry'] = final_args.get('expiry')
-        req = v1_pb2.GetAndTouchRequest(**req_args)
+        req_args['expiry_secs'] = final_args.get('expiry')
+        req = kv_pb2.GetAndTouchRequest(**req_args)
         response, call = self._kv.GetAndTouch.with_call(req, **call_args)
         return ProtostellarResponse(response, call, key, transcoder)
 
@@ -328,18 +350,18 @@ class Collection:
                         *opts,  # type: GetAnyReplicaOptions
                         **kwargs,  # type: Dict[str, Any]
                         ) -> GetReplicaResult:
-        final_args = parse_options(ValidKeyValueOptions.get_valid_options(OptionTypes.GetAnyReplicas), kwargs, *opts)
+        final_args = parse_options(ValidKeyValueOptions.get_valid_options(OptionTypes.GetAnyReplica), kwargs, *opts)
         call_args = self._get_call_args(**final_args)
         transcoder = final_args.get('transcoder', None)
         if not transcoder:
             transcoder = self.default_transcoder
 
-        raise FeatureUnavailableException('Protostellar does not yet implement replica reads.  See ING-373.')
-        # req_args = self._get_namespace_args()
-        # req_args['key'] = key
-        # req = v1_pb2.GetReplicaRequest(**req_args)
-        # response, call = self._kv.GetReplica.with_call(req, **call_args)
-        # return ProtostellarResponse(response, call, key, transcoder)
+        #raise FeatureUnavailableException('Protostellar does not yet implement replica reads.  See ING-373.')
+        req_args = self._get_namespace_args()
+        req_args['key'] = key
+        req = kv_pb2.GetReplicaRequest(**req_args)
+        response, call = self._kv.GetReplica.with_call(req, **call_args)
+        return ProtostellarResponse(response, call, key, transcoder)
 
     @BlockingWrapper.decode_mutation_op(MutationResult)
     def insert(self,
@@ -351,14 +373,21 @@ class Collection:
         final_args = parse_options(ValidKeyValueOptions.get_valid_options(OptionTypes.Insert), kwargs, *opts)
         call_args = self._get_call_args(**final_args)
         transcoder = final_args.pop('transcoder', self.default_transcoder)
-        content, content_type = transcoder.encode_value(value, implementation=self.api_implementation)
+        content, content_flags = transcoder.encode_value(value)
         req_args = self._get_namespace_args()
         req_args['key'] = key
         req_args['content'] = content
-        req_args['content_type'] = content_type
+        req_args['content_flags'] = content_flags
         if 'expiry' in final_args:
             req_args['expiry'] = final_args.get('expiry')
-        req = v1_pb2.InsertRequest(**req_args)
+
+        durability = final_args.get('durability', None)
+        if durability:
+            if isinstance(durability, dict):
+                raise FeatureUnavailableException('Protostellar does not support legacy durability.')
+            req_args['durability_level'] = durability
+
+        req = kv_pb2.InsertRequest(**req_args)
         response, call = self._kv.Insert.with_call(req, **call_args)
         return ProtostellarResponse(response, call, key, None)
 
@@ -377,7 +406,7 @@ class Collection:
 
         req_args = self._get_namespace_args()
         req_args['key'] = key
-        req = v1_pb2.LookupInRequest(**req_args)
+        req = kv_pb2.LookupInRequest(**req_args)
         for sp in spec:
             ps_spec = to_protostellar_lookup_in_spec(sp)
             req.specs.append(ps_spec)
@@ -397,7 +426,27 @@ class Collection:
         call_args = self._get_call_args(**final_args)
         req_args = self._get_namespace_args()
         req_args['key'] = key
-        req = v1_pb2.MutateInRequest(**req_args)
+        
+
+        expiry = final_args.get('expiry', None)
+        preserve_expiry = final_args.get('preserve_expiry', False)
+
+        spec_ops = [s[0] for s in spec]
+        if SubDocOp.DICT_ADD in spec_ops and preserve_expiry is True:
+            raise InvalidArgumentException(
+                'The preserve_expiry option cannot be set for mutate_in with insert operations.')
+
+        if SubDocOp.REPLACE in spec_ops and expiry and preserve_expiry is True:
+            raise InvalidArgumentException(
+                'The expiry and preserve_expiry options cannot both be set for mutate_in with replace operations.')
+
+        # Classic: expiry is by default set to not preserve,
+        # PS: expirty is by default set to preserve
+        # @TODO(jc): https://couchbasecloud.atlassian.net/browse/ING-434
+        if expiry is not None:
+            req_args['expiry_time'] = expiry
+        elif preserve_expiry is False or preserve_expiry is None:
+            req_args['expiry_secs'] = 0
 
         insert_semantics = final_args.pop('insert_doc', None)
         upsert_semantics = final_args.pop('upsert_doc', None)
@@ -408,18 +457,25 @@ class Collection:
             raise InvalidArgumentException("Cannot set multiple store semantics.")
 
         if insert_semantics is not None:
-            req.store_semantic = v1_pb2.MutateInRequest.StoreSemantic.INSERT
+            req_args['store_semantic'] = kv_pb2.MutateInRequest.StoreSemantic.STORE_SEMANTIC_INSERT
         if upsert_semantics is not None:
-            req.store_semantic = v1_pb2.MutateInRequest.StoreSemantic.UPSERT
+            req_args['store_semantic'] = kv_pb2.MutateInRequest.StoreSemantic.STORE_SEMANTIC_UPSERT
         if replace_semantics is not None:
-            req.store_semantic = v1_pb2.MutateInRequest.StoreSemantic.REPLACE
+            req_args['store_semantic'] = kv_pb2.MutateInRequest.StoreSemantic.STORE_SEMANTIC_REPLACE
 
+        durability = final_args.get('durability', None)
+        if durability:
+            if isinstance(durability, dict):
+                raise FeatureUnavailableException('Protostellar does not support legacy durability.')
+            req_args['durability_level'] = durability
+
+        req = kv_pb2.MutateInRequest(**req_args)
         tc = self.default_transcoder if isinstance(self.default_transcoder, JSONTranscoder) else JSONTranscoder()
         for sp in spec:
             ps_spec = to_protostellar_mutate_in_spec(sp, tc)
             req.specs.append(ps_spec)
 
-        response, call = self._kv.LookupIn.with_call(req, **call_args)
+        response, call = self._kv.MutateIn.with_call(req, **call_args)
         return ProtostellarResponse(response, call, key, tc)
 
     @BlockingWrapper.decode_mutation_op(MutationResult)
@@ -435,7 +491,12 @@ class Collection:
         req_args['key'] = key
         if 'cas' in final_args:
             req_args['cas'] = final_args.get('cas')
-        req = v1_pb2.RemoveRequest(**req_args)
+        durability = final_args.get('durability', None)
+        if durability:
+            if isinstance(durability, dict):
+                raise FeatureUnavailableException('Protostellar does not support legacy durability.')
+            req_args['durability_level'] = durability
+        req = kv_pb2.RemoveRequest(**req_args)
         response, call = self._kv.Remove.with_call(req, **call_args)
         return ProtostellarResponse(response, call, key, None)
 
@@ -449,30 +510,34 @@ class Collection:
         final_args = parse_options(ValidKeyValueOptions.get_valid_options(OptionTypes.Replace), kwargs, *opts)
         call_args = self._get_call_args(**final_args)
         transcoder = final_args.pop('transcoder', self.default_transcoder)
-        content, content_type = transcoder.encode_value(value, implementation=self.api_implementation)
+        content, content_flags = transcoder.encode_value(value)
         req_args = self._get_namespace_args()
         req_args['key'] = key
         req_args['content'] = content
-        req_args['content_type'] = content_type
+        req_args['content_flags'] = content_flags
         if 'cas' in final_args:
             req_args['cas'] = final_args.get('cas')
 
         expiry = final_args.get('expiry', None)
         preserve_expiry = final_args.get('preserve_expiry', None)
-        if expiry and preserve_expiry is True:
+        if expiry and preserve_expiry is not None:
             raise InvalidArgumentException(
                 'The expiry and preserve_expiry options cannot both be set for replace operations.'
             )
             
-        # @TODO:  expiry is by default set to preserve, in class it is set to reset (i.e. 0)
-        if preserve_expiry is None and expiry is not None:
-            req_args['expiry'] = expiry
-        elif preserve_expiry is False:
-            # @TODO:  how to pass in expiry = 0, since expiry is a timestamp
-            # req_args['expiry'] = timedelta_as_timestamp(timedelta(seconds=0))
-            pass
+        # Classic: expiry is by default set to not preserve,
+        # PS: expirty is by default set to preserve
+        if expiry is not None:
+            req_args['expiry_time'] = expiry
+        elif preserve_expiry is False or preserve_expiry is None:
+            req_args['expiry_secs'] = 0
 
-        req = v1_pb2.ReplaceRequest(**req_args)
+        durability = final_args.get('durability', None)
+        if durability:
+            if isinstance(durability, dict):
+                raise FeatureUnavailableException('Protostellar does not support legacy durability.')
+            req_args['durability_level'] = durability
+        req = kv_pb2.ReplaceRequest(**req_args)
         response, call = self._kv.Replace.with_call(req, **call_args)
         return ProtostellarResponse(response, call, key, None)
 
@@ -488,8 +553,8 @@ class Collection:
         call_args = self._get_call_args(**final_args)
         req_args = self._get_namespace_args()
         req_args['key'] = key
-        req_args['expiry'] = final_args.get('expiry')
-        req = v1_pb2.TouchRequest(**req_args)
+        req_args['expiry_secs'] = final_args.get('expiry')
+        req = kv_pb2.TouchRequest(**req_args)
         response, call = self._kv.Touch.with_call(req, **call_args)
         return ProtostellarResponse(response, call, key, None)
 
@@ -506,7 +571,7 @@ class Collection:
         req_args = self._get_namespace_args()
         req_args['key'] = key
         req_args['cas'] = final_args.get('cas')
-        req = v1_pb2.UnlockRequest(**req_args)
+        req = kv_pb2.UnlockRequest(**req_args)
         response, call = self._kv.Unlock.with_call(req, **call_args)
         ProtostellarResponse(response, call, key, None)
 
@@ -520,27 +585,34 @@ class Collection:
         final_args = parse_options(ValidKeyValueOptions.get_valid_options(OptionTypes.Upsert), kwargs, *opts)
         call_args = self._get_call_args(**final_args)
         transcoder = final_args.pop('transcoder', self.default_transcoder)
-        content, content_type = transcoder.encode_value(value, implementation=self.api_implementation)
+        content, content_flags = transcoder.encode_value(value)
         req_args = self._get_namespace_args()
         req_args['key'] = key
         req_args['content'] = content
-        req_args['content_type'] = content_type
+        req_args['content_flags'] = content_flags
         expiry = final_args.get('expiry', None)
         preserve_expiry = final_args.get('preserve_expiry', None)
         # new behavior in PS
-        if expiry and preserve_expiry is True:
+        if expiry and preserve_expiry is not None:
             raise InvalidArgumentException(
                 'The expiry and preserve_expiry options cannot both be set for upsert operations.'
             )
             
-        # @TODO:  expiry is by default set to preserve, in class it is set to reset (i.e. 0)
-        if preserve_expiry is None and expiry is not None:
-            req_args['expiry'] = expiry
-        elif preserve_expiry is False:
-            # @TODO:  how to pass in expiry = 0, since expiry is a timestamp
-            # req_args['expiry'] = timedelta_as_timestamp(timedelta(seconds=0))
-            pass
-        req = v1_pb2.UpsertRequest(**req_args)
+        # Classic: expiry is by default set to not preserve,
+        # PS: expirty is by default set to preserve
+        # @TODO(jc): https://couchbasecloud.atlassian.net/browse/ING-434
+        if expiry is not None:
+            req_args['expiry_time'] = expiry
+        elif preserve_expiry is False or preserve_expiry is None:
+            req_args['expiry_secs'] = 0
+
+        durability = final_args.get('durability', None)
+        if durability:
+            if isinstance(durability, dict):
+                raise FeatureUnavailableException('Protostellar does not support legacy durability.')
+            req_args['durability_level'] = durability
+
+        req = kv_pb2.UpsertRequest(**req_args)
         response, call = self._kv.Upsert.with_call(req, **call_args)
         return ProtostellarResponse(response, call, key, None)
 

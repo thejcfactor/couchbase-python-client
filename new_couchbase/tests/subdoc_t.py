@@ -382,10 +382,6 @@ class SubDocumentTestSuite:
                 raise Exception(f"{new_cas} != {r.cas}")
 
         TestEnvironment.try_n_times(10, 3, cas_matches, cb_env.collection, result.cas)
-
-        # result = cb_env.collection.get(key, GetOptions(with_expiry=True))
-        # expires_in = (result.expiry_time - datetime.now()).total_seconds()
-        # assert expires_in > 0 and expires_in < 1021
         expiry_path = '$document.exptime'
         res = TestEnvironment.try_n_times(10,
                                           3,
@@ -395,7 +391,6 @@ class SubDocumentTestSuite:
         
         res_expiry = res.content_as[int](0)
         expected = now + expiry
-        print(f'now: {now}, expected: {expiry}, res: {res_expiry}')
         err = round(abs(res_expiry - expected) / ((res_expiry + expected)/2) * 100, 2)
         # assert we are < 1% error
         assert err <= 1.0
@@ -680,48 +675,19 @@ class ClassicSubDocumentTests(SubDocumentTestSuite):
 
 class ProtostellarSubDocumentTests(SubDocumentTestSuite):
     SKIP_LIST = {
-        'test_array_add_unique': 'ING-363',
-        'test_array_add_unique_create_parents': 'ING-363',
-        'test_array_add_unique_fail': 'ING-363',
-        'test_array_append': 'ING-363',
-        'test_array_append_create_parents': 'ING-363',
-        'test_array_append_multi_insert': 'ING-363',
-        'test_array_as_document': 'ING-363',
-        'test_array_insert': 'ING-363',
-        'test_array_insert_multi_insert': 'ING-363',
-        'test_array_prepend': 'ING-363',
-        'test_array_prepend_create_parents': 'ING-363',
-        'test_array_prepend_multi_insert': 'ING-363',
-        # 'test_count': '',
-        'test_decrement': 'ING-363',
-        'test_decrement_create_parents': 'ING-363',
-        'test_increment': 'ING-363',
-        'test_increment_create_parents': 'ING-363',
-        'test_insert_create_parents': 'ING-363',
         # 'test_lookup_in_multiple_specs': '',
-        'test_lookup_in_one_path_not_found': 'ING-362',
-        'test_lookup_in_simple_exists': 'ING-362',
-        'test_lookup_in_simple_exists_bad_path': 'ING-362',
-        # 'test_lookup_in_simple_get': '',
-        # 'test_lookup_in_simple_get_spec_as_list': '',
-        # 'test_lookup_in_simple_long_path': '',
-        'test_mutate_in_expiry': 'ING-363, ING-372',
-        'test_mutate_in_insert_semantics': 'ING-363',
-        'test_mutate_in_insert_semantics_fail': 'ING-363',
-        'test_mutate_in_insert_semantics_kwargs': 'ING-363',
-        'test_mutate_in_preserve_expiry': 'ING-363',
-        'test_mutate_in_preserve_expiry_fails': 'ING-363',
-        'test_mutate_in_preserve_expiry_not_used': 'ING-363',
-        'test_mutate_in_remove': 'ING-363',
-        'test_mutate_in_replace_semantics': 'ING-363',
-        'test_mutate_in_replace_semantics_fail': 'ING-363',
-        'test_mutate_in_replace_semantics_kwargs': 'ING-363',
-        'test_mutate_in_simple': 'ING-363',
-        'test_mutate_in_simple_spec_as_list': 'ING-363',
-        'test_mutate_in_store_semantics_fail': 'ING-363',
-        'test_mutate_in_upsert_semantics': 'ING-363',
-        'test_mutate_in_upsert_semantics_kwargs': 'ING-363',
-        'test_upsert_create_parents': 'ING-363',
+        'test_lookup_in_one_path_not_found': 'When accessing content, DocNotFound/PathNotFound is not raised',
+        'test_lookup_in_simple_exists': 'When accessing content, DocNotFound/PathNotFound is not raised',
+        'test_lookup_in_simple_exists_bad_path': 'When accessing content, DocNotFound/PathNotFound is not raised',
+        'test_mutate_in_insert_semantics': 'Store semantics TBD',
+        'test_mutate_in_insert_semantics_fail': 'Store semantics TBD',
+        'test_mutate_in_insert_semantics_kwargs': 'Store semantics TBD',
+        'test_mutate_in_replace_semantics': 'Store semantics TBD',
+        'test_mutate_in_replace_semantics_fail': 'Store semantics TBD',
+        'test_mutate_in_replace_semantics_kwargs': 'Store semantics TBD',
+        'test_mutate_in_store_semantics_fail': 'Store semantics TBD',
+        'test_mutate_in_upsert_semantics': 'Store semantics TBD',
+        'test_mutate_in_upsert_semantics_kwargs': 'Store semantics TBD',
     }
 
     @pytest.fixture(scope='function', autouse=True)
@@ -750,15 +716,15 @@ class ProtostellarSubDocumentTests(SubDocumentTestSuite):
         cb_env.teardown(request.param)
 
     # @TODO(jc):  remove once ING-362 allows for exist op
-    @pytest.mark.usefixtures("check_xattr_supported")
-    def test_lookup_in_multiple_specs(self, cb_env):
-        key, value = cb_env.get_existing_doc_by_type('vehicle')
-        result = cb_env.collection.lookup_in(key, (SD.get('$document.exptime', xattr=True),
-                                                #    SD.exists('manufacturer'),
-                                                   SD.get('manufacturer'),
-                                                   SD.get('manufacturer.geo.accuracy'),))
-        assert isinstance(result, LookupInResult)
-        assert result.content_as[int](0) == 0
-        # assert result.exists(1) is True
-        assert result.content_as[dict](1) == value['manufacturer']
-        assert result.content_as[str](2) == value['manufacturer']['geo']['accuracy']
+    # @pytest.mark.usefixtures("check_xattr_supported")
+    # def test_lookup_in_multiple_specs(self, cb_env):
+    #     key, value = cb_env.get_existing_doc_by_type('vehicle')
+    #     result = cb_env.collection.lookup_in(key, (SD.get('$document.exptime', xattr=True),
+    #                                             #    SD.exists('manufacturer'),
+    #                                                SD.get('manufacturer'),
+    #                                                SD.get('manufacturer.geo.accuracy'),))
+    #     assert isinstance(result, LookupInResult)
+    #     assert result.content_as[int](0) == 0
+    #     # assert result.exists(1) is True
+    #     assert result.content_as[dict](1) == value['manufacturer']
+    #     assert result.content_as[str](2) == value['manufacturer']['geo']['accuracy']

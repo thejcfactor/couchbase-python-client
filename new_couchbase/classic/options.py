@@ -291,30 +291,30 @@ class ValidBinaryOptions:
     def get_valid_options(opt_type # type: OptionTypes
         ) -> Dict[str, Any]:
         if opt_type == OptionTypes.Append:
-            valid_opts = copy.copy(ValidKeyValueOptions._VALID_OPTS)
+            valid_opts = copy.copy(ValidBinaryOptions._VALID_OPTS)
             valid_opts.update({
                 'cas': {'cas': validate_int},
             })
         elif opt_type == OptionTypes.Decrement:
-            valid_opts = copy.copy(ValidKeyValueOptions._VALID_OPTS)
+            valid_opts = copy.copy(ValidBinaryOptions._VALID_OPTS)
             valid_opts.update({
                 'delta': {'delta': validate_binary_counter_delta},
                 'expiry': {'expiry': timedelta_as_timestamp},
                 'initial': {'initial': validate_binary_counter_initial},
             })
         elif opt_type == OptionTypes.Increment:
-            valid_opts = copy.copy(ValidKeyValueOptions._VALID_OPTS)
+            valid_opts = copy.copy(ValidBinaryOptions._VALID_OPTS)
             valid_opts.update({
                 'delta': {'delta': validate_binary_counter_delta},
                 'expiry': {'expiry': timedelta_as_timestamp},
                 'initial': {'initial': validate_binary_counter_initial},
             })
         elif opt_type == OptionTypes.Prepend:
-            valid_opts = copy.copy(ValidKeyValueOptions._VALID_OPTS)
+            valid_opts = copy.copy(ValidBinaryOptions._VALID_OPTS)
             valid_opts.update({
                 'cas': {'cas': validate_int},
             })
         else:
             raise InvalidArgumentException(f"Invalid option type: {opt_type}")
-        
+
         return valid_opts

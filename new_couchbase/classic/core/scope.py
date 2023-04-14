@@ -14,7 +14,7 @@
 #  limitations under the License.
 
 
-from typing import TYPE_CHECKING, Any, Dict
+from typing import Any, Dict, Optional, TYPE_CHECKING
 
 
 from new_couchbase.serializer import Serializer
@@ -34,10 +34,10 @@ if TYPE_CHECKING:
 class ScopeCore:
     def __init__(self, 
                 bucket, # type: Bucket
-                scope_name # type: str
+                scope_name=None # type: Optional[str]
                 ):
         self._bucket = bucket
-        self._scope_name = scope_name
+        self._scope_name = ScopeCore.default_name() if scope_name is None else scope_name
 
     @property
     def api_implementation(self) -> ApiImplementation:

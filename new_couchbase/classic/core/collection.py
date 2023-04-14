@@ -53,15 +53,15 @@ class CollectionCore:
     Not a part of the public API.
     """
     def __init__(self, 
-                scope, # type: Scope
-                name # type: str
+                 scope, # type: Scope
+                 collection_name=None # type: Optional[str]
                 ):
         if not scope:
             raise InvalidArgumentException(message="Collection must be given a scope")
         # if not scope.connection:
         #     raise RuntimeError("No connection provided")
         self._scope = scope
-        self._collection_name = name
+        self._collection_name = CollectionCore.default_name() if collection_name is None else collection_name
         self._connection = scope.connection
 
     @property
@@ -473,3 +473,7 @@ class CollectionCore:
             op_type=op_type,
             op_args=final_args
         )
+
+    @staticmethod
+    def default_name():
+        return "_default"

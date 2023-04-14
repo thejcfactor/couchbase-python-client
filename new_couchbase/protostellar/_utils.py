@@ -25,7 +25,7 @@ from new_couchbase.exceptions import InvalidArgumentException
 
 def timedelta_as_timestamp(
     duration,  # type: timedelta
-) -> int:
+) -> Timestamp:
     if not isinstance(duration, timedelta):
         raise InvalidArgumentException(f'Expected timedelta instead of {duration}')
 
@@ -40,6 +40,19 @@ def timedelta_as_timestamp(
     #   then = datetime.utcnow().replace(tzinfo=timezone.utc) + duration
     #   ts.FromDatetime(then)
     return ts
+
+def timedelta_as_seconds(
+    duration,  # type: timedelta
+) -> int:
+    if not isinstance(duration, timedelta):
+        raise InvalidArgumentException(f'Expected timedelta instead of {duration}')
+
+    # PYCBC-1177 remove deprecated heuristic from PYCBC-948:
+    seconds = int(duration.total_seconds())
+    if seconds < 0:
+        raise InvalidArgumentException(f'Expected expiry seconds of zero (for no expiry) or greater, got {seconds}.')
+
+    return seconds
 
 
 def timedelta_as_duration(

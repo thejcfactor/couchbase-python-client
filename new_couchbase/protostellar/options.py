@@ -28,7 +28,8 @@ from new_couchbase.common._utils import (timedelta_as_microseconds,
                                                 validate_projections,
                                                 validate_serializer,
                                                 validate_transcoder)
-from new_couchbase.protostellar._utils import timedelta_as_timestamp, to_seconds
+from new_couchbase.protostellar._utils import timedelta_as_seconds, timedelta_as_timestamp, to_seconds
+from new_couchbase.protostellar.durability import DurabilityParser
 
 from new_couchbase.exceptions import InvalidArgumentException
 
@@ -159,7 +160,7 @@ class ValidKeyValueOptions:
     _VALID_DURABLE_OPTS = {
         'timeout': {'timeout': to_seconds},
         # 'span': {'span': lambda x: x},
-        # 'durability': {'durability': DurabilityParser.parse_durability},
+        'durability': {'durability': DurabilityParser.parse_durability},
     }
 
     @staticmethod
@@ -171,7 +172,7 @@ class ValidKeyValueOptions:
         elif opt_type == OptionTypes.Get:
             valid_opts = copy.copy(ValidKeyValueOptions._VALID_OPTS)
             valid_opts.update({
-                'project': {'with_expiry': validate_projections},
+                'project': {'project': validate_projections},
                 'transcoder': {'transcoder': validate_transcoder},
                 'with_expiry': {'with_expiry': validate_bool},
             })
@@ -189,7 +190,7 @@ class ValidKeyValueOptions:
         elif opt_type == OptionTypes.GetAndTouch:
             valid_opts = copy.copy(ValidKeyValueOptions._VALID_OPTS)
             valid_opts.update({
-                'expiry': {'expiry': timedelta_as_timestamp},
+                'expiry': {'expiry': timedelta_as_seconds},
                 'transcoder': {'transcoder': validate_transcoder},
             })
         elif opt_type == OptionTypes.GetAnyReplica:
@@ -209,6 +210,7 @@ class ValidKeyValueOptions:
             valid_opts = copy.copy(ValidKeyValueOptions._VALID_DURABLE_OPTS)
             valid_opts.update({
                 'cas': {'cas': validate_int},
+                'expiry': {'expiry': timedelta_as_timestamp},
                 'preserve_expiry': {'preserve_expiry': validate_bool},
                 'store_semantics': {'store_semantics': lambda x: x},
             })
@@ -227,6 +229,9 @@ class ValidKeyValueOptions:
             })
         elif opt_type == OptionTypes.Touch:
             valid_opts = copy.copy(ValidKeyValueOptions._VALID_OPTS)
+            valid_opts.update({
+                'expiry': {'expiry': timedelta_as_seconds},
+            })
         elif opt_type == OptionTypes.Unlock:
             valid_opts = copy.copy(ValidKeyValueOptions._VALID_OPTS)
             valid_opts.update({
@@ -250,33 +255,33 @@ class ValidBinaryOptions:
     _VALID_OPTS = {
         'timeout': {'timeout': timedelta_as_microseconds},
         # 'span': {'span': lambda x: x},
-        # 'durability': {'durability': DurabilityParser.parse_durability},
+        'durability': {'durability': DurabilityParser.parse_durability},
     }
 
     @staticmethod
     def get_valid_options(opt_type # type: OptionTypes
         ) -> Dict[str, Any]:
         if opt_type == OptionTypes.Append:
-            valid_opts = copy.copy(ValidKeyValueOptions._VALID_OPTS)
+            valid_opts = copy.copy(ValidBinaryOptions._VALID_OPTS)
             valid_opts.update({
                 'cas': {'cas': validate_int},
             })
         elif opt_type == OptionTypes.Decrement:
-            valid_opts = copy.copy(ValidKeyValueOptions._VALID_OPTS)
+            valid_opts = copy.copy(ValidBinaryOptions._VALID_OPTS)
             valid_opts.update({
                 'delta': {'delta': validate_binary_counter_delta},
                 'expiry': {'expiry': timedelta_as_timestamp},
                 'initial': {'initial': validate_binary_counter_initial},
             })
         elif opt_type == OptionTypes.Increment:
-            valid_opts = copy.copy(ValidKeyValueOptions._VALID_OPTS)
+            valid_opts = copy.copy(ValidBinaryOptions._VALID_OPTS)
             valid_opts.update({
                 'delta': {'delta': validate_binary_counter_delta},
                 'expiry': {'expiry': timedelta_as_timestamp},
                 'initial': {'initial': validate_binary_counter_initial},
             })
         elif opt_type == OptionTypes.Prepend:
-            valid_opts = copy.copy(ValidKeyValueOptions._VALID_OPTS)
+            valid_opts = copy.copy(ValidBinaryOptions._VALID_OPTS)
             valid_opts.update({
                 'cas': {'cas': validate_int},
             })

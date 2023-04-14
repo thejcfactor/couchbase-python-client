@@ -234,34 +234,14 @@ class ClassicBinaryCollectionTests(BinaryCollectionTestSuite):
         cb_env.teardown(request.param)
 
 class ProtostellarBinaryCollectionTests(BinaryCollectionTestSuite):
-    SKIP_LIST = {
-        # 'test_append_bytes': '',
-        # 'test_append_bytes_not_empty': '',
-        'test_append_string': 'No FMT_UTF8 for transcoder',
-        'test_append_string_nokey': 'Does not raise DocumentNotFound, Unknown error',
-        'test_append_string_not_empty': 'No FMT_UTF8 for transcoder',
-        # 'test_counter_bad_delta_value': '',
-        # 'test_counter_bad_initial_value': '',
-        # 'test_counter_decrement': 'In/Decrement not working',
-        # 'test_counter_decrement_initial_value': 'In/Decrement not working',
-        # 'test_counter_decrement_non_default': 'In/Decrement not working',
-        # 'test_counter_increment': 'In/Decrement not working',
-        # 'test_counter_increment_initial_value': 'In/Decrement not working',
-        # 'test_counter_increment_non_default': 'In/Decrement not working',
-        # 'test_prepend_bytes': '',
-        # 'test_prepend_bytes_not_empty': '',
-        'test_prepend_string': 'No FMT_UTF8 for transcoder',
-        'test_prepend_string_nokey': 'Does not raise DocumentNotFound, Unknown error',
-        'test_prepend_string_not_empty': 'No FMT_UTF8 for transcoder',
-        # 'test_signed_int_64': '',
-        # 'test_unsigned_int': '',
-    }
-    @pytest.fixture(scope='function', autouse=True)
-    def can_run_test(self, request):
-        test_name = request.function.__name__
-        if test_name in ProtostellarBinaryCollectionTests.SKIP_LIST:
-            reason = ProtostellarBinaryCollectionTests.SKIP_LIST[test_name]
-            pytest.skip(f'Skipping {test_name} due to : {reason}')
+    # @TODO(jc):  remove once all the dust has settled
+    # SKIP_LIST = {}
+    # @pytest.fixture(scope='function', autouse=True)
+    # def can_run_test(self, request):
+    #     test_name = request.function.__name__
+    #     if test_name in ProtostellarBinaryCollectionTests.SKIP_LIST:
+    #         reason = ProtostellarBinaryCollectionTests.SKIP_LIST[test_name]
+    #         pytest.skip(f'Skipping {test_name} due to : {reason}')
 
 
     @pytest.fixture(scope='class', autouse=True)

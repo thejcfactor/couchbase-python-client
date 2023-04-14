@@ -33,9 +33,10 @@ if TYPE_CHECKING:
     from new_couchbase.options import QueryOptions
 
 class Scope:
-    def __init__(self, bucket, # type: Union[ClassicBucket, ProtostellarBucket]
-            scope_name # type: str
-            ):
+    def __init__(self,
+                 bucket, # type: Union[ClassicBucket, ProtostellarBucket]
+                 scope_name=None # type: Optional[str]
+                 ):
         if bucket.api_implementation == ApiImplementation.PROTOSTELLAR:
             from new_couchbase.protostellar.scope import Scope
             self._impl = Scope(bucket, scope_name)
@@ -56,9 +57,9 @@ class Scope:
         return self._impl.name
 
     def collection(self, 
-                collection_name # type: str
-                ) -> Collection:
-        return self._impl.collection(collection_name)
+                   collection_name=None # type: Optional[str]
+                   ) -> Collection:
+        return Collection(self._impl, collection_name)
 
     def query(
         self,

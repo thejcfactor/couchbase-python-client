@@ -23,7 +23,7 @@ from typing import (TYPE_CHECKING,
                     Dict,
                     Optional)
 
-from new_couchbase.protostellar.proto.couchbase.kv import v1_pb2
+# from new_couchbase.protostellar.proto.couchbase.kv.v1 import v1_pb2
 from grpc import StatusCode
 
 
@@ -494,7 +494,7 @@ class LookupInResult(LookupInResultInterface):
                 f"Provided index ({index}) is invalid.")
 
         # @TODO(JC):  how do we handle exists??
-        exists = self.value[index].get('exists', None)
+        exists = self.value[index].get('value', None)
         return exists is not None and exists is True
 
     def __repr__(self):
